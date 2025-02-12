@@ -1,0 +1,64 @@
+{
+  "areas": [
+    {
+      "id": 1,
+      "city_id": 1,
+      "name": "CBD"
+    },
+    {
+      "id": 2,
+      "city_id": 1,
+      "name": "Ponsonby"
+    },
+    {
+      "id": 3,
+      "city_id": 1,
+      "name": "Newmarket"
+    },
+    {
+      "id": 4,
+      "city_id": 2,
+      "name": "Te Aro"
+    },
+    {
+      "id": 5,
+      "city_id": 2,
+      "name": "Thorndon"
+    },
+    {
+      "id": 6,
+      "city_id": 2,
+      "name": "Kelburn"
+    },
+    {
+      "id": 7,
+      "city_id": 3,
+      "name": "Riccarton"
+    },
+    {
+      "id": 8,
+      "city_id": 3,
+      "name": "Addington"
+    },
+    {
+      "id": 9,
+      "city_id": 3,
+      "name": "Merivale"
+    },
+    {
+      "id": 10,
+      "city_id": 4,
+      "name": "Queenstown Central"
+    },
+    {
+      "id": 11,
+      "city_id": 4,
+      "name": "Frankton"
+    },
+    {
+      "id": 12,
+      "city_id": 4,
+      "name": "Arrowtown"
+    }
+  ]
+}
