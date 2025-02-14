@@ -31,15 +31,10 @@ import {
   MultiSelectorList,
   MultiSelectorTrigger,
 } from "@/components/ui/multi-select";
-
-interface FormValues {
-  title: string;
-  description: string;
-  price?: number;
-  location: string[];
-  tags: string[];
-  image_upload_input?: File[];
-}
+import {
+  ListingFormValues,
+  convertFormValuesToListing,
+} from "@/types/listings";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ACCEPTED_FILE_TYPES = [".jpg", ".jpeg", ".png", ".gif", ".svg"];
@@ -49,12 +44,15 @@ export default function CreateListingForm() {
   const [files, setFiles] = useState<File[] | null>(null);
   const [location, setLocation] = useState({ country: "", state: "" });
 
-  const form = useForm<FormValues>({
+  const form = useForm<ListingFormValues>({
     defaultValues: {
       title: "",
       description: "",
       price: undefined,
-      location: [],
+      location: {
+        country: "",
+        state: "",
+      },
       tags: ["React"],
       image_upload_input: undefined,
     },
@@ -85,10 +83,29 @@ export default function CreateListingForm() {
     multiple: true,
   };
 
-  const handleSubmit = async (formData: FormValues) => {
+  const handleSubmit = async (formData: ListingFormValues) => {
     try {
       setIsUploading(true);
-      // Add your form submission logic here
+
+      // Here you would typically:
+      // 1. Upload images to your storage service
+      // 2. Get back the URLs
+      // For this example, we'll create placeholder URLs
+      const mockImageUrls =
+        formData.image_upload_input?.map(
+          (_, index) => `/api/placeholder/600/400?image=${index}`
+        ) || [];
+
+      // Convert form data to Listing type
+      const listingData = convertFormValuesToListing(
+        formData,
+        crypto.randomUUID(), // Generate a temporary ID (replace with your ID generation logic)
+        mockImageUrls
+      );
+
+      // Add your form submission logic here with listingData
+      console.log("Submitting listing:", listingData);
+
       toast.success("Form submitted successfully!");
       handleSubmitSuccess();
     } catch (error) {
@@ -193,14 +210,18 @@ export default function CreateListingForm() {
                     onCountryChange={(country) => {
                       const newCountry = country?.name || "";
                       setLocation({ ...location, country: newCountry });
-                      field.onChange([newCountry]);
+                      field.onChange({
+                        ...field.value,
+                        country: newCountry,
+                      });
                     }}
                     onStateChange={(state) => {
                       const newState = state?.name || "";
                       setLocation({ ...location, state: newState });
-                      field.onChange(
-                        [location.country, newState].filter(Boolean)
-                      );
+                      field.onChange({
+                        ...field.value,
+                        state: newState,
+                      });
                     }}
                   />
                 </FormControl>
