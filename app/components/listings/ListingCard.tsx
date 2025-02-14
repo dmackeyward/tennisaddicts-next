@@ -1,7 +1,7 @@
 import React, { memo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import type { Listing } from "@/types/listings";
+import { PLACEHOLDER_LISTING, type Listing } from "@/types/listings";
 import {
   Card,
   CardContent,
@@ -17,29 +17,6 @@ interface ListingCardProps {
   isLoading?: boolean;
   onError?: (error: Error) => void;
 }
-
-const PLACEHOLDER_LISTING: Listing = {
-  id: "placeholder",
-  title: "Sample Listing Title",
-  description:
-    "This is a placeholder description for the listing. It provides a brief overview of what the listing is about.",
-  price: 199.99,
-  location: {
-    country: "United States",
-    state: "California",
-    formatted: "San Francisco, CA",
-  },
-  images: [
-    {
-      id: "placeholder-image-1",
-      url: "/images/placeholder.svg",
-      alt: "Placeholder listing image",
-    },
-  ],
-  tags: ["placeholder", "sample"],
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-};
 
 const LoadingSkeleton = memo(() => (
   <div role="status" aria-label="Loading listing card">

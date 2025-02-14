@@ -17,8 +17,16 @@ export interface Listing {
   title: string;
   description: string;
   price: number;
-  location: Location;
-  images: ListingImage[];
+  location: {
+    country: string;
+    state: string;
+    formatted: string;
+  };
+  images: Array<{
+    id: string;
+    url: string;
+    alt: string;
+  }>;
   tags: string[];
   createdAt: string;
   updatedAt: string;
@@ -50,6 +58,20 @@ export interface ListingGridProps {
   hasMore?: boolean;
 }
 
+export interface ListingPageProps {
+  params: {
+    id: string;
+  };
+}
+
+export interface ListingFilters {
+  location?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  sortBy?: "price" | "date" | "location";
+  sortOrder?: "asc" | "desc";
+}
+
 // Utility function to convert form values to Listing type
 export function convertFormValuesToListing(
   formValues: ListingFormValues,
@@ -78,3 +100,26 @@ export function convertFormValuesToListing(
     updatedAt: new Date().toISOString(),
   };
 }
+
+export const PLACEHOLDER_LISTING: Listing = {
+  id: "placeholder",
+  title: "Sample Listing Title",
+  description:
+    "This is a placeholder description for the listing. It provides a brief overview of what the listing is about.",
+  price: 199.99,
+  location: {
+    country: "United States",
+    state: "California",
+    formatted: "San Francisco, CA",
+  },
+  images: [
+    {
+      id: "placeholder-image-1",
+      url: "/images/placeholder.svg",
+      alt: "Placeholder listing image",
+    },
+  ],
+  tags: ["placeholder", "sample"],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+};

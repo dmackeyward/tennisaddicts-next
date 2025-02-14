@@ -13,31 +13,12 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { Listing, ListingDetailProps } from "@/types/listings";
+import {
+  PLACEHOLDER_LISTING,
+  type Listing,
+  type ListingDetailProps,
+} from "@/types/listings";
 import { formatDate } from "@/app/utils/format-date";
-
-const PLACEHOLDER_LISTING: Listing = {
-  id: "placeholder",
-  title: "Sample Listing Title",
-  description:
-    "This is a placeholder description for the listing. It provides a brief overview of what the listing is about.",
-  price: 199.99,
-  location: {
-    country: "United States",
-    state: "California",
-    formatted: "San Francisco, CA",
-  },
-  images: [
-    {
-      id: "placeholder-image-1",
-      url: "/images/placeholder.svg",
-      alt: "Placeholder listing image",
-    },
-  ],
-  tags: ["placeholder", "sample"],
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-};
 
 // Memoized loading skeleton component
 const LoadingSkeleton = memo(() => (

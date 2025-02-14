@@ -1,6 +1,7 @@
+// app/listings/create/page.tsx
 import { Metadata } from "next";
 import { Suspense } from "react";
-
+import { notFound } from "next/navigation";
 import CreateListingForm from "@/components/listings/ListingForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,7 +11,22 @@ export const metadata: Metadata = {
   description: "Create a new listing to sell your tennis equipment",
 };
 
+async function checkCreatePermission() {
+  // Add your permission check logic here
+  // For example:
+  // const session = await getSession();
+  // if (!session?.user) return false;
+  // return session.user.canCreateListings;
+  return true;
+}
+
 export default async function CreateListingPage() {
+  const hasPermission = await checkCreatePermission();
+
+  if (!hasPermission) {
+    notFound();
+  }
+
   return (
     <div className="container mx-auto py-8">
       <Card>

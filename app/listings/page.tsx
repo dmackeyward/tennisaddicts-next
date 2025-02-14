@@ -1,27 +1,13 @@
-import { ListingGrid } from "@/components/listings/ListingGrid";
+// app/listings/page.tsx
+import { Suspense } from "react";
+import { ClientSideListings } from "../components/listings/ClientSideListings";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-
-async function getListings() {
-  // This is a placeholder function - replace with your actual API call
-  const data = [
-    {
-      id: "1",
-      title: "Modern Apartment in Downtown",
-      description: "Beautiful 2-bedroom apartment with city views",
-      price: 2500,
-      imageUrl: "/api/placeholder/400/300",
-      location: "Downtown",
-      createdAt: new Date().toISOString(),
-    },
-    // Add more sample listings as needed
-  ];
-
-  return data;
-}
+import { getListings } from "@/db/queries/listings";
 
 export default async function ListingsPage() {
-  const listings = await getListings();
+  // Fetch initial listings on the server
+  const initialListings = await getListings();
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -31,7 +17,10 @@ export default async function ListingsPage() {
           <Button>Create New Listing</Button>
         </Link>
       </div>
-      <ListingGrid listings={listings} />
+
+      <Suspense fallback={<div>Loading...</div>}>
+        <ClientSideListings initialListings={initialListings} />
+      </Suspense>
     </div>
   );
 }
