@@ -37,6 +37,19 @@ export interface ListingFormValues {
   image_upload_input?: File[];
 }
 
+export interface ListingDetailProps {
+  listing: Listing;
+  onContactSeller: () => void;
+  isLoading?: boolean;
+}
+
+export interface ListingGridProps {
+  listings: Listing[];
+  isLoading?: boolean;
+  onLoadMore?: () => void;
+  hasMore?: boolean;
+}
+
 // Utility function to convert form values to Listing type
 export function convertFormValuesToListing(
   formValues: ListingFormValues,

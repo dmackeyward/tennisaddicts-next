@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { CloudUpload, Paperclip } from "lucide-react";
+import { CloudUpload, Paperclip, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -31,50 +32,104 @@ import {
   MultiSelectorList,
   MultiSelectorTrigger,
 } from "@/components/ui/multi-select";
-import {
-  ListingFormValues,
-  convertFormValuesToListing,
-} from "@/types/listings";
+import { ListingFormValues } from "@/types/listings";
+import { z } from "zod";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ACCEPTED_FILE_TYPES = [".jpg", ".jpeg", ".png", ".gif", ".svg"];
+const AVAILABLE_FRAMEWORKS = [
+  "React",
+  "Vue",
+  "Svelte",
+  "Angular",
+  "Next.js",
+] as const;
 
-export default function CreateListingForm() {
+const listingSchema = z.object({
+  title: z
+    .string()
+    .min(3, "Title must be at least 3 characters")
+    .max(100, "Title must not exceed 100 characters"),
+  description: z
+    .string()
+    .min(10, "Description must be at least 10 characters")
+    .max(1000, "Description must not exceed 1000 characters"),
+  price: z
+    .number()
+    .min(0, "Price must be positive")
+    .transform((val) => Number(val.toFixed(2))),
+  location: z.object({
+    country: z.string().min(1, "Country is required"),
+    state: z.string().min(1, "State is required"),
+  }),
+  tags: z
+    .array(z.enum(AVAILABLE_FRAMEWORKS))
+    .min(1, "Select at least one framework")
+    .max(3, "Maximum 3 frameworks allowed"),
+  image_upload_input: z
+    .array(z.instanceof(File))
+    .min(1, "At least one image is required")
+    .max(5, "Maximum 5 images allowed")
+    .optional(),
+});
+
+interface CreateListingFormProps {
+  onSubmitSuccess?: () => void;
+  onDismiss?: () => void;
+  initialValues?: Partial<ListingFormValues>;
+}
+
+export default function CreateListingForm({
+  onSubmitSuccess,
+  onDismiss,
+  initialValues,
+}: CreateListingFormProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [files, setFiles] = useState<File[] | null>(null);
   const [location, setLocation] = useState({ country: "", state: "" });
 
   const form = useForm<ListingFormValues>({
     defaultValues: {
-      title: "",
-      description: "",
-      price: undefined,
-      location: {
+      title: initialValues?.title ?? "",
+      description: initialValues?.description ?? "",
+      price: initialValues?.price,
+      location: initialValues?.location ?? {
         country: "",
         state: "",
       },
-      tags: ["React"],
+      tags: initialValues?.tags ?? ["React"],
       image_upload_input: undefined,
     },
   });
+
+  const validateFiles = useCallback((newFiles: File[]): boolean => {
+    const totalSize = newFiles.reduce((acc, file) => acc + file.size, 0);
+    if (totalSize > MAX_FILE_SIZE) {
+      toast.error("Total file size exceeds 10MB");
+      return false;
+    }
+
+    const invalidFiles = newFiles.filter(
+      (file) =>
+        !ACCEPTED_FILE_TYPES.some((type) =>
+          file.name.toLowerCase().endsWith(type)
+        )
+    );
+    if (invalidFiles.length > 0) {
+      toast.error(
+        `Invalid file type(s): ${invalidFiles.map((f) => f.name).join(", ")}`
+      );
+      return false;
+    }
+
+    return true;
+  }, []);
 
   useEffect(() => {
     if (files) {
       form.setValue("image_upload_input", files, { shouldValidate: true });
     }
   }, [files, form]);
-
-  const validateFiles = (newFiles: File[]): boolean => {
-    const totalSize = newFiles.reduce(
-      (acc: number, file: File) => acc + file.size,
-      0
-    );
-    if (totalSize > MAX_FILE_SIZE) {
-      toast.error("Total file size exceeds 10MB");
-      return false;
-    }
-    return true;
-  };
 
   const dropZoneConfig = {
     maxFiles: 5,
@@ -86,33 +141,33 @@ export default function CreateListingForm() {
   const handleSubmit = async (formData: ListingFormValues) => {
     try {
       setIsUploading(true);
+      const validated = listingSchema.parse(formData);
 
-      // Here you would typically:
-      // 1. Upload images to your storage service
-      // 2. Get back the URLs
-      // For this example, we'll create placeholder URLs
-      const mockImageUrls =
-        formData.image_upload_input?.map(
-          (_, index) => `/api/placeholder/600/400?image=${index}`
-        ) || [];
+      if (formData.image_upload_input?.length) {
+        const uploadPromises = formData.image_upload_input.map(async (file) => {
+          const formData = new FormData();
+          formData.append("file", file);
+          // TODO: Implement your upload logic here
+          // const response = await uploadImage(formData);
+          // return response.imageUrl;
+        });
 
-      // Convert form data to Listing type
-      const listingData = convertFormValuesToListing(
-        formData,
-        crypto.randomUUID(), // Generate a temporary ID (replace with your ID generation logic)
-        mockImageUrls
-      );
-
-      // Add your form submission logic here with listingData
-      console.log("Submitting listing:", listingData);
-
-      toast.success("Form submitted successfully!");
-      handleSubmitSuccess();
+        try {
+          const imageUrls = await Promise.all(uploadPromises);
+          // TODO: Handle successful upload
+          onSubmitSuccess?.();
+          handleSubmitSuccess();
+        } catch (error) {
+          toast.error("Failed to upload images. Please try again.");
+        }
+      }
     } catch (error) {
-      if (error instanceof Error) {
+      if (error instanceof z.ZodError) {
+        error.errors.forEach((err) => {
+          toast.error(`${err.path.join(".")}: ${err.message}`);
+        });
+      } else if (error instanceof Error) {
         toast.error(error.message);
-      } else {
-        toast.error("An unknown error occurred");
       }
     } finally {
       setIsUploading(false);
@@ -132,16 +187,16 @@ export default function CreateListingForm() {
       );
       if (!confirmed) return;
     }
+    onDismiss?.();
   };
 
   return (
-    <div className="max-h-screen overflow-y-auto">
+    <div className="max-h-screen overflow-y-auto bg-white dark:bg-gray-900">
       <Form {...form}>
         <form
-          className="mx-auto max-w-6xl space-y-4 px-4 py-4"
+          className="mx-auto max-w-6xl space-y-6 px-6 py-8"
           onSubmit={form.handleSubmit(handleSubmit)}
         >
-          {/* Title Field */}
           <FormField
             control={form.control}
             name="title"
@@ -149,14 +204,20 @@ export default function CreateListingForm() {
               <FormItem>
                 <FormLabel>Title</FormLabel>
                 <FormControl>
-                  <Input placeholder="E.g. Wilson Blade" {...field} />
+                  <Input
+                    placeholder="E.g. Wilson Blade"
+                    {...field}
+                    className="w-full"
+                  />
                 </FormControl>
+                <FormDescription>
+                  Give your listing a clear, descriptive title
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* Description Field */}
           <FormField
             control={form.control}
             name="description"
@@ -165,17 +226,19 @@ export default function CreateListingForm() {
                 <FormLabel>Description</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="Description"
-                    className="resize-none"
+                    placeholder="Describe your item in detail..."
+                    className="min-h-32 resize-none"
                     {...field}
                   />
                 </FormControl>
+                <FormDescription>
+                  Include condition, features, and any relevant details
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* Price Field */}
           <FormField
             control={form.control}
             name="price"
@@ -183,28 +246,33 @@ export default function CreateListingForm() {
               <FormItem>
                 <FormLabel>Price</FormLabel>
                 <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="E.g. $100.00"
-                    {...field}
-                    onChange={(e) => {
-                      const value = e.target.valueAsNumber;
-                      field.onChange(isNaN(value) ? undefined : value);
-                    }}
-                  />
+                  <div className="relative">
+                    <span className="absolute left-3 top-2 text-gray-500">
+                      $
+                    </span>
+                    <Input
+                      type="number"
+                      placeholder="0.00"
+                      className="pl-8"
+                      {...field}
+                      onChange={(e) => {
+                        const value = e.target.valueAsNumber;
+                        field.onChange(isNaN(value) ? undefined : value);
+                      }}
+                    />
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* Location Field */}
           <FormField
             control={form.control}
             name="location"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Select Location</FormLabel>
+              <FormItem className="space-y-4">
+                <FormLabel>Location</FormLabel>
                 <FormControl>
                   <LocationSelector
                     onCountryChange={(country) => {
@@ -230,13 +298,12 @@ export default function CreateListingForm() {
             )}
           />
 
-          {/* Tags Field */}
           <FormField
             control={form.control}
             name="tags"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Select your framework</FormLabel>
+                <FormLabel>Frameworks</FormLabel>
                 <FormControl>
                   <MultiSelector
                     values={field.value || []}
@@ -245,33 +312,31 @@ export default function CreateListingForm() {
                     className="max-w-xs"
                   >
                     <MultiSelectorTrigger>
-                      <MultiSelectorInput placeholder="Select languages" />
+                      <MultiSelectorInput placeholder="Select frameworks (max 3)" />
                     </MultiSelectorTrigger>
                     <MultiSelectorContent>
                       <MultiSelectorList>
-                        <MultiSelectorItem value="React">
-                          React
-                        </MultiSelectorItem>
-                        <MultiSelectorItem value="Vue">Vue</MultiSelectorItem>
-                        <MultiSelectorItem value="Svelte">
-                          Svelte
-                        </MultiSelectorItem>
+                        {AVAILABLE_FRAMEWORKS.map((framework) => (
+                          <MultiSelectorItem key={framework} value={framework}>
+                            {framework}
+                          </MultiSelectorItem>
+                        ))}
                       </MultiSelectorList>
                     </MultiSelectorContent>
                   </MultiSelector>
                 </FormControl>
+                <FormDescription>Select up to 3 frameworks</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* Image Upload Field */}
           <FormField
             control={form.control}
             name="image_upload_input"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Upload image</FormLabel>
+                <FormLabel>Images</FormLabel>
                 <FormControl>
                   <FileUploader
                     value={files}
@@ -282,19 +347,19 @@ export default function CreateListingForm() {
                       }
                     }}
                     dropzoneOptions={dropZoneConfig}
-                    className="relative rounded-lg bg-background p-2"
+                    className="rounded-lg bg-gray-50 p-2 dark:bg-gray-800"
                   >
                     <FileInput
                       id="fileInput"
-                      className="outline-dashed outline-1 outline-slate-500"
+                      className="outline-dashed outline-1 outline-gray-300 dark:outline-gray-600"
                     >
                       <div className="flex w-full flex-col items-center justify-center p-8">
-                        <CloudUpload className="h-10 w-10 text-gray-500" />
-                        <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
+                        <CloudUpload className="h-12 w-12 text-gray-400" />
+                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                           <span className="font-semibold">Click to upload</span>
-                          &nbsp; or drag and drop
+                          &nbsp;or drag and drop
                         </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                           SVG, PNG, JPG or GIF (max 10MB)
                         </p>
                       </div>
@@ -303,20 +368,40 @@ export default function CreateListingForm() {
                       {files?.map((file: File, i: number) => (
                         <FileUploaderItem key={i} index={i}>
                           <Paperclip className="h-4 w-4 stroke-current" />
-                          <span>{file.name}</span>
+                          <span className="ml-2 text-sm">{file.name}</span>
                         </FileUploaderItem>
                       ))}
                     </FileUploaderContent>
                   </FileUploader>
                 </FormControl>
+                <FormDescription>
+                  Upload up to 5 images of your item
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <Button type="submit" disabled={isUploading}>
-            {isUploading ? "Uploading..." : "Submit"}
-          </Button>
+          <div className="flex justify-end space-x-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleDismiss}
+              disabled={isUploading}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isUploading}>
+              {isUploading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Uploading...
+                </>
+              ) : (
+                "Create Listing"
+              )}
+            </Button>
+          </div>
         </form>
       </Form>
     </div>

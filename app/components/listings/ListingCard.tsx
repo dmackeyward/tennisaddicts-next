@@ -1,4 +1,6 @@
+import React, { memo, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import type { Listing } from "@/types/listings";
 import {
   Card,
@@ -7,9 +9,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { formatPrice, formatDate } from "@/lib/format"; // Assuming you'll create these utilities
 
 interface ListingCardProps {
-  listing: Listing;
+  listing?: Listing;
+  isLoading?: boolean;
+  onError?: (error: Error) => void;
 }
 
 const PLACEHOLDER_LISTING: Listing = {
@@ -26,7 +32,7 @@ const PLACEHOLDER_LISTING: Listing = {
   images: [
     {
       id: "placeholder-image-1",
-      url: "/api/placeholder/800/600",
+      url: "/images/placeholder.svg",
       alt: "Placeholder listing image",
     },
   ],
@@ -35,39 +41,117 @@ const PLACEHOLDER_LISTING: Listing = {
   updatedAt: new Date().toISOString(),
 };
 
-export function ListingCard({
-  listing = PLACEHOLDER_LISTING,
-}: ListingCardProps) {
-  const mainImage = listing.images?.[0];
+const LoadingSkeleton = memo(() => (
+  <div role="status" aria-label="Loading listing card">
+    <Card className="h-full">
+      <CardHeader>
+        <Skeleton className="w-full h-48 rounded-t-lg" />
+        <Skeleton className="h-6 w-3/4 mt-4" />
+      </CardHeader>
+      <CardContent>
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-2/3 mt-2" />
+      </CardContent>
+      <CardFooter className="flex justify-between">
+        <Skeleton className="h-6 w-24" />
+        <Skeleton className="h-6 w-32" />
+      </CardFooter>
+    </Card>
+  </div>
+));
 
-  return (
-    <Link href={`/listings/${listing.id || "placeholder"}`}>
-      <Card className="h-full hover:shadow-lg transition-shadow">
-        <CardHeader>
-          <img
-            src={mainImage?.url || "/api/placeholder/800/600"}
-            alt={mainImage?.alt || listing.title || "Listing image"}
-            className="w-full h-48 object-cover rounded-t-lg"
-          />
-          <CardTitle className="text-xl mt-4">
-            {listing.title || PLACEHOLDER_LISTING.title}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-gray-600 line-clamp-2">
-            {listing.description || PLACEHOLDER_LISTING.description}
-          </p>
-        </CardContent>
-        <CardFooter className="flex justify-between">
-          <div className="text-lg font-semibold">
-            ${(listing.price || PLACEHOLDER_LISTING.price).toFixed(2)}
-          </div>
-          <div className="text-gray-500">
-            {listing.location?.formatted ||
-              PLACEHOLDER_LISTING.location.formatted}
-          </div>
-        </CardFooter>
-      </Card>
-    </Link>
-  );
-}
+LoadingSkeleton.displayName = "LoadingSkeleton";
+
+const ListingImage = memo(
+  ({ image, title }: { image?: Listing["images"][0]; title: string }) => {
+    const [isImageError, setIsImageError] = useState(false);
+    const imageUrl =
+      !isImageError && image?.url ? image.url : "/images/placeholder.svg";
+
+    return (
+      <div className="relative w-full h-48 overflow-hidden rounded-t-lg">
+        <Image
+          src={imageUrl}
+          alt={image?.alt || title}
+          fill
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          onError={() => setIsImageError(true)}
+          priority={false}
+          loading="lazy"
+        />
+      </div>
+    );
+  }
+);
+
+ListingImage.displayName = "ListingImage";
+
+const ListingCard: React.FC<ListingCardProps> = memo(
+  ({ listing, isLoading = false, onError }) => {
+    if (isLoading) {
+      return <LoadingSkeleton />;
+    }
+
+    const displayData = listing || PLACEHOLDER_LISTING;
+    const mainImage = displayData.images?.[0];
+    const isPlaceholder = !listing;
+
+    // Format the listing date for screen readers
+    const formattedDate = formatDate(displayData.updatedAt);
+
+    return (
+      <Link
+        href={`/listings/${displayData.id}`}
+        className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg"
+        aria-label={`View details for ${displayData.title}`}
+        tabIndex={isPlaceholder ? -1 : 0}
+      >
+        <Card className="h-full hover:shadow-lg transition-shadow duration-200">
+          <CardHeader>
+            <ListingImage image={mainImage} title={displayData.title} />
+            <CardTitle className="text-xl mt-4 line-clamp-1">
+              {displayData.title}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-600 line-clamp-2">
+              {displayData.description}
+            </p>
+            {displayData.tags && displayData.tags.length > 0 && (
+              <div className="flex gap-2 mt-2 flex-wrap" aria-label="Tags">
+                {displayData.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-full"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </CardContent>
+          <CardFooter className="flex justify-between items-center">
+            <div
+              className="text-lg font-semibold"
+              aria-label={`Price: ${formatPrice(displayData.price)}`}
+            >
+              ${displayData.price.toFixed(2)}
+            </div>
+            <div
+              className="text-gray-500 text-sm truncate max-w-[150px]"
+              aria-label={`Location: ${displayData.location?.formatted}`}
+            >
+              {displayData.location?.formatted}
+            </div>
+          </CardFooter>
+          <div className="sr-only">Last updated {formattedDate}</div>
+        </Card>
+      </Link>
+    );
+  }
+);
+
+ListingCard.displayName = "ListingCard";
+
+export default ListingCard;

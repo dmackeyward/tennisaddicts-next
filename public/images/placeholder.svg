@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <!-- Background -->
+  <rect width="800" height="600" fill="#f3f4f6"/>
+  
+  <!-- Image icon -->
+  <path d="M350 250 L450 250 L450 350 L350 350 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="8"/>
+  <circle cx="390" cy="290" r="15" fill="#9ca3af"/>
+  <path d="M350 350 L380 310 L400 330 L430 290 L450 350 Z" fill="#9ca3af"/>
+  
+  <!-- Text -->
+  <text x="400" y="400" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="#6b7280">
+    Placeholder Image
+  </text>
+</svg>
