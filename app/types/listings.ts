@@ -1,5 +1,9 @@
 // @/types/listings.ts
 
+export type ListingId = string;
+export type UserId = string;
+
+// Base interfaces
 export interface Location {
   country: string;
   state: string;
@@ -12,39 +16,62 @@ export interface ListingImage {
   id: string;
 }
 
-export interface Listing {
-  id: string;
+// Core listing interfaces
+export interface BaseListing {
   title: string;
   description: string;
   price: number;
-  location: {
-    country: string;
-    state: string;
-    formatted: string;
-  };
-  images: Array<{
-    id: string;
-    url: string;
-    alt: string;
-  }>;
+  location: Location;
   tags: string[];
+}
+
+export interface Listing extends BaseListing {
+  id: ListingId;
+  userId: UserId;
+  images: ListingImage[];
   createdAt: string;
   updatedAt: string;
 }
 
-// Form-specific type that maps to Listing
-export interface ListingFormValues {
-  title: string;
-  description: string;
+// Form-related interfaces
+export interface ListingFormValues
+  extends Omit<BaseListing, "location" | "price"> {
   price?: number;
-  location: {
-    country: string;
-    state: string;
-  };
-  tags: string[];
+  location: Omit<Location, "formatted">;
   image_upload_input?: File[];
 }
 
+export interface ListingFormState {
+  message: string;
+  errors?: {
+    _form?: string[];
+    title?: string[];
+    description?: string[];
+    price?: string[];
+    location?: string[];
+    [key: string]: string[] | undefined;
+  };
+  data?: {
+    id: number;
+  };
+}
+
+export interface ListingInput extends BaseListing {
+  images: ListingImage[];
+  userId?: UserId;
+}
+
+// Response interfaces
+export interface DeleteListingResponse {
+  success: boolean;
+  message: string;
+  error?: {
+    code: string;
+    details: string;
+  };
+}
+
+// Component prop interfaces
 export interface ListingDetailProps {
   listing: Listing;
   onContactSeller: () => void;
@@ -60,26 +87,29 @@ export interface ListingGridProps {
 
 export interface ListingPageProps {
   params: {
-    id: string;
+    id: ListingId;
   };
 }
 
+// Filter interfaces
 export interface ListingFilters {
-  location?: string;
+  location?: Partial<Location>;
   minPrice?: number;
   maxPrice?: number;
   sortBy?: "price" | "date" | "location";
   sortOrder?: "asc" | "desc";
 }
 
-// Utility function to convert form values to Listing type
+// Utility function
 export function convertFormValuesToListing(
   formValues: ListingFormValues,
-  id: string,
+  id: ListingId,
+  userId: UserId,
   imageUrls: string[]
 ): Listing {
   return {
     id,
+    userId,
     title: formValues.title,
     description: formValues.description,
     price: formValues.price || 0,
@@ -101,8 +131,10 @@ export function convertFormValuesToListing(
   };
 }
 
+// Constants
 export const PLACEHOLDER_LISTING: Listing = {
   id: "placeholder",
+  userId: "placeholder-user",
   title: "Sample Listing Title",
   description:
     "This is a placeholder description for the listing. It provides a brief overview of what the listing is about.",

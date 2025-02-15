@@ -1,35 +1,25 @@
-// Example model schema from the Drizzle docs
-// https://orm.drizzle.team/docs/sql-schema-declaration
-
 import { sql } from "drizzle-orm";
 import {
-  index,
   integer,
-  pgTableCreator,
+  jsonb,
+  pgTable,
   timestamp,
   varchar,
+  index,
 } from "drizzle-orm/pg-core";
-import { array } from "zod";
+import { ListingImage, Location } from "@/app/types/listings";
 
-/**
- * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
- * database instance for multiple projects.
- *
- * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
- */
-export const createTable = pgTableCreator((name) => `tennisaddicts_${name}`);
-
-export const listings = createTable(
+export const listings = pgTable(
   "listings",
   {
     id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
-    userId: varchar("userId", { length: 256 }).notNull(),
+    userId: varchar("user_id", { length: 256 }).notNull(),
     title: varchar("title", { length: 256 }).notNull(),
     description: varchar("description", { length: 1024 }).notNull(),
-    price: integer("price"),
-    location: varchar("location", { length: 256 }).array(),
+    price: integer("price").notNull().default(0),
+    location: jsonb("location").$type<Location>().notNull(),
     tags: varchar("tags", { length: 256 }).array(),
-    imageUrl: varchar("imageUrl", { length: 1024 }).array().notNull(),
+    images: jsonb("images").$type<ListingImage[]>().notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -37,7 +27,13 @@ export const listings = createTable(
       () => new Date()
     ),
   },
-  (example) => ({
-    titleIndex: index("title_idx").on(example.title),
+  (table) => ({
+    titleIdx: index("title_idx").on(table.title),
+    userIdIdx: index("user_id_idx").on(table.userId),
+    locationIdx: index("location_idx").on(table.location),
   })
 );
+
+// Types generated from the schema
+export type ListingSchema = typeof listings.$inferSelect;
+export type NewListing = typeof listings.$inferInsert;
