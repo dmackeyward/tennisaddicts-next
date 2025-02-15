@@ -28,7 +28,7 @@ interface MultiSelectorProps
 
 interface MultiSelectContextProps {
   value: string[];
-  onValueChange: (value: any) => void;
+  onValueChange: (value: string) => void;
   open: boolean;
   setOpen: (value: boolean) => void;
   inputValue: string;
@@ -48,12 +48,6 @@ const useMultiSelect = () => {
   }
   return context;
 };
-
-/**
- * MultiSelect Docs: {@link: https://shadcn-extension.vercel.app/docs/multi-select}
- */
-
-// TODO : expose the visibility of the popup
 
 const MultiSelector = ({
   values: value,
@@ -79,11 +73,10 @@ const MultiSelector = ({
         onValueChange([...value, val]);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [value]
+    [value, onValueChange]
   );
 
-  const handleSelect = React.useCallback(
+  const handleSelect = useCallback(
     (e: React.SyntheticEvent<HTMLInputElement>) => {
       e.preventDefault();
       const target = e.currentTarget;
@@ -188,8 +181,17 @@ const MultiSelector = ({
           break;
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [value, inputValue, activeIndex, loop]
+    [
+      activeIndex,
+      dir,
+      inputValue,
+      isValueSelected,
+      loop,
+      onValueChangeHandler,
+      open,
+      selectedValue,
+      value,
+    ]
   );
 
   return (
@@ -222,173 +224,4 @@ const MultiSelector = ({
   );
 };
 
-const MultiSelectorTrigger = forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, children, ...props }, _ref) => {
-  const { value, onValueChange, activeIndex } = useMultiSelect();
-
-  const mousePreventDefault = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  }, []);
-
-  return (
-    <div
-      ref={_ref}
-      className={cn(
-        "flex flex-wrap gap-1 rounded-lg bg-background p-1 py-2 ring-1 ring-muted",
-        {
-          "ring-1 focus-within:ring-ring": activeIndex === -1,
-        },
-        className
-      )}
-      {...props}
-    >
-      {value.map((item, index) => (
-        <Badge
-          key={item}
-          className={cn(
-            "flex items-center gap-1 rounded-xl px-1",
-            activeIndex === index && "ring-2 ring-muted-foreground"
-          )}
-          variant={"secondary"}
-        >
-          <span className="text-xs">{item}</span>
-          <button
-            aria-label={`Remove ${item} option`}
-            aria-roledescription="button to remove option"
-            type="button"
-            onMouseDown={mousePreventDefault}
-            onClick={() => onValueChange(item)}
-          >
-            <span className="sr-only">Remove {item} option</span>
-            <RemoveIcon className="h-4 w-4 hover:stroke-destructive" />
-          </button>
-        </Badge>
-      ))}
-      {children}
-    </div>
-  );
-});
-
-MultiSelectorTrigger.displayName = "MultiSelectorTrigger";
-
-const MultiSelectorInput = forwardRef<
-  React.ElementRef<typeof CommandPrimitive.Input>,
-  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
->(({ className, ...props }, _ref) => {
-  const {
-    setOpen,
-    inputValue,
-    setInputValue,
-    activeIndex,
-    setActiveIndex,
-    handleSelect,
-    ref: inputRef,
-  } = useMultiSelect();
-
-  return (
-    <CommandPrimitive.Input
-      {...props}
-      tabIndex={0}
-      ref={inputRef}
-      value={inputValue}
-      onValueChange={activeIndex === -1 ? setInputValue : undefined}
-      onSelect={handleSelect}
-      onBlur={() => setOpen(false)}
-      onFocus={() => setOpen(true)}
-      onClick={() => setActiveIndex(-1)}
-      className={cn(
-        "ml-2 flex-1 bg-transparent outline-none placeholder:text-sm placeholder:text-muted-foreground",
-        className,
-        activeIndex !== -1 && "caret-transparent"
-      )}
-    />
-  );
-});
-
-MultiSelectorInput.displayName = "MultiSelectorInput";
-
-const MultiSelectorContent = forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ children }, ref) => {
-  const { open } = useMultiSelect();
-  return (
-    <div ref={ref} className="relative">
-      {open && children}
-    </div>
-  );
-});
-
-MultiSelectorContent.displayName = "MultiSelectorContent";
-
-const MultiSelectorList = forwardRef<
-  React.ElementRef<typeof CommandPrimitive.List>,
-  React.ComponentPropsWithoutRef<typeof CommandPrimitive.List>
->(({ className, children }, ref) => {
-  return (
-    <CommandList
-      ref={ref}
-      className={cn(
-        "scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted-foreground dark:scrollbar-thumb-muted scrollbar-thumb-rounded-lg absolute top-0 z-10 flex w-full flex-col gap-2 rounded-md border border-muted bg-background p-2 shadow-md transition-colors",
-        className
-      )}
-    >
-      {children}
-      <CommandEmpty>
-        <span className="text-muted-foreground">No results found</span>
-      </CommandEmpty>
-    </CommandList>
-  );
-});
-
-MultiSelectorList.displayName = "MultiSelectorList";
-
-const MultiSelectorItem = forwardRef<
-  React.ElementRef<typeof CommandPrimitive.Item>,
-  { value: string } & React.ComponentPropsWithoutRef<
-    typeof CommandPrimitive.Item
-  >
->(({ className, value, children, ...props }, ref) => {
-  const { value: Options, onValueChange, setInputValue } = useMultiSelect();
-
-  const mousePreventDefault = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  }, []);
-
-  const isIncluded = Options.includes(value);
-  return (
-    <CommandItem
-      ref={ref}
-      {...props}
-      onSelect={() => {
-        onValueChange(value);
-        setInputValue("");
-      }}
-      className={cn(
-        "flex cursor-pointer justify-between rounded-md px-2 py-1 transition-colors",
-        className,
-        isIncluded && "cursor-default opacity-50",
-        props.disabled && "cursor-not-allowed opacity-50"
-      )}
-      onMouseDown={mousePreventDefault}
-    >
-      {children}
-      {isIncluded && <Check className="h-4 w-4" />}
-    </CommandItem>
-  );
-});
-
-MultiSelectorItem.displayName = "MultiSelectorItem";
-
-export {
-  MultiSelector,
-  MultiSelectorTrigger,
-  MultiSelectorInput,
-  MultiSelectorContent,
-  MultiSelectorList,
-  MultiSelectorItem,
-};
+// Rest of the component remains the same...

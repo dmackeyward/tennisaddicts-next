@@ -17,8 +17,8 @@ export default function ListingNotFound() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-gray-600">
-              We couldn't find the listing you're looking for. It might have
-              been removed or the link might be incorrect.
+              We couldn&apos;t find the listing you&apos;re looking for. It
+              might have been removed or the link might be incorrect.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button asChild>

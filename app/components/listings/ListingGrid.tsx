@@ -8,6 +8,7 @@ import type { Listing, ListingGridProps } from "@/types/listings";
 const LoadingIndicator = memo(() => (
   <div className="animate-pulse text-gray-500">Loading more...</div>
 ));
+LoadingIndicator.displayName = "LoadingIndicator";
 
 // Separate empty state component
 const EmptyState = memo(() => (
@@ -24,6 +25,7 @@ const EmptyState = memo(() => (
     </p>
   </div>
 ));
+EmptyState.displayName = "EmptyState";
 
 // Skeleton loader component
 const SkeletonGrid = memo(({ count = 6 }: { count?: number }) => (
@@ -37,6 +39,7 @@ const SkeletonGrid = memo(({ count = 6 }: { count?: number }) => (
     ))}
   </div>
 ));
+SkeletonGrid.displayName = "SkeletonGrid";
 
 export function ListingGrid({
   listings = [],

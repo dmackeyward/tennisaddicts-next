@@ -21,14 +21,6 @@ import { cn } from "@/lib/utils";
 import city from "@/data/city.json";
 import area from "@/data/area.json";
 
-interface Timezone {
-  zoneName: string;
-  gmtOffset: number;
-  gmtOffsetName: string;
-  abbreviation: string;
-  tzName: string;
-}
-
 type CityProps = {
   id: number;
   name: string;

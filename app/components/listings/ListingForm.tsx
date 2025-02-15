@@ -141,23 +141,26 @@ export default function CreateListingForm({
   const handleSubmit = async (formData: ListingFormValues) => {
     try {
       setIsUploading(true);
+      // Parse and validate the form data
       const validated = listingSchema.parse(formData);
 
-      if (formData.image_upload_input?.length) {
-        const uploadPromises = formData.image_upload_input.map(async (file) => {
-          const formData = new FormData();
-          formData.append("file", file);
-          // TODO: Implement your upload logic here
-          // const response = await uploadImage(formData);
-          // return response.imageUrl;
-        });
+      if (validated.image_upload_input?.length) {
+        const uploadPromises = validated.image_upload_input.map(
+          async (file) => {
+            const formData = new FormData();
+            formData.append("file", file);
+            // TODO: Implement your upload logic here
+            // const response = await uploadImage(formData);
+            // return response.imageUrl;
+          }
+        );
 
         try {
-          const imageUrls = await Promise.all(uploadPromises);
-          // TODO: Handle successful upload
+          await Promise.all(uploadPromises);
+          // Call success handlers
           onSubmitSuccess?.();
           handleSubmitSuccess();
-        } catch (error) {
+        } catch {
           toast.error("Failed to upload images. Please try again.");
         }
       }

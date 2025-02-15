@@ -65,7 +65,7 @@ const ListingImage = memo(
 ListingImage.displayName = "ListingImage";
 
 const ListingCard: React.FC<ListingCardProps> = memo(
-  ({ listing, isLoading = false, onError }) => {
+  ({ listing, isLoading = false }) => {
     if (isLoading) {
       return <LoadingSkeleton />;
     }

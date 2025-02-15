@@ -1,9 +1,15 @@
-// app/listings/[id]/page.tsx
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import ListingDetail from "@/components/listings/ListingDetail";
 import { getListing } from "@/db/queries/listings";
 import { ListingPageProps, PLACEHOLDER_LISTING } from "@/app/types/listings";
+import { Metadata } from "next";
+
+// Define interface for listing image
+interface ListingImage {
+  url: string;
+  alt: string;
+}
 
 // Loading component
 function ListingLoading() {
@@ -52,7 +58,9 @@ export default async function ListingPage({ params }: ListingPageProps) {
 }
 
 // Generate metadata for the page
-export async function generateMetadata({ params }: ListingPageProps) {
+export async function generateMetadata({
+  params,
+}: ListingPageProps): Promise<Metadata> {
   try {
     const listing = await getListing(params.id);
 
@@ -69,13 +77,14 @@ export async function generateMetadata({ params }: ListingPageProps) {
       openGraph: {
         title: listing.title,
         description: listing.description.slice(0, 155) + "...",
-        images: listing.images.map((image: any) => ({
+        images: listing.images.map((image: ListingImage) => ({
           url: image.url,
           alt: image.alt,
         })),
       },
     };
-  } catch (error) {
+  } catch {
+    // Remove the unused error parameter and return fallback metadata
     return {
       title: "Listing Details",
       description: "View listing details on our platform.",

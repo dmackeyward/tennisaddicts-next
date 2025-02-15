@@ -17,7 +17,7 @@ export default function ListingsNotFound() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-gray-600">
-              We couldn't find any listings matching your criteria. Try
+              We couldn&apos;t find any listings matching your criteria. Try
               adjusting your filters or creating a new listing.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
