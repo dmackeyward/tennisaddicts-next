@@ -86,9 +86,8 @@ export interface ListingGridProps {
 }
 
 export interface ListingPageProps {
-  params: {
-    id: ListingId;
-  };
+  params: { id: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
 // Filter interfaces

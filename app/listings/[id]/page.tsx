@@ -2,16 +2,11 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import ListingDetail from "@/components/listings/ListingDetail";
 import { getListing } from "@/db/queries/listings";
-import { ListingPageProps, PLACEHOLDER_LISTING } from "@/app/types/listings";
+import { ListingImage, PLACEHOLDER_LISTING } from "@/types/listings";
 import { Metadata } from "next";
+import { use } from "react";
 
-// Define interface for listing image
-interface ListingImage {
-  url: string;
-  alt: string;
-}
-
-// Loading component
+// Loading component stays the same
 function ListingLoading() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -24,7 +19,7 @@ function ListingLoading() {
   );
 }
 
-// Main listing content
+// Main listing content stays the same
 async function ListingContent({ id }: { id: string }) {
   const listing = await getListing(id);
 
@@ -33,7 +28,6 @@ async function ListingContent({ id }: { id: string }) {
   }
 
   const handleContactSeller = async () => {
-    // Implement contact seller logic
     console.log("Contact seller for listing:", id);
   };
 
@@ -48,21 +42,30 @@ async function ListingContent({ id }: { id: string }) {
   );
 }
 
-// Main page component
-export default async function ListingPage({ params }: ListingPageProps) {
+// Main page component - simplified props type
+export default function ListingPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = use(params);
   return (
     <Suspense fallback={<ListingLoading />}>
-      <ListingContent id={params.id} />
+      <ListingContent id={id} />
     </Suspense>
   );
 }
 
-// Generate metadata for the page
+// Generate metadata - using the same simplified type
 export async function generateMetadata({
   params,
-}: ListingPageProps): Promise<Metadata> {
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+
   try {
-    const listing = await getListing(params.id);
+    const listing = await getListing(id);
 
     if (!listing) {
       return {
@@ -84,7 +87,6 @@ export async function generateMetadata({
       },
     };
   } catch {
-    // Remove the unused error parameter and return fallback metadata
     return {
       title: "Listing Details",
       description: "View listing details on our platform.",

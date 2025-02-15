@@ -7,10 +7,10 @@ import {
   varchar,
   index,
 } from "drizzle-orm/pg-core";
-import { ListingImage, Location } from "@/app/types/listings";
+import { ListingImage, Location } from "@/types/listings";
 
 export const listings = pgTable(
-  "listings",
+  "tennisaddicts_listings",
   {
     id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
     userId: varchar("user_id", { length: 256 }).notNull(),

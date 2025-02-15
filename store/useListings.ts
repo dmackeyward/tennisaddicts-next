@@ -23,7 +23,21 @@ const createSearchParams = (
 ): Record<string, string> => {
   const params: Record<string, string> = {};
 
-  if (filters.location) params.location = filters.location;
+  // Handle location object by converting it to a formatted string or using individual parts
+  if (filters.location) {
+    if (filters.location.formatted) {
+      params.location = filters.location.formatted;
+    } else {
+      const locationParts = [];
+      if (filters.location.state) locationParts.push(filters.location.state);
+      if (filters.location.country)
+        locationParts.push(filters.location.country);
+      if (locationParts.length > 0) {
+        params.location = locationParts.join(", ");
+      }
+    }
+  }
+
   if (filters.minPrice) params.minPrice = filters.minPrice.toString();
   if (filters.maxPrice) params.maxPrice = filters.maxPrice.toString();
   if (filters.sortBy) params.sortBy = filters.sortBy;

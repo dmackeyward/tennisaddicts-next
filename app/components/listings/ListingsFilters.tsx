@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import type { ListingFilters } from "@/types/listings";
+import type { ListingFilters, Location } from "@/types/listings";
 
 interface ListingsFiltersProps {
   onFiltersChange: (filters: ListingFilters) => void;
@@ -16,18 +16,35 @@ export function ListingsFilters({ onFiltersChange }: ListingsFiltersProps) {
     sortOrder: "desc",
   });
 
+  const [locationInput, setLocationInput] = useState("");
+
   const handleFilterChange = (newFilters: Partial<ListingFilters>) => {
     const updatedFilters = { ...filters, ...newFilters };
     setFilters(updatedFilters);
     onFiltersChange(updatedFilters);
   };
 
+  const handleLocationChange = (value: string) => {
+    setLocationInput(value);
+
+    // Simple logic to determine if input looks like a state or country
+    // You might want to enhance this logic based on your needs
+    const locationObject: Partial<Location> = {
+      state: value,
+      country: value,
+      formatted: value,
+    };
+
+    handleFilterChange({ location: locationObject });
+  };
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Input
-          placeholder="Location"
-          onChange={(e) => handleFilterChange({ location: e.target.value })}
+          placeholder="Location (State or Country)"
+          onChange={(e) => handleLocationChange(e.target.value)}
+          value={locationInput}
         />
         <Input
           type="number"
@@ -35,6 +52,7 @@ export function ListingsFilters({ onFiltersChange }: ListingsFiltersProps) {
           onChange={(e) =>
             handleFilterChange({ minPrice: Number(e.target.value) })
           }
+          value={filters.minPrice || ""}
         />
         <Input
           type="number"
@@ -42,9 +60,10 @@ export function ListingsFilters({ onFiltersChange }: ListingsFiltersProps) {
           onChange={(e) =>
             handleFilterChange({ maxPrice: Number(e.target.value) })
           }
+          value={filters.maxPrice || ""}
         />
         <Select
-          value={filters.sortBy}
+          value={filters.sortBy || "date"}
           onValueChange={(value) =>
             handleFilterChange({ sortBy: value as ListingFilters["sortBy"] })
           }

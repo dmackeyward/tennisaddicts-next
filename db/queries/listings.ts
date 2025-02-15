@@ -2,7 +2,7 @@ import "server-only";
 import { db } from "@/db";
 import { auth } from "@clerk/nextjs/server";
 import { desc, asc, sql } from "drizzle-orm";
-import { listings } from "@/db/schema/listings";
+import { listings } from "@/db/schema";
 import type { Listing, ListingFilters } from "@/types/listings";
 
 // Helper function to format listing data
