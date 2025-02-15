@@ -280,10 +280,9 @@ const MultiSelectorTrigger = forwardRef<
 MultiSelectorTrigger.displayName = "MultiSelectorTrigger";
 
 const MultiSelectorInput = forwardRef<
-  React.ElementRef<typeof CommandPrimitive.Input>,
+  React.ComponentRef<typeof CommandPrimitive.Input>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
 >(({ className, ...props }) => {
-  // Using _ to indicate intentionally unused parameter
   const {
     setOpen,
     inputValue,
@@ -319,10 +318,11 @@ MultiSelectorInput.displayName = "MultiSelectorInput";
 const MultiSelectorContent = forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
->(({ children }, ref) => {
+>((props, ref) => {
+  const { children, ...rest } = props;
   const { open } = useMultiSelect();
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative" {...rest}>
       {open && children}
     </div>
   );
@@ -331,7 +331,7 @@ const MultiSelectorContent = forwardRef<
 MultiSelectorContent.displayName = "MultiSelectorContent";
 
 const MultiSelectorList = forwardRef<
-  React.ElementRef<typeof CommandPrimitive.List>,
+  React.ComponentRef<typeof CommandPrimitive.List>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.List>
 >(({ className, children }, ref) => {
   return (
@@ -350,10 +350,8 @@ const MultiSelectorList = forwardRef<
   );
 });
 
-MultiSelectorList.displayName = "MultiSelectorList";
-
 const MultiSelectorItem = forwardRef<
-  React.ElementRef<typeof CommandPrimitive.Item>,
+  React.ComponentRef<typeof CommandPrimitive.Item>,
   { value: string } & React.ComponentPropsWithoutRef<
     typeof CommandPrimitive.Item
   >
@@ -387,8 +385,6 @@ const MultiSelectorItem = forwardRef<
     </CommandItem>
   );
 });
-
-MultiSelectorItem.displayName = "MultiSelectorItem";
 
 export {
   MultiSelector,
