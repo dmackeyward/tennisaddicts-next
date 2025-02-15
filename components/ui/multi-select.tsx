@@ -1,19 +1,11 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import {
-  Command,
-  CommandItem,
-  CommandEmpty,
-  CommandList,
-} from "@/components/ui/command";
+import { Command } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import { Command as CommandPrimitive } from "cmdk";
-import { X as RemoveIcon, Check } from "lucide-react";
 import React, {
   KeyboardEvent,
   createContext,
-  forwardRef,
   useCallback,
   useContext,
   useState,
@@ -41,7 +33,7 @@ interface MultiSelectContextProps {
 
 const MultiSelectContext = createContext<MultiSelectContextProps | null>(null);
 
-const useMultiSelect = () => {
+export const useMultiSelect = () => {
   const context = useContext(MultiSelectContext);
   if (!context) {
     throw new Error("useMultiSelect must be used within MultiSelectProvider");
@@ -49,7 +41,7 @@ const useMultiSelect = () => {
   return context;
 };
 
-const MultiSelector = ({
+export const MultiSelector = ({
   values: value,
   onValuesChange: onValueChange,
   loop = false,
@@ -224,4 +216,5 @@ const MultiSelector = ({
   );
 };
 
-// Rest of the component remains the same...
+// Export default to make the component more flexible to import
+export default MultiSelector;
