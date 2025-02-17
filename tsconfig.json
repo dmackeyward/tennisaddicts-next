@@ -25,7 +25,8 @@
       "@utils/*": ["./utils/*", "./app/utils/*"],
       "@types/*": ["./types/*"],
       "@db/*": ["./app/db/*"],
-      "@store/*": ["./app/store/*"]
+      "@store/*": ["./app/store/*"],
+      "@action/*": ["./app/actions/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

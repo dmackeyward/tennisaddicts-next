@@ -1,5 +1,3 @@
-// @/types/listings.ts
-
 export type ListingId = string;
 export type UserId = string;
 
@@ -23,40 +21,45 @@ export interface BaseListing {
   price: number;
   location: Location;
   tags: string[];
+  images: ListingImage[]; // Changed from string[] to ListingImage[]
 }
 
 export interface Listing extends BaseListing {
   id: ListingId;
   userId: UserId;
-  images: ListingImage[];
   createdAt: string;
   updatedAt: string;
 }
 
 // Form-related interfaces
 export interface ListingFormValues
-  extends Omit<BaseListing, "location" | "price"> {
+  extends Omit<BaseListing, "location" | "price" | "images"> {
   price?: number;
   location: Omit<Location, "formatted">;
-  image_upload_input?: File[];
+  images: string[]; // Keep as string[] for form values
+}
+
+export interface UploadThingResponse {
+  uploadedBy: string;
+  url: string;
 }
 
 export interface ListingFormState {
-  message: string;
+  message: string; // Note: this is required, not optional
   errors?: {
-    _form?: string[];
     title?: string[];
     description?: string[];
     price?: string[];
     location?: string[];
+    _form?: string[];
     [key: string]: string[] | undefined;
   };
   data?: {
-    id: number;
+    id: string;
   };
 }
 
-export interface ListingInput extends BaseListing {
+export interface ListingInput extends Omit<BaseListing, "images"> {
   images: ListingImage[];
   userId?: UserId;
 }

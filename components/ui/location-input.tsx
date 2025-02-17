@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -34,16 +34,23 @@ type AreaProps = {
   name: string;
 };
 
+interface LocationValue {
+  country: string;
+  state: string;
+}
+
 interface LocationSelectorProps {
   disabled?: boolean;
-  onCountryChange?: (country: CityProps | null) => void;
-  onStateChange?: (state: AreaProps | null) => void;
+  value: LocationValue;
+  onCountryChange: (location: LocationValue) => void;
+  onStateChange: (location: LocationValue) => void;
 }
 
 const LocationSelector = ({
   disabled,
   onCountryChange,
   onStateChange,
+  value,
 }: LocationSelectorProps) => {
   const [selectedCountry, setSelectedCountry] = useState<CityProps | null>(
     null
@@ -56,21 +63,49 @@ const LocationSelector = ({
   const cityData = city.cities as CityProps[];
   const areaData = area.areas as AreaProps[];
 
+  // Initialize selected values from props
+  useEffect(() => {
+    if (value?.country) {
+      const foundCity = cityData.find((city) => city.name === value.country);
+      if (foundCity) {
+        setSelectedCountry(foundCity);
+
+        if (value.state) {
+          const foundArea = areaData.find(
+            (area) => area.city_id === foundCity.id && area.name === value.state
+          );
+          if (foundArea) {
+            setSelectedState(foundArea);
+          }
+        }
+      }
+    }
+  }, [value]);
+
   // Filter states for selected country
   const availableAreas = areaData.filter(
     (area) => area.city_id === selectedCountry?.id
   );
 
-  const handleCountrySelect = (country: CityProps | null) => {
+  const handleCountrySelect = (country: CityProps) => {
     setSelectedCountry(country);
     setSelectedState(null); // Reset state when country changes
-    onCountryChange?.(country);
-    onStateChange?.(null);
+
+    onCountryChange?.({
+      country: country.name,
+      state: "",
+    });
   };
 
-  const handleStateSelect = (state: AreaProps | null) => {
+  const handleStateSelect = (state: AreaProps) => {
     setSelectedState(state);
-    onStateChange?.(state);
+
+    if (selectedCountry) {
+      onStateChange?.({
+        country: selectedCountry.name,
+        state: state.name,
+      });
+    }
   };
 
   return (
