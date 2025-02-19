@@ -18,7 +18,7 @@ import {
   type Listing,
   type ListingDetailProps,
 } from "@/types/listings";
-import { formatDate } from "@/app/utils/format-date";
+import { formatDate } from "@/utils/format-date";
 
 // Memoized loading skeleton component
 const LoadingSkeleton = memo(() => (
