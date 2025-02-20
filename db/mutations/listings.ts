@@ -21,7 +21,7 @@ export async function createListing(
     // Extract and validate form data
     const title = formData.get("title")?.toString();
     const description = formData.get("description")?.toString();
-    const priceRaw = formData.get("price")?.toString();
+    const priceRaw = formData.get("price")?.toString() || "0";
     const country = formData.get("location.country")?.toString();
     const state = formData.get("location.state")?.toString();
     const tags = formData.getAll("tags").map((tag) => tag.toString());
@@ -30,7 +30,7 @@ export async function createListing(
       .map((image) => image.toString());
 
     // Validate required fields
-    if (!title || !description || !priceRaw || !country) {
+    if (!title || !description || !country) {
       return {
         message: "Missing required fields",
         errors: {
@@ -43,11 +43,12 @@ export async function createListing(
     }
 
     const price = Number(priceRaw);
-    if (isNaN(price) || price <= 0) {
+    if (isNaN(price) || price < 0) {
+      // Changed from price <= 0 to price < 0
       return {
         message: "Invalid price",
         errors: {
-          price: ["Price must be a positive number"],
+          price: ["Price must be zero or a positive number"],
         },
       };
     }

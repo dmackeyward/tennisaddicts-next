@@ -49,10 +49,11 @@ const formSchema = z.object({
   description: z
     .string()
     .min(10, "Description must be at least 10 characters")
-    .max(1000, "Description must not exceed 1000 characters"),
+    .max(500, "Description must not exceed 500 characters"),
   price: z
     .string()
-    .min(1, "Price is required")
+    .optional()
+    .transform((val) => (val === "" ? "0" : val)) // Transform empty string to "0"
     .refine((val) => !isNaN(Number(val)), "Must be a valid number")
     .refine(
       (val) => Number(val) >= 0,
@@ -107,11 +108,14 @@ export default function CreateListingForm({
     const formData = new FormData();
     formData.append("title", values.title);
     formData.append("description", values.description);
-    formData.append("price", values.price.toString());
     formData.append("location.country", values.location.country);
     formData.append("location.state", values.location.state);
     values.tags.forEach((tag) => formData.append("tags", tag));
     values.images.forEach((image) => formData.append("images", image));
+
+    if (values.price) {
+      formData.append("price", values.price.toString());
+    }
 
     startTransition(async () => {
       const result = await createListingAction(formData);
@@ -169,7 +173,8 @@ export default function CreateListingForm({
                   />
                 </FormControl>
                 <FormDescription>
-                  Give your listing a clear, descriptive title
+                  Give your listing a clear, descriptive title (
+                  {field.value.length}/100)
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -192,7 +197,7 @@ export default function CreateListingForm({
                 </FormControl>
                 <FormDescription>
                   Include condition, features, and any relevant details (
-                  {field.value.length}/1000)
+                  {field.value.length}/500)
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -205,7 +210,7 @@ export default function CreateListingForm({
             name="price"
             render={({ field: { onChange, ...fieldProps } }) => (
               <FormItem>
-                <FormLabel>Price</FormLabel>
+                <FormLabel>Price (Optional)</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <span className="absolute left-3 top-2 text-gray-500">
@@ -219,12 +224,16 @@ export default function CreateListingForm({
                       className="pl-8"
                       {...fieldProps}
                       onChange={(e) => {
-                        // Convert to string for form state
-                        onChange(e.target.value);
+                        // Remove leading zeros and convert to string
+                        const value = e.target.value.replace(/^0+(?=\d)/, "");
+                        onChange(value);
                       }}
                     />
                   </div>
                 </FormControl>
+                <FormDescription>
+                  Enter a price or leave empty for listings not for sale
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -255,7 +264,7 @@ export default function CreateListingForm({
             name="tags"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Frameworks</FormLabel>
+                <FormLabel>Tags</FormLabel>
                 <FormControl>
                   <MultiSelector
                     values={field.value}
@@ -264,7 +273,7 @@ export default function CreateListingForm({
                     className="max-w-xs"
                   >
                     <MultiSelectorTrigger>
-                      <MultiSelectorInput placeholder="Select frameworks (max 3)" />
+                      <MultiSelectorInput placeholder="Select tags (max 3)" />
                     </MultiSelectorTrigger>
                     <MultiSelectorContent>
                       <MultiSelectorList>
@@ -277,7 +286,7 @@ export default function CreateListingForm({
                     </MultiSelectorContent>
                   </MultiSelector>
                 </FormControl>
-                <FormDescription>Select up to 3 frameworks</FormDescription>
+                <FormDescription>Select up to 3 tags</FormDescription>
                 <FormMessage />
               </FormItem>
             )}

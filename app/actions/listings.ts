@@ -65,7 +65,14 @@ export async function createListingAction(
     const validatedData = {
       title: sanitizeInput(formData.get("title")?.toString()),
       description: sanitizeInput(formData.get("description")?.toString()),
-      price: validatePrice(formData.get("price")?.toString()),
+      price: z
+        .string()
+        .transform((val) => (!val ? "0" : val)) // Transform empty/undefined to "0"
+        .refine((val) => !isNaN(Number(val)), "Must be a valid number")
+        .refine(
+          (val) => Number(val) >= 0,
+          "Price must be greater than or equal to 0"
+        ),
       status: (formData.get("status")?.toString() || "active") as ListingStatus,
       location: {
         country: sanitizeInput(formData.get("location.country")?.toString()),

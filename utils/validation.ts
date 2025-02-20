@@ -31,13 +31,12 @@ export function validateImage(file: File): boolean {
 
 // Price validation
 export function validatePrice(price: string | undefined | null): string {
-  if (!price) return "";
+  if (!price || price.trim() === "") return "0";
 
   const numPrice = Number(price);
   if (isNaN(numPrice) || numPrice < 0) {
-    return "";
+    return "0";
   }
 
-  // Return as string
   return price;
 }
