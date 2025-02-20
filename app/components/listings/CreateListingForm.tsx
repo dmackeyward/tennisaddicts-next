@@ -369,7 +369,6 @@ export default function CreateListingForm({
                             ? files
                             : Object.values(files);
 
-                        // Check file count
                         if (
                           fileArray.length + field.value.length >
                           MAX_FILE_COUNT
@@ -380,7 +379,6 @@ export default function CreateListingForm({
                           return false;
                         }
 
-                        // Validate file types
                         const invalidFiles = fileArray.filter(
                           (file) => !file.type.startsWith("image/")
                         );
@@ -424,6 +422,30 @@ export default function CreateListingForm({
                         setIsUploading(false);
                       }}
                     />
+                    {field.value.length > 0 && (
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+                        {field.value.map((url, index) => (
+                          <div key={index} className="relative group">
+                            <img
+                              src={url}
+                              alt={`Uploaded image ${index + 1}`}
+                              className="w-full h-32 object-cover rounded-lg"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newImages = [...field.value];
+                                newImages.splice(index, 1);
+                                field.onChange(newImages);
+                              }}
+                              className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </FormControl>
                 <FormDescription>
