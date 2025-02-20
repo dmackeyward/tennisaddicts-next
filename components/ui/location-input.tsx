@@ -89,10 +89,10 @@ const LocationSelector = ({
 
   const handleCountrySelect = (country: CityProps) => {
     setSelectedCountry(country);
-    setSelectedState(null); // Reset state when country changes
+    setSelectedState(null);
 
     onCountryChange?.({
-      country: country.name,
+      country: country.name || "", // Ensure we always have a string
       state: "",
     });
   };
@@ -118,7 +118,10 @@ const LocationSelector = ({
             role="combobox"
             aria-expanded={openCountryDropdown}
             disabled={disabled}
-            className="w-full justify-between"
+            className={cn(
+              "w-full justify-between",
+              !selectedCountry && "text-muted-foreground" // Add visual feedback for empty state
+            )}
           >
             {selectedCountry ? (
               <div className="flex items-center gap-2">

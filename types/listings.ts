@@ -16,6 +16,11 @@ export interface ListingImage {
   id: string;
 }
 
+export type LocationErrorType = {
+  country?: string[];
+  state?: string[];
+};
+
 export type ListingStatus = "active" | "sold" | "archived";
 
 // Core listing interfaces

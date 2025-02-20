@@ -4,7 +4,11 @@
 import { z } from "zod";
 import { createListing } from "@/db/mutations/listings";
 import { revalidatePath } from "next/cache";
-import type { ListingFormState, ListingStatus } from "@/types/listings";
+import type {
+  ListingFormState,
+  ListingStatus,
+  LocationErrorType,
+} from "@/types/listings";
 import { sanitizeInput, validatePrice } from "@/utils/validation";
 
 const AVAILABLE_FRAMEWORKS = [
@@ -20,7 +24,8 @@ const serverListingSchema = z.object({
   description: z.string().min(10).max(1000).transform(sanitizeInput),
   price: z
     .string()
-    .min(1, "Price is required")
+    .optional()
+    .transform((val) => (!val ? "0" : val)) // Transform empty/undefined to "0"
     .refine((val) => !isNaN(Number(val)), "Must be a valid number")
     .refine(
       (val) => Number(val) >= 0,
@@ -28,8 +33,14 @@ const serverListingSchema = z.object({
     ),
   status: z.enum(["active", "sold", "archived"] as const).default("active"),
   location: z.object({
-    country: z.string().min(1).transform(sanitizeInput),
-    state: z.string().min(1).transform(sanitizeInput),
+    country: z
+      .string({
+        required_error: "Country must be selected",
+        invalid_type_error: "Country must be selected",
+      })
+      .min(1, "Country must be selected")
+      .transform(sanitizeInput),
+    state: z.string().optional().default("").transform(sanitizeInput),
   }),
   tags: z.array(z.enum(AVAILABLE_FRAMEWORKS)).min(1).max(3),
   images: z.array(z.string()).min(1).max(6),
@@ -43,7 +54,9 @@ export type ServerActionResponse = {
         title?: string[];
         description?: string[];
         price?: string[];
-        location?: string[];
+        location?: string[] | LocationErrorType;
+        tags?: string[];
+        images?: string[];
         _form?: string[];
       };
   data?: {
@@ -55,59 +68,83 @@ export async function createListingAction(
   formData: FormData
 ): Promise<ServerActionResponse> {
   try {
-    // Initialize the previous state
+    console.log("Server action started");
+
+    // Log incoming FormData
+    console.log("Received FormData entries:");
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
+
     const prevState: ListingFormState = {
       message: "Creating listing...",
       errors: {},
     };
 
-    // Sanitize and validate the input data
+    // Log the validated data before Zod processing
     const validatedData = {
       title: sanitizeInput(formData.get("title")?.toString()),
       description: sanitizeInput(formData.get("description")?.toString()),
-      price: z
-        .string()
-        .transform((val) => (!val ? "0" : val)) // Transform empty/undefined to "0"
-        .refine((val) => !isNaN(Number(val)), "Must be a valid number")
-        .refine(
-          (val) => Number(val) >= 0,
-          "Price must be greater than or equal to 0"
-        ),
+      price: formData.get("price")?.toString() || "0",
       status: (formData.get("status")?.toString() || "active") as ListingStatus,
-      location: z.object({
-        country: z.string().min(1).transform(sanitizeInput),
-        state: z.string().optional().default("").transform(sanitizeInput),
-      }),
+      location: {
+        country: sanitizeInput(
+          formData.get("location.country")?.toString() || ""
+        ),
+        state: sanitizeInput(formData.get("location.state")?.toString() || ""),
+      },
       tags: formData.getAll("tags").map((tag) => tag.toString()),
       images: formData.getAll("images").map((image) => image.toString()),
     };
+
+    console.log("Validated data before Zod:", validatedData);
 
     // Validate using Zod schema
     const parsed = serverListingSchema.safeParse(validatedData);
 
     if (!parsed.success) {
-      return {
+      console.log("Zod validation failed");
+      console.log("Raw Zod error:", parsed.error);
+      console.log("Formatted Zod error:", parsed.error.format());
+
+      const errors = parsed.error.formErrors.fieldErrors;
+      console.log("Field errors:", errors);
+
+      const response = {
         success: false,
-        error: parsed.error.formErrors.fieldErrors,
+        error: {
+          ...errors,
+          location: {
+            country: ["Country must be selected"],
+          },
+        },
       };
+
+      console.log("Sending error response:", response);
+      return response;
     }
 
-    // Call the createListing mutation with both required arguments
-    const result = await createListing(prevState, formData);
+    console.log("Zod validation passed");
 
-    // Handle the result
+    // Log the parsed data
+    console.log("Parsed data:", parsed.data);
+
+    // Call the createListing mutation
+    const result = await createListing(prevState, formData);
+    console.log("Database mutation result:", result);
+
     if (result.data) {
+      console.log("Listing created successfully:", result.data);
       revalidatePath("/listings");
       return { success: true, data: result.data };
     } else {
-      // If we have errors, make sure they're in the correct format
+      console.log("Listing creation failed:", result);
       if (result.errors) {
         return {
           success: false,
           error: result.errors,
         };
       }
-      // If we only have a message, return it as a string error
       return {
         success: false,
         error: result.message,

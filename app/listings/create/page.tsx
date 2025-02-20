@@ -2,7 +2,7 @@
 import { Metadata } from "next";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import CreateListingForm from "@/components/listings/ListingForm";
+import CreateListingForm from "@/app/components/listings/CreateListingForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -36,7 +36,7 @@ export default async function CreateListingPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Suspense fallback={<ListingFormSkeleton />}>
+          <Suspense fallback={<CreateListingFormSkeleton />}>
             <CreateListingForm />
           </Suspense>
         </CardContent>
@@ -45,7 +45,7 @@ export default async function CreateListingPage() {
   );
 }
 
-function ListingFormSkeleton() {
+function CreateListingFormSkeleton() {
   return (
     <div className="space-y-6">
       {/* Title skeleton */}

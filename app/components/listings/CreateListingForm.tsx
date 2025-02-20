@@ -29,6 +29,7 @@ import { UploadDropzone } from "@/utils/uploadthing";
 import { createListingAction } from "@/app/actions/listings";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { LocationErrorType } from "@/types/listings";
 
 const AVAILABLE_FRAMEWORKS = [
   "React",
@@ -61,8 +62,13 @@ const formSchema = z.object({
     ),
   status: z.enum(["active", "sold", "archived"]).default("active"),
   location: z.object({
-    country: z.string().min(1, "Country is required"),
-    state: z.string().optional().default(""), // Make state optional
+    country: z
+      .string({
+        required_error: "Country must be selected", // This is the message that will be shown
+        invalid_type_error: "Country must be selected",
+      })
+      .min(1, "Country must be selected"),
+    state: z.string().optional().default(""),
   }),
   tags: z
     .array(z.enum(AVAILABLE_FRAMEWORKS))
@@ -105,11 +111,15 @@ export default function CreateListingForm({
   });
 
   const handleSubmit = async (values: FormValues) => {
+    // Log initial form values
+    console.log("Form submission started with values:", values);
+    console.log("Location value:", values.location);
+
     const formData = new FormData();
     formData.append("title", values.title);
     formData.append("description", values.description);
     formData.append("location.country", values.location.country);
-    formData.append("location.state", values.location.state);
+    formData.append("location.state", values.location.state || "");
     values.tags.forEach((tag) => formData.append("tags", tag));
     values.images.forEach((image) => formData.append("images", image));
 
@@ -117,25 +127,60 @@ export default function CreateListingForm({
       formData.append("price", values.price.toString());
     }
 
+    // Log FormData contents
+    console.log("FormData entries:");
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
+
     startTransition(async () => {
       const result = await createListingAction(formData);
+      console.log("Server action complete result:", result);
 
       if (result.success) {
+        console.log("Submission successful");
         toast.success("Listing created successfully!");
         onSubmitSuccess?.();
         form.reset();
       } else {
+        console.log("Submission failed, processing errors");
         if (typeof result.error === "string") {
+          console.log("String error received:", result.error);
           toast.error(result.error);
         } else if (result.error) {
-          // Handle field-specific errors
+          console.log("Error object received:", result.error);
           Object.entries(result.error).forEach(([field, errors]) => {
-            if (errors?.[0]) {
-              form.setError(field as any, { message: errors[0] });
+            console.log(`Processing field: ${field}`, errors);
+
+            if (field === "location") {
+              console.log("Location error structure:", errors);
+              const locationError = errors as LocationErrorType;
+              console.log("Parsed location error:", locationError);
+
+              if (locationError.country) {
+                console.log("Setting country error:", locationError.country[0]);
+                form.setError("location.country", {
+                  type: "server",
+                  message:
+                    locationError.country[0] || "Country must be selected",
+                });
+              }
+            } else if (Array.isArray(errors) && errors.length > 0) {
+              console.log(`Setting error for field ${field}:`, errors[0]);
+              form.setError(field as any, {
+                type: "server",
+                message: errors[0],
+              });
             }
           });
-        } else {
-          toast.error("Failed to create listing");
+
+          // Log form state after setting errors
+          console.log("Form state after setting errors:", {
+            errors: form.formState.errors,
+            locationError: form.formState.errors.location?.country?.message,
+            dirtyFields: form.formState.dirtyFields,
+            isDirty: form.formState.isDirty,
+          });
         }
       }
     });
@@ -243,26 +288,41 @@ export default function CreateListingForm({
           <FormField
             control={form.control}
             name="location"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Location</FormLabel>
-                <FormControl>
-                  <LocationSelector
-                    value={field.value}
-                    onCountryChange={(location) => {
-                      field.onChange(location);
-                      form.clearErrors("location");
-                    }}
-                    onStateChange={(location) => {
-                      field.onChange(location);
-                    }}
-                  />
-                </FormControl>
-                <FormMessage>
-                  {form.formState.errors.location?.country?.message}
-                </FormMessage>
-              </FormItem>
-            )}
+            render={({ field }) => {
+              const errorMessage =
+                form.formState.errors.location?.country?.message;
+
+              console.log("Location field render:", {
+                fieldValue: field.value,
+                formErrors: form.formState.errors,
+                errorMessage,
+              });
+
+              return (
+                <FormItem>
+                  <FormLabel>Location</FormLabel>
+                  <FormControl>
+                    <LocationSelector
+                      value={field.value}
+                      onCountryChange={(location) => {
+                        console.log("Country changed to:", location);
+                        field.onChange(location);
+                        form.clearErrors("location.country");
+                      }}
+                      onStateChange={(location) => {
+                        console.log("State changed to:", location);
+                        field.onChange(location);
+                      }}
+                    />
+                  </FormControl>
+                  {errorMessage && (
+                    <div className="text-sm font-medium text-destructive">
+                      {errorMessage}
+                    </div>
+                  )}
+                </FormItem>
+              );
+            }}
           />
 
           {/* Tags Field */}
