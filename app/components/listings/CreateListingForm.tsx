@@ -94,27 +94,25 @@ export default function CreateListingForm({
   const [isPending, startTransition] = useTransition();
   const [isUploading, setIsUploading] = useState(false);
 
+  const defaultValues: FormValues = {
+    title: "",
+    description: "",
+    price: "",
+    status: "active" as const, // explicitly type as const to match the enum
+    location: {
+      country: "",
+      state: "",
+    },
+    tags: ["React" as const], // explicitly type as const to match the enum array
+    images: [],
+  };
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      price: "",
-      status: "active",
-      location: {
-        country: "",
-        state: "",
-      },
-      tags: ["React"],
-      images: [],
-    },
+    defaultValues,
   });
 
   const handleSubmit = async (values: FormValues) => {
-    // Log initial form values
-    console.log("Form submission started with values:", values);
-    console.log("Location value:", values.location);
-
     const formData = new FormData();
     formData.append("title", values.title);
     formData.append("description", values.description);
@@ -127,21 +125,14 @@ export default function CreateListingForm({
       formData.append("price", values.price.toString());
     }
 
-    // Log FormData contents
-    console.log("FormData entries:");
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
-    }
-
     startTransition(async () => {
       const result = await createListingAction(formData);
       console.log("Server action complete result:", result);
 
       if (result.success) {
-        console.log("Submission successful");
         toast.success("Listing created successfully!");
+        form.reset(defaultValues);
         onSubmitSuccess?.();
-        form.reset();
       } else {
         console.log("Submission failed, processing errors");
         if (typeof result.error === "string") {
@@ -433,7 +424,6 @@ export default function CreateListingForm({
                         setIsUploading(false);
                       }}
                     />
-                    {/* Rest of your existing image preview code */}
                   </div>
                 </FormControl>
                 <FormDescription>

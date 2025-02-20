@@ -63,45 +63,52 @@ const LocationSelector = ({
   const cityData = city.cities as CityProps[];
   const areaData = area.areas as AreaProps[];
 
-  // Initialize selected values from props
+  // Effect to handle external value changes (including reset)
   useEffect(() => {
-    if (value?.country) {
-      const foundCity = cityData.find((city) => city.name === value.country);
-      if (foundCity) {
-        setSelectedCountry(foundCity);
-
-        if (value.state) {
-          const foundArea = areaData.find(
-            (area) => area.city_id === foundCity.id && area.name === value.state
-          );
-          if (foundArea) {
-            setSelectedState(foundArea);
-          }
-        }
-      }
+    // Reset internal state when value is empty
+    if (!value?.country) {
+      setSelectedCountry(null);
+      setSelectedState(null);
+      return;
     }
-  }, [value]);
+
+    // Update internal state based on new value
+    const foundCity = cityData.find((city) => city.name === value.country);
+    if (foundCity) {
+      setSelectedCountry(foundCity);
+
+      if (value.state) {
+        const foundArea = areaData.find(
+          (area) => area.city_id === foundCity.id && area.name === value.state
+        );
+        setSelectedState(foundArea || null);
+      } else {
+        setSelectedState(null);
+      }
+    } else {
+      setSelectedCountry(null);
+      setSelectedState(null);
+    }
+  }, [value, cityData, areaData]);
 
   // Filter states for selected country
-  const availableAreas = areaData.filter(
-    (area) => area.city_id === selectedCountry?.id
-  );
+  const availableAreas = selectedCountry
+    ? areaData.filter((area) => area.city_id === selectedCountry.id)
+    : [];
 
   const handleCountrySelect = (country: CityProps) => {
     setSelectedCountry(country);
     setSelectedState(null);
-
-    onCountryChange?.({
-      country: country.name || "", // Ensure we always have a string
+    onCountryChange({
+      country: country.name,
       state: "",
     });
   };
 
   const handleStateSelect = (state: AreaProps) => {
     setSelectedState(state);
-
     if (selectedCountry) {
-      onStateChange?.({
+      onStateChange({
         country: selectedCountry.name,
         state: state.name,
       });
@@ -110,7 +117,6 @@ const LocationSelector = ({
 
   return (
     <div className="flex gap-4">
-      {/* Country Selector */}
       <Popover open={openCountryDropdown} onOpenChange={setOpenCountryDropdown}>
         <PopoverTrigger asChild>
           <Button
@@ -120,13 +126,11 @@ const LocationSelector = ({
             disabled={disabled}
             className={cn(
               "w-full justify-between",
-              !selectedCountry && "text-muted-foreground" // Add visual feedback for empty state
+              !selectedCountry && "text-muted-foreground"
             )}
           >
             {selectedCountry ? (
-              <div className="flex items-center gap-2">
-                <span>{selectedCountry.name}</span>
-              </div>
+              <span>{selectedCountry.name}</span>
             ) : (
               <span>Select Country...</span>
             )}
@@ -139,7 +143,7 @@ const LocationSelector = ({
             <CommandList>
               <CommandEmpty>No country found.</CommandEmpty>
               <CommandGroup>
-                <ScrollArea className="h-[300px]">
+                <ScrollArea className="h-72">
                   {cityData.map((city) => (
                     <CommandItem
                       key={city.id}
@@ -148,22 +152,21 @@ const LocationSelector = ({
                         handleCountrySelect(city);
                         setOpenCountryDropdown(false);
                       }}
-                      className="flex cursor-pointer items-center justify-between text-sm"
                     >
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-between w-full">
                         <span>{city.name}</span>
+                        <Check
+                          className={cn(
+                            "h-4 w-4",
+                            selectedCountry?.id === city.id
+                              ? "opacity-100"
+                              : "opacity-0"
+                          )}
+                        />
                       </div>
-                      <Check
-                        className={cn(
-                          "h-4 w-4",
-                          selectedCountry?.id === city.id
-                            ? "opacity-100"
-                            : "opacity-0"
-                        )}
-                      />
                     </CommandItem>
                   ))}
-                  <ScrollBar orientation="vertical" />
+                  <ScrollBar />
                 </ScrollArea>
               </CommandGroup>
             </CommandList>
@@ -171,7 +174,6 @@ const LocationSelector = ({
         </PopoverContent>
       </Popover>
 
-      {/* State Selector - Only shown if selected country has states */}
       {availableAreas.length > 0 && (
         <Popover open={openStateDropdown} onOpenChange={setOpenStateDropdown}>
           <PopoverTrigger asChild>
@@ -179,7 +181,7 @@ const LocationSelector = ({
               variant="outline"
               role="combobox"
               aria-expanded={openStateDropdown}
-              disabled={!selectedCountry}
+              disabled={!selectedCountry || disabled}
               className="w-full justify-between"
             >
               {selectedState ? (
@@ -196,7 +198,7 @@ const LocationSelector = ({
               <CommandList>
                 <CommandEmpty>No state found.</CommandEmpty>
                 <CommandGroup>
-                  <ScrollArea className="h-[300px]">
+                  <ScrollArea className="h-72">
                     {availableAreas.map((area) => (
                       <CommandItem
                         key={area.id}
@@ -205,20 +207,21 @@ const LocationSelector = ({
                           handleStateSelect(area);
                           setOpenStateDropdown(false);
                         }}
-                        className="flex cursor-pointer items-center justify-between text-sm"
                       >
-                        <span>{area.name}</span>
-                        <Check
-                          className={cn(
-                            "h-4 w-4",
-                            selectedState?.id === area.id
-                              ? "opacity-100"
-                              : "opacity-0"
-                          )}
-                        />
+                        <div className="flex items-center justify-between w-full">
+                          <span>{area.name}</span>
+                          <Check
+                            className={cn(
+                              "h-4 w-4",
+                              selectedState?.id === area.id
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                        </div>
                       </CommandItem>
                     ))}
-                    <ScrollBar orientation="vertical" />
+                    <ScrollBar />
                   </ScrollArea>
                 </CommandGroup>
               </CommandList>
