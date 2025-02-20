@@ -23,7 +23,7 @@ export async function createListing(
     const description = formData.get("description")?.toString();
     const priceRaw = formData.get("price")?.toString() || "0";
     const country = formData.get("location.country")?.toString();
-    const state = formData.get("location.state")?.toString();
+    const state = formData.get("location.state")?.toString() || ""; // Provide default empty string
     const tags = formData.getAll("tags").map((tag) => tag.toString());
     const imageUrls = formData
       .getAll("images")
@@ -56,8 +56,8 @@ export async function createListing(
     // Create location object with correct type
     const locationData: Location = {
       country: country,
-      state: state || "",
-      formatted: `${state ? state + ", " : ""}${country}`,
+      state: state || "", // Ensure empty string if state is undefined
+      formatted: state ? `${state}, ${country}` : country, // Format differently if no state
     };
 
     // Convert image URLs to ListingImage objects

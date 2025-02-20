@@ -6,7 +6,7 @@ export type UserId = string;
 // Base interfaces
 export interface Location {
   country: string;
-  state: string;
+  state: string; // Keep as string since we're using empty string as default
   formatted: string; // For display purposes (e.g., "Portland, OR")
 }
 
@@ -40,7 +40,10 @@ export interface Listing extends BaseListing {
 export interface ListingFormValues
   extends Omit<BaseListing, "location" | "price" | "images" | "status"> {
   price?: number;
-  location: Omit<Location, "formatted">;
+  location: {
+    country: string;
+    state: string;
+  };
   images: string[];
   status?: ListingStatus;
 }
@@ -101,7 +104,10 @@ export interface ListingPageProps {
 
 // Filter interfaces
 export interface ListingFilters {
-  location?: Partial<Location>;
+  location?: {
+    country?: string;
+    state?: string;
+  };
   minPrice?: number;
   maxPrice?: number;
   sortBy?: "price" | "date" | "location";

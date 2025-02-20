@@ -62,7 +62,7 @@ const formSchema = z.object({
   status: z.enum(["active", "sold", "archived"]).default("active"),
   location: z.object({
     country: z.string().min(1, "Country is required"),
-    state: z.string().min(1, "State is required"),
+    state: z.string().optional().default(""), // Make state optional
   }),
   tags: z
     .array(z.enum(AVAILABLE_FRAMEWORKS))
@@ -249,11 +249,18 @@ export default function CreateListingForm({
                 <FormControl>
                   <LocationSelector
                     value={field.value}
-                    onCountryChange={(location) => field.onChange(location)}
-                    onStateChange={(location) => field.onChange(location)}
+                    onCountryChange={(location) => {
+                      field.onChange(location);
+                      form.clearErrors("location");
+                    }}
+                    onStateChange={(location) => {
+                      field.onChange(location);
+                    }}
                   />
                 </FormControl>
-                <FormMessage />
+                <FormMessage>
+                  {form.formState.errors.location?.country?.message}
+                </FormMessage>
               </FormItem>
             )}
           />

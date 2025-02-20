@@ -74,10 +74,10 @@ export async function createListingAction(
           "Price must be greater than or equal to 0"
         ),
       status: (formData.get("status")?.toString() || "active") as ListingStatus,
-      location: {
-        country: sanitizeInput(formData.get("location.country")?.toString()),
-        state: sanitizeInput(formData.get("location.state")?.toString()),
-      },
+      location: z.object({
+        country: z.string().min(1).transform(sanitizeInput),
+        state: z.string().optional().default("").transform(sanitizeInput),
+      }),
       tags: formData.getAll("tags").map((tag) => tag.toString()),
       images: formData.getAll("images").map((image) => image.toString()),
     };
