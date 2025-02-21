@@ -30,6 +30,7 @@ import { createListingAction } from "@/app/actions/listings";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { LocationErrorType } from "@/types/listings";
+import { useRouter } from "next/navigation";
 
 const AVAILABLE_FRAMEWORKS = [
   "React",
@@ -93,6 +94,7 @@ export default function CreateListingForm({
 }: CreateListingFormProps) {
   const [isPending, startTransition] = useTransition();
   const [isUploading, setIsUploading] = useState(false);
+  const router = useRouter();
 
   const defaultValues: FormValues = {
     title: "",
@@ -133,6 +135,8 @@ export default function CreateListingForm({
         toast.success("Listing created successfully!");
         form.reset(defaultValues);
         onSubmitSuccess?.();
+        router.push("/listings");
+        router.refresh(); // Refresh the page to show the latest data
       } else {
         console.log("Submission failed, processing errors");
         if (typeof result.error === "string") {
