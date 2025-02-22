@@ -1,6 +1,7 @@
 import React, { memo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { Loader2 } from "lucide-react";
 import { PLACEHOLDER_LISTING, type Listing } from "@/types/listings";
 import {
   Card,
@@ -42,11 +43,17 @@ LoadingSkeleton.displayName = "LoadingSkeleton";
 const ListingImage = memo(
   ({ image, title }: { image?: Listing["images"][0]; title: string }) => {
     const [isImageError, setIsImageError] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const imageUrl =
       !isImageError && image?.url ? image.url : "/images/placeholder.svg";
 
     return (
       <div className="relative w-full h-48 overflow-hidden rounded-t-lg">
+        {isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+          </div>
+        )}
         <Image
           src={imageUrl}
           alt={image?.alt || title}
@@ -54,6 +61,7 @@ const ListingImage = memo(
           className="object-cover transition-transform duration-300 group-hover:scale-105"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           onError={() => setIsImageError(true)}
+          onLoad={() => setIsLoading(false)}
           priority={false}
           loading="lazy"
         />

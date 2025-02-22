@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback, memo } from "react";
 import Image from "next/image";
+import { Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   MapPin,
@@ -92,15 +93,22 @@ CarouselButton.displayName = "CarouselButton";
 const ListingImage = memo(
   ({ image, title }: { image: Listing["images"][0]; title: string }) => {
     const [isError, setIsError] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     return (
       <div className="relative w-full h-[400px]">
+        {isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Loader2 className="w-12 h-12 animate-spin text-gray-400" />
+          </div>
+        )}
         <Image
           src={isError ? "/images/placeholder.svg" : image.url}
           alt={image.alt || title}
           fill
           className="rounded-lg object-cover"
           onError={() => setIsError(true)}
+          onLoad={() => setIsLoading(false)}
           sizes="(max-width: 768px) 100vw, 50vw"
           priority
         />
