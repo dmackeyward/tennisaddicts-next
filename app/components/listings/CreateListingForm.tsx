@@ -289,12 +289,6 @@ export default function CreateListingForm({
               const errorMessage =
                 form.formState.errors.location?.city?.message;
 
-              console.log("Location field render:", {
-                fieldValue: field.value,
-                formErrors: form.formState.errors,
-                errorMessage,
-              });
-
               return (
                 <FormItem>
                   <FormLabel>Location</FormLabel>
