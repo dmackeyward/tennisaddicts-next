@@ -20,6 +20,7 @@ export const listings = pgTable(
     location: jsonb("location").$type<Location>().notNull(),
     tags: varchar("tags", { length: 256 }).array(),
     images: jsonb("images").$type<ListingImage[]>().notNull(),
+    status: varchar("status", { length: 50 }).notNull().default("active"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -31,6 +32,7 @@ export const listings = pgTable(
     titleIdx: index("title_idx").on(table.title),
     userIdIdx: index("user_id_idx").on(table.userId),
     locationIdx: index("location_idx").on(table.location),
+    statusIdx: index("status_idx").on(table.status),
   })
 );
 

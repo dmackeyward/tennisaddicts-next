@@ -3,10 +3,16 @@ import { db } from "@/db";
 import { auth } from "@clerk/nextjs/server";
 import { desc, asc, sql } from "drizzle-orm";
 import { listings } from "@/db/schema";
-import type { Listing, ListingFilters } from "@/types/listings";
+import type { Listing, ListingFilters, ListingStatus } from "@/types/listings";
 
 // Helper function to format listing data
 function formatListing(listing: typeof listings.$inferSelect): Listing {
+  // Ensure status is a valid ListingStatus type
+  const status: ListingStatus = (listing.status ?? "active") as ListingStatus;
+  if (!["active", "sold", "archived"].includes(status)) {
+    throw new Error(`Invalid status: ${status}`);
+  }
+
   return {
     ...listing,
     id: String(listing.id),
@@ -24,6 +30,8 @@ function formatListing(listing: typeof listings.$inferSelect): Listing {
     tags: listing.tags ?? [],
     // Ensure images is never null
     images: listing.images ?? [],
+    // Add status field with a default value
+    status: status,
   };
 }
 

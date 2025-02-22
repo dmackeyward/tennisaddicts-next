@@ -23,17 +23,13 @@ const createSearchParams = (
 ): Record<string, string> => {
   const params: Record<string, string> = {};
 
-  // Handle location object by converting it to a formatted string or using individual parts
+  // Handle location object by using individual parts
   if (filters.location) {
-    if (filters.location.formatted) {
-      params.location = filters.location.formatted;
-    } else {
-      const locationParts = [];
-      if (filters.location.club) locationParts.push(filters.location.club);
-      if (filters.location.city) locationParts.push(filters.location.city);
-      if (locationParts.length > 0) {
-        params.location = locationParts.join(", ");
-      }
+    const locationParts = [];
+    if (filters.location.club) locationParts.push(filters.location.club);
+    if (filters.location.city) locationParts.push(filters.location.city);
+    if (locationParts.length > 0) {
+      params.location = locationParts.join(", ");
     }
   }
 
