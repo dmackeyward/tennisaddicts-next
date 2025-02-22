@@ -9,7 +9,7 @@ import type {
   ListingStatus,
   LocationErrorType,
 } from "@/types/listings";
-import { sanitizeInput, validatePrice } from "@/utils/validation";
+import { sanitizeInput } from "@/utils/validation";
 
 const AVAILABLE_FRAMEWORKS = [
   "React",

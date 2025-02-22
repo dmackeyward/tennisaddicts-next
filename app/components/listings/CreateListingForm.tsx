@@ -31,6 +31,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { LocationErrorType } from "@/types/listings";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const AVAILABLE_FRAMEWORKS = [
   "React",
@@ -82,6 +83,8 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
+
+type FieldName = keyof FormValues | `location.${keyof FormValues["location"]}`;
 
 interface CreateListingFormProps {
   onSubmitSuccess?: () => void;
@@ -154,14 +157,14 @@ export default function CreateListingForm({
 
               if (locationError.city) {
                 console.log("Setting city error:", locationError.city[0]);
-                form.setError("location.city", {
+                form.setError("location.city" as FieldName, {
                   type: "server",
                   message: locationError.city[0] || "City must be selected",
                 });
               }
             } else if (Array.isArray(errors) && errors.length > 0) {
               console.log(`Setting error for field ${field}:`, errors[0]);
-              form.setError(field as any, {
+              form.setError(field as FieldName, {
                 type: "server",
                 message: errors[0],
               });
@@ -429,9 +432,11 @@ export default function CreateListingForm({
                       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
                         {field.value.map((url, index) => (
                           <div key={index} className="relative group">
-                            <img
+                            <Image
                               src={url}
                               alt={`Uploaded image ${index + 1}`}
+                              width={300}
+                              height={200}
                               className="w-full h-32 object-cover rounded-lg"
                             />
                             <button

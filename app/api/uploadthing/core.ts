@@ -2,7 +2,7 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 // Comment out auth imports for now
 // import { auth, clerkClient } from "@clerk/nextjs/server";
-import { UploadThingError } from "uploadthing/server";
+// import { UploadThingError } from "uploadthing/server";
 
 const f = createUploadthing();
 
@@ -13,7 +13,8 @@ export const ourFileRouter = {
       maxFileCount: 6,
     },
   })
-    .middleware(async ({ req }) => {
+    .middleware(async () => {
+      // .middleware(async ({ req }) => {
       // Temporarily bypass auth checks
       // const user = await auth();
       // if (!user.userId) throw new UploadThingError("Unauthorized");

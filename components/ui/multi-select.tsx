@@ -350,6 +350,8 @@ const MultiSelectorList = forwardRef<
   );
 });
 
+MultiSelectorList.displayName = "MultiSelectorList";
+
 const MultiSelectorItem = forwardRef<
   React.ComponentRef<typeof CommandPrimitive.Item>,
   { value: string } & React.ComponentPropsWithoutRef<
@@ -385,6 +387,8 @@ const MultiSelectorItem = forwardRef<
     </CommandItem>
   );
 });
+
+MultiSelectorItem.displayName = "MultiSelectorItem";
 
 export {
   MultiSelector,

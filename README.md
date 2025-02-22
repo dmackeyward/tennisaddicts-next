@@ -9,8 +9,8 @@
 - [x] Connect storage
 - [x] View individual listing
 - [x] Update form fields to City/Club
-- [] Update Card component to show loading spinner when image preview is loading
-- [] Update Form component to show loading spinner when image preview is loading
+- [x] Update Card component to show loading spinner when image preview is loading
+- [x] Update Form component to show loading spinner when image preview is loading
 - [] Parralel routes
 - [] Modal issues resolved
 - [] Sidebar
