@@ -27,11 +27,11 @@ export function ListingsFilters({ onFiltersChange }: ListingsFiltersProps) {
   const handleLocationChange = (value: string) => {
     setLocationInput(value);
 
-    // Simple logic to determine if input looks like a state or country
+    // Simple logic to determine if input looks like a state or city
     // You might want to enhance this logic based on your needs
     const locationObject: Partial<Location> = {
-      state: value,
-      country: value,
+      club: value,
+      city: value,
       formatted: value,
     };
 
@@ -42,7 +42,7 @@ export function ListingsFilters({ onFiltersChange }: ListingsFiltersProps) {
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Input
-          placeholder="Location (State or Country)"
+          placeholder="Location (Club or City)"
           onChange={(e) => handleLocationChange(e.target.value)}
           value={locationInput}
         />

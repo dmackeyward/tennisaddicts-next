@@ -5,8 +5,8 @@ export type UserId = string;
 
 // Base interfaces
 export interface Location {
-  country: string;
-  state: string; // Keep as string since we're using empty string as default
+  city: string;
+  club: string; // Keep as string since we're using empty string as default
   formatted: string; // For display purposes (e.g., "Portland, OR")
 }
 
@@ -17,8 +17,8 @@ export interface ListingImage {
 }
 
 export type LocationErrorType = {
-  country?: string[];
-  state?: string[];
+  city?: string[];
+  club?: string[];
 };
 
 export type ListingStatus = "active" | "sold" | "archived";
@@ -46,8 +46,8 @@ export interface ListingFormValues
   extends Omit<BaseListing, "location" | "price" | "images" | "status"> {
   price?: number;
   location: {
-    country: string;
-    state: string;
+    city: string;
+    club: string;
   };
   images: string[];
   status?: ListingStatus;
@@ -109,8 +109,8 @@ export interface ListingPageProps {
 // Filter interfaces
 export interface ListingFilters {
   location?: {
-    country?: string;
-    state?: string;
+    city?: string;
+    club?: string;
   };
   minPrice?: number;
   maxPrice?: number;
@@ -133,11 +133,11 @@ export function convertFormValuesToListing(
     price: formValues.price || 0,
     status: formValues.status || "active",
     location: {
-      country: formValues.location.country,
-      state: formValues.location.state,
+      city: formValues.location.city,
+      club: formValues.location.club,
       formatted: `${
-        formValues.location.state ? formValues.location.state + ", " : ""
-      }${formValues.location.country}`,
+        formValues.location.club ? formValues.location.club + ", " : ""
+      }${formValues.location.city}`,
     },
     images: imageUrls.map((url, index) => ({
       url,
@@ -160,8 +160,8 @@ export const PLACEHOLDER_LISTING: Listing = {
   price: 199.99,
   status: "active",
   location: {
-    country: "United States",
-    state: "California",
+    city: "United States",
+    club: "California",
     formatted: "San Francisco, CA",
   },
   images: [

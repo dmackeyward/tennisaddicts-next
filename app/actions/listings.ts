@@ -33,14 +33,14 @@ const serverListingSchema = z.object({
     ),
   status: z.enum(["active", "sold", "archived"] as const).default("active"),
   location: z.object({
-    country: z
+    city: z
       .string({
-        required_error: "Country must be selected",
-        invalid_type_error: "Country must be selected",
+        required_error: "City must be selected",
+        invalid_type_error: "City must be selected",
       })
-      .min(1, "Country must be selected")
+      .min(1, "City must be selected")
       .transform(sanitizeInput),
-    state: z.string().optional().default("").transform(sanitizeInput),
+    club: z.string().optional().default("").transform(sanitizeInput),
   }),
   tags: z.array(z.enum(AVAILABLE_FRAMEWORKS)).min(1).max(3),
   images: z.array(z.string()).min(1).max(6),
@@ -88,10 +88,8 @@ export async function createListingAction(
       price: formData.get("price")?.toString() || "0",
       status: (formData.get("status")?.toString() || "active") as ListingStatus,
       location: {
-        country: sanitizeInput(
-          formData.get("location.country")?.toString() || ""
-        ),
-        state: sanitizeInput(formData.get("location.state")?.toString() || ""),
+        city: sanitizeInput(formData.get("location.city")?.toString() || ""),
+        club: sanitizeInput(formData.get("location.club")?.toString() || ""),
       },
       tags: formData.getAll("tags").map((tag) => tag.toString()),
       images: formData.getAll("images").map((image) => image.toString()),
@@ -115,7 +113,7 @@ export async function createListingAction(
         error: {
           ...errors,
           location: {
-            country: ["Country must be selected"],
+            city: ["City must be selected"],
           },
         },
       };

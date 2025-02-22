@@ -16,9 +16,9 @@ function formatListing(listing: typeof listings.$inferSelect): Listing {
       : new Date().toISOString(),
     location: {
       ...listing.location,
-      formatted: `${
-        listing.location.state ? listing.location.state + ", " : ""
-      }${listing.location.country}`,
+      formatted: `${listing.location.club ? listing.location.club + ", " : ""}${
+        listing.location.city
+      }`,
     },
     // Ensure tags is never null
     tags: listing.tags ?? [],
@@ -34,15 +34,15 @@ export async function getListings(
     where: (fields, { and, sql }) => {
       const conditions = [];
 
-      if (filters?.location?.country) {
+      if (filters?.location?.city) {
         conditions.push(
-          sql`${fields.location}->>'country' = ${filters.location.country}`
+          sql`${fields.location}->>'city' = ${filters.location.city}`
         );
       }
 
-      if (filters?.location?.state) {
+      if (filters?.location?.club) {
         conditions.push(
-          sql`${fields.location}->>'state' = ${filters.location.state}`
+          sql`${fields.location}->>'club' = ${filters.location.club}`
         );
       }
 
@@ -66,8 +66,8 @@ export async function getListings(
             return [sortOrder(fields.createdAt)];
           case "location":
             return [
-              sortOrder(sql`${fields.location}->>'country'`),
-              sortOrder(sql`${fields.location}->>'state'`),
+              sortOrder(sql`${fields.location}->>'city'`),
+              sortOrder(sql`${fields.location}->>'club'`),
             ];
           default:
             return [desc(fields.createdAt)];

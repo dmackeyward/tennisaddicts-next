@@ -4,25 +4,25 @@
       "id": 1,
       "name": "Auckland",
       "region": "Auckland",
-      "country": "New Zealand"
+      "city": "New Zealand"
     },
     {
       "id": 2,
       "name": "Wellington",
       "region": "Wellington",
-      "country": "New Zealand"
+      "city": "New Zealand"
     },
     {
       "id": 3,
       "name": "Christchurch",
       "region": "Canterbury",
-      "country": "New Zealand"
+      "city": "New Zealand"
     },
     {
       "id": 4,
       "name": "Queenstown",
       "region": "Otago",
-      "country": "New Zealand"
+      "city": "New Zealand"
     }
   ]
 }

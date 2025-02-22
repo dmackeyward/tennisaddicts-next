@@ -22,22 +22,22 @@ export async function createListing(
     const title = formData.get("title")?.toString();
     const description = formData.get("description")?.toString();
     const priceRaw = formData.get("price")?.toString() || "0";
-    const country = formData.get("location.country")?.toString();
-    const state = formData.get("location.state")?.toString() || ""; // Provide default empty string
+    const city = formData.get("location.city")?.toString();
+    const club = formData.get("location.club")?.toString() || ""; // Provide default empty string
     const tags = formData.getAll("tags").map((tag) => tag.toString());
     const imageUrls = formData
       .getAll("images")
       .map((image) => image.toString());
 
     // Validate required fields
-    if (!title || !description || !country) {
+    if (!title || !description || !city) {
       return {
         message: "Missing required fields",
         errors: {
           title: !title ? ["Title is required"] : undefined,
           description: !description ? ["Description is required"] : undefined,
           price: !priceRaw ? ["Price is required"] : undefined,
-          location: !country ? ["Country is required"] : undefined,
+          location: !city ? ["City is required"] : undefined,
         },
       };
     }
@@ -55,9 +55,9 @@ export async function createListing(
 
     // Create location object with correct type
     const locationData: Location = {
-      country: country,
-      state: state || "", // Ensure empty string if state is undefined
-      formatted: state ? `${state}, ${country}` : country, // Format differently if no state
+      city: city,
+      club: club || "", // Ensure empty string if club is undefined
+      formatted: club ? `${club}, ${city}` : city, // Format differently if no club
     };
 
     // Convert image URLs to ListingImage objects

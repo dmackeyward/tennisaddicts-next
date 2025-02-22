@@ -29,9 +29,8 @@ const createSearchParams = (
       params.location = filters.location.formatted;
     } else {
       const locationParts = [];
-      if (filters.location.state) locationParts.push(filters.location.state);
-      if (filters.location.country)
-        locationParts.push(filters.location.country);
+      if (filters.location.club) locationParts.push(filters.location.club);
+      if (filters.location.city) locationParts.push(filters.location.city);
       if (locationParts.length > 0) {
         params.location = locationParts.join(", ");
       }

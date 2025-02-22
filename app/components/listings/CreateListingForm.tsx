@@ -63,13 +63,13 @@ const formSchema = z.object({
     ),
   status: z.enum(["active", "sold", "archived"]).default("active"),
   location: z.object({
-    country: z
+    city: z
       .string({
-        required_error: "Country must be selected", // This is the message that will be shown
-        invalid_type_error: "Country must be selected",
+        required_error: "City must be selected", // This is the message that will be shown
+        invalid_type_error: "City must be selected",
       })
-      .min(1, "Country must be selected"),
-    state: z.string().optional().default(""),
+      .min(1, "City must be selected"),
+    club: z.string().optional().default(""),
   }),
   tags: z
     .array(z.enum(AVAILABLE_FRAMEWORKS))
@@ -102,8 +102,8 @@ export default function CreateListingForm({
     price: "",
     status: "active" as const, // explicitly type as const to match the enum
     location: {
-      country: "",
-      state: "",
+      city: "",
+      club: "",
     },
     tags: ["React" as const], // explicitly type as const to match the enum array
     images: [],
@@ -118,8 +118,8 @@ export default function CreateListingForm({
     const formData = new FormData();
     formData.append("title", values.title);
     formData.append("description", values.description);
-    formData.append("location.country", values.location.country);
-    formData.append("location.state", values.location.state || "");
+    formData.append("location.city", values.location.city);
+    formData.append("location.club", values.location.club || "");
     values.tags.forEach((tag) => formData.append("tags", tag));
     values.images.forEach((image) => formData.append("images", image));
 
@@ -152,12 +152,11 @@ export default function CreateListingForm({
               const locationError = errors as LocationErrorType;
               console.log("Parsed location error:", locationError);
 
-              if (locationError.country) {
-                console.log("Setting country error:", locationError.country[0]);
-                form.setError("location.country", {
+              if (locationError.city) {
+                console.log("Setting city error:", locationError.city[0]);
+                form.setError("location.city", {
                   type: "server",
-                  message:
-                    locationError.country[0] || "Country must be selected",
+                  message: locationError.city[0] || "City must be selected",
                 });
               }
             } else if (Array.isArray(errors) && errors.length > 0) {
@@ -172,7 +171,7 @@ export default function CreateListingForm({
           // Log form state after setting errors
           console.log("Form state after setting errors:", {
             errors: form.formState.errors,
-            locationError: form.formState.errors.location?.country?.message,
+            locationError: form.formState.errors.location?.city?.message,
             dirtyFields: form.formState.dirtyFields,
             isDirty: form.formState.isDirty,
           });
@@ -285,7 +284,7 @@ export default function CreateListingForm({
             name="location"
             render={({ field }) => {
               const errorMessage =
-                form.formState.errors.location?.country?.message;
+                form.formState.errors.location?.city?.message;
 
               console.log("Location field render:", {
                 fieldValue: field.value,
@@ -299,13 +298,13 @@ export default function CreateListingForm({
                   <FormControl>
                     <LocationSelector
                       value={field.value}
-                      onCountryChange={(location) => {
-                        console.log("Country changed to:", location);
+                      onCityChange={(location) => {
+                        console.log("City changed to:", location);
                         field.onChange(location);
-                        form.clearErrors("location.country");
+                        form.clearErrors("location.city");
                       }}
                       onStateChange={(location) => {
-                        console.log("State changed to:", location);
+                        console.log("Club changed to:", location);
                         field.onChange(location);
                       }}
                     />

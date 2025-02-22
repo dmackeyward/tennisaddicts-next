@@ -25,7 +25,7 @@ type CityProps = {
   id: number;
   name: string;
   region: string;
-  country: string;
+  city: string;
 };
 
 type AreaProps = {
@@ -35,29 +35,27 @@ type AreaProps = {
 };
 
 interface LocationValue {
-  country: string;
-  state: string;
+  city: string;
+  club: string;
 }
 
 interface LocationSelectorProps {
   disabled?: boolean;
   value: LocationValue;
-  onCountryChange: (location: LocationValue) => void;
-  onStateChange: (location: LocationValue) => void;
+  onCityChange: (location: LocationValue) => void;
+  onClubChange: (location: LocationValue) => void;
 }
 
 const LocationSelector = ({
   disabled,
-  onCountryChange,
-  onStateChange,
+  onCityChange,
+  onClubChange,
   value,
 }: LocationSelectorProps) => {
-  const [selectedCountry, setSelectedCountry] = useState<CityProps | null>(
-    null
-  );
-  const [selectedState, setSelectedState] = useState<AreaProps | null>(null);
-  const [openCountryDropdown, setOpenCountryDropdown] = useState(false);
-  const [openStateDropdown, setOpenStateDropdown] = useState(false);
+  const [selectedCity, setSelectedCity] = useState<CityProps | null>(null);
+  const [selectedClub, setSelectedClub] = useState<AreaProps | null>(null);
+  const [openCityDropdown, setOpenCityDropdown] = useState(false);
+  const [openClubDropdown, setOpenClubDropdown] = useState(false);
 
   // Cast imported JSON data to their respective types
   const cityData = city.cities as CityProps[];
@@ -66,82 +64,82 @@ const LocationSelector = ({
   // Effect to handle external value changes (including reset)
   useEffect(() => {
     // Reset internal state when value is empty
-    if (!value?.country) {
-      setSelectedCountry(null);
-      setSelectedState(null);
+    if (!value?.city) {
+      setSelectedCity(null);
+      setSelectedClub(null);
       return;
     }
 
     // Update internal state based on new value
-    const foundCity = cityData.find((city) => city.name === value.country);
+    const foundCity = cityData.find((city) => city.name === value.city);
     if (foundCity) {
-      setSelectedCountry(foundCity);
+      setSelectedCity(foundCity);
 
-      if (value.state) {
+      if (value.club) {
         const foundArea = areaData.find(
-          (area) => area.city_id === foundCity.id && area.name === value.state
+          (area) => area.city_id === foundCity.id && area.name === value.club
         );
-        setSelectedState(foundArea || null);
+        setSelectedClub(foundArea || null);
       } else {
-        setSelectedState(null);
+        setSelectedClub(null);
       }
     } else {
-      setSelectedCountry(null);
-      setSelectedState(null);
+      setSelectedCity(null);
+      setSelectedClub(null);
     }
   }, [value, cityData, areaData]);
 
-  // Filter states for selected country
-  const availableAreas = selectedCountry
-    ? areaData.filter((area) => area.city_id === selectedCountry.id)
+  // Filter clubs for selected city
+  const availableAreas = selectedCity
+    ? areaData.filter((area) => area.city_id === selectedCity.id)
     : [];
 
-  const handleCountrySelect = (country: CityProps) => {
-    setSelectedCountry(country);
-    setSelectedState(null);
-    onCountryChange({
-      country: country.name,
-      state: "",
+  const handleCitySelect = (city: CityProps) => {
+    setSelectedCity(city);
+    setSelectedClub(null);
+    onCityChange({
+      city: city.name,
+      club: "",
     });
   };
 
-  const handleStateSelect = (state: AreaProps) => {
-    setSelectedState(state);
-    if (selectedCountry) {
-      onStateChange({
-        country: selectedCountry.name,
-        state: state.name,
+  const handleClubSelect = (state: AreaProps) => {
+    setSelectedClub(state);
+    if (selectedCity) {
+      onClubChange({
+        city: selectedCity.name,
+        club: club.name,
       });
     }
   };
 
   return (
     <div className="flex gap-4">
-      <Popover open={openCountryDropdown} onOpenChange={setOpenCountryDropdown}>
+      <Popover open={openCityDropdown} onOpenChange={setOpenCityDropdown}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             role="combobox"
-            aria-expanded={openCountryDropdown}
+            aria-expanded={openCityDropdown}
             disabled={disabled}
             className={cn(
               "w-full justify-between",
-              !selectedCountry && "text-muted-foreground"
+              !selectedCity && "text-muted-foreground"
             )}
           >
-            {selectedCountry ? (
-              <span>{selectedCountry.name}</span>
+            {selectedCity ? (
+              <span>{selectedCity.name}</span>
             ) : (
-              <span>Select Country...</span>
+              <span>Select City...</span>
             )}
             <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[300px] p-0">
           <Command>
-            <CommandInput placeholder="Search country..." />
+            <CommandInput placeholder="Search city..." />
             <CommandList>
-              <CommandEmpty>No country found.</CommandEmpty>
+              <CommandEmpty>No city found.</CommandEmpty>
               <CommandGroup>
                 <ScrollArea className="h-72">
                   {cityData.map((city) => (
@@ -149,8 +147,8 @@ const LocationSelector = ({
                       key={city.id}
                       value={city.name}
                       onSelect={() => {
-                        handleCountrySelect(city);
-                        setOpenCountryDropdown(false);
+                        handleCitySelect(city);
+                        setOpenCityDropdown(false);
                       }}
                     >
                       <div className="flex items-center justify-between w-full">
@@ -158,7 +156,7 @@ const LocationSelector = ({
                         <Check
                           className={cn(
                             "h-4 w-4",
-                            selectedCountry?.id === city.id
+                            selectedCity?.id === city.id
                               ? "opacity-100"
                               : "opacity-0"
                           )}
@@ -175,28 +173,28 @@ const LocationSelector = ({
       </Popover>
 
       {availableAreas.length > 0 && (
-        <Popover open={openStateDropdown} onOpenChange={setOpenStateDropdown}>
+        <Popover open={openClubDropdown} onOpenChange={setOpenClubDropdown}>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
               role="combobox"
-              aria-expanded={openStateDropdown}
-              disabled={!selectedCountry || disabled}
+              aria-expanded={openClubDropdown}
+              disabled={!selectedCity || disabled}
               className="w-full justify-between"
             >
-              {selectedState ? (
-                <span>{selectedState.name}</span>
+              {selectedClub ? (
+                <span>{selectedClub.name}</span>
               ) : (
-                <span>Select State (Optional)...</span>
+                <span>Select Club (Optional)...</span>
               )}
               <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-[300px] p-0">
             <Command>
-              <CommandInput placeholder="Search state..." />
+              <CommandInput placeholder="Search club..." />
               <CommandList>
-                <CommandEmpty>No state found.</CommandEmpty>
+                <CommandEmpty>No club found.</CommandEmpty>
                 <CommandGroup>
                   <ScrollArea className="h-72">
                     {availableAreas.map((area) => (
@@ -204,8 +202,8 @@ const LocationSelector = ({
                         key={area.id}
                         value={area.name}
                         onSelect={() => {
-                          handleStateSelect(area);
-                          setOpenStateDropdown(false);
+                          handleClubSelect(area);
+                          setOpenClubDropdown(false);
                         }}
                       >
                         <div className="flex items-center justify-between w-full">
@@ -213,7 +211,7 @@ const LocationSelector = ({
                           <Check
                             className={cn(
                               "h-4 w-4",
-                              selectedState?.id === area.id
+                              selectedClub?.id === area.id
                                 ? "opacity-100"
                                 : "opacity-0"
                             )}
