@@ -103,8 +103,8 @@ const LocationSelector = ({
     });
   };
 
-  const handleClubSelect = (state: AreaProps) => {
-    setSelectedClub(state);
+  const handleClubSelect = (club: AreaProps) => {
+    setSelectedClub(club);
     if (selectedCity) {
       onClubChange({
         city: selectedCity.name,

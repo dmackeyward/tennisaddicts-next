@@ -303,7 +303,7 @@ export default function CreateListingForm({
                         field.onChange(location);
                         form.clearErrors("location.city");
                       }}
-                      onStateChange={(location) => {
+                      onClubChange={(location) => {
                         console.log("Club changed to:", location);
                         field.onChange(location);
                       }}
