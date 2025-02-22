@@ -10,11 +10,7 @@ import { use } from "react";
 function ListingLoading() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <ListingDetail
-        listing={PLACEHOLDER_LISTING}
-        onContactSeller={() => {}}
-        isLoading={true}
-      />
+      <ListingDetail listing={PLACEHOLDER_LISTING} isLoading={true} />
     </div>
   );
 }
@@ -27,17 +23,9 @@ async function ListingContent({ id }: { id: string }) {
     notFound();
   }
 
-  const handleContactSeller = async () => {
-    console.log("Contact seller for listing:", id);
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <ListingDetail
-        listing={listing}
-        onContactSeller={handleContactSeller}
-        isLoading={false}
-      />
+      <ListingDetail listing={listing} isLoading={false} />
     </div>
   );
 }

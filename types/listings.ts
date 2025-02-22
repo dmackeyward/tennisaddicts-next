@@ -91,7 +91,6 @@ export interface DeleteListingResponse {
 // Component prop interfaces
 export interface ListingDetailProps {
   listing: Listing;
-  onContactSeller: () => void;
   isLoading?: boolean;
 }
 

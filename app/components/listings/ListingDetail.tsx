@@ -113,7 +113,6 @@ ListingImage.displayName = "ListingImage";
 
 const ListingDetail = ({
   listing: propListing,
-  onContactSeller = () => {},
   isLoading = false,
 }: ListingDetailProps) => {
   const [selectedImage, setSelectedImage] = useState(0);
@@ -281,7 +280,6 @@ const ListingDetail = ({
 
               <div className="pt-4">
                 <Button
-                  onClick={onContactSeller}
                   className="w-full md:w-auto"
                   aria-label="Contact seller about this listing"
                 >
