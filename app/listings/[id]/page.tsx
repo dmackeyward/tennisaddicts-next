@@ -6,6 +6,8 @@ import { ListingImage, PLACEHOLDER_LISTING } from "@/types/listings";
 import { Metadata } from "next";
 import { use } from "react";
 
+export const dynamic = "force-dynamic";
+
 // Loading component stays the same
 function ListingLoading() {
   return (
