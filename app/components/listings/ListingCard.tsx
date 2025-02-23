@@ -87,7 +87,7 @@ const ListingCard: React.FC<ListingCardProps> = memo(
 
     return (
       <Link
-        href={`/listings/${displayData.id}`}
+        href={`/listings/view/${displayData.id}`}
         className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg"
         aria-label={`View details for ${displayData.title}`}
         tabIndex={isPlaceholder ? -1 : 0}

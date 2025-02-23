@@ -104,11 +104,11 @@ export async function getMyListings(): Promise<Listing[]> {
   return results.map(formatListing);
 }
 
-export async function getListing(id: string): Promise<Listing> {
+export async function getListing(id: string): Promise<Listing | null> {
   const parsedId = parseInt(id, 10);
 
   if (isNaN(parsedId)) {
-    throw new Error("Invalid listing ID");
+    return null; // Return null instead of throwing error for invalid IDs
   }
 
   const result = await db.query.listings.findFirst({
@@ -116,7 +116,7 @@ export async function getListing(id: string): Promise<Listing> {
   });
 
   if (!result) {
-    throw new Error("Listing not found");
+    return null;
   }
 
   return formatListing(result);

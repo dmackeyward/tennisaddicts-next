@@ -5,6 +5,7 @@ import ListingDetail from "@/components/listings/ListingDetail";
 import { getListing } from "@/db/queries/listings";
 import { PLACEHOLDER_LISTING } from "@/types/listings";
 import { Modal } from "./modal";
+import { ErrorBoundary } from "@/app/components/ErrorBoundary";
 
 export const dynamic = "force-dynamic";
 
@@ -35,9 +36,22 @@ export default async function ListingModal({
 
   return (
     <Modal>
-      <Suspense fallback={<ListingLoading />}>
-        <ListingContent id={id} />
-      </Suspense>
+      <ErrorBoundary
+        fallback={
+          <div className="p-6 bg-white rounded-lg">
+            <h2 className="text-xl font-semibold text-red-600">
+              Error Loading Listing
+            </h2>
+            <p className="mt-2 text-gray-600">
+              There was a problem loading this listing.
+            </p>
+          </div>
+        }
+      >
+        <Suspense fallback={<ListingLoading />}>
+          <ListingContent id={id} />
+        </Suspense>
+      </ErrorBoundary>
     </Modal>
   );
 }
