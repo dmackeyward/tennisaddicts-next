@@ -194,7 +194,7 @@ export default function CreateListingForm({
   };
 
   return (
-    <div className="max-h-screen overflow-y-auto bg-white dark:bg-gray-900">
+    <div className="bg-white dark:bg-gray-900">
       <Form {...form}>
         <form
           className="mx-auto max-w-6xl space-y-6 px-6 py-8"

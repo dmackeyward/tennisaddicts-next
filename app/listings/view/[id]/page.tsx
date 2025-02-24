@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 // Loading component stays the same
 function ListingLoading() {
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="container mx-auto max-w-6xl px-6 py-8 min-h-screen">
       <ListingDetail listing={PLACEHOLDER_LISTING} isLoading={true} />
     </div>
   );
@@ -26,7 +26,7 @@ async function ListingContent({ id }: { id: string }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="container mx-auto max-w-6xl px-6 py-8 min-h-screen">
       <ListingDetail listing={listing} isLoading={false} />
     </div>
   );

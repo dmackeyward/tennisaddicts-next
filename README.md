@@ -11,11 +11,11 @@
 - [x] Update form fields to City/Club
 - [x] Update Card component to show loading spinner when image preview is loading
 - [x] Update Form component to show loading spinner when image preview is loading
-- [] Parralel routes
-- [] Modal issues resolved
+- [x] Parralel routes
+- [x] Modal issues resolved
 - [] Sidebar
-- [] Github Actions
 - [] Connect auth
+- [] Github Actions
 - [] CRUD Actions
 - [] Search and filter
 - [] Update listing

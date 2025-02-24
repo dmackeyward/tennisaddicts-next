@@ -4,6 +4,8 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,13 +33,21 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased flex h-screen overflow-hidden`}
         >
           <ErrorBoundary>
-            {children}
-            {modal}
-            <div id="modal-root" />
-            <Toaster />
+            <SidebarProvider>
+              <div className="flex w-full h-full">
+                <AppSidebar className="flex-shrink-0" />
+                <main className="flex-1 overflow-auto">
+                  <SidebarTrigger />
+                  {children}
+                  {modal}
+                  <div id="modal-root" />
+                  <Toaster />
+                </main>
+              </div>
+            </SidebarProvider>
           </ErrorBoundary>
         </body>
       </html>
