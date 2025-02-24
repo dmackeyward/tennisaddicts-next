@@ -13,7 +13,7 @@
 - [x] Update Form component to show loading spinner when image preview is loading
 - [x] Parralel routes
 - [x] Modal issues resolved
-- [] Sidebar
+- [x] Sidebar
 - [] Connect auth
 - [] Github Actions
 - [] CRUD Actions
