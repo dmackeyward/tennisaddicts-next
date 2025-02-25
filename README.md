@@ -14,8 +14,9 @@
 - [x] Parralel routes
 - [x] Modal issues resolved
 - [x] Sidebar
-- [] Connect auth
-- [] Github Actions
+- [x] Connect auth
+- [] Configure auth (basic)
+- [] Clean up sidebar
 - [] CRUD Actions
 - [] Search and filter
-- [] Update listing
+- [] Github Actions

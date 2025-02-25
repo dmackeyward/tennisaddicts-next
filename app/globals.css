@@ -93,3 +93,40 @@
     @apply relative flex-1 flex flex-col min-h-0 overflow-auto;
   }
 }
+
+/* Clerk components border removal */
+.cl-card,
+.cl-rootBox,
+.cl-main,
+.cl-cardBox,
+.cl-cardWrapper {
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+/* Target Clerk internal classes that might be responsible for borders/shadows */
+[class^="cl-internal-"],
+[class*=" cl-internal-"] {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Target any Clerk element with card in the name */
+[class*="cl-card"],
+[class*="Card"] {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Ensure no Clerk container has border or shadow */
+.cl-rootBox,
+.cl-card,
+.cl-cardWrapper,
+.cl-pageScrollBox,
+.cl-containerBox,
+.cl-formFieldInput__emailAddress,
+.cl-formFieldInput__password {
+  border: 0 !important;
+  box-shadow: none !important;
+}
