@@ -82,10 +82,6 @@ export interface ListingInput extends Omit<BaseListing, "images"> {
 export interface DeleteListingResponse {
   success: boolean;
   message: string;
-  error?: {
-    code: string;
-    details: string;
-  };
 }
 
 // Component prop interfaces

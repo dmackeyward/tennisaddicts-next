@@ -1,6 +1,12 @@
+import { Metadata } from "next";
 import { SignUp } from "@clerk/nextjs";
 import Link from "next/link";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+export const metadata: Metadata = {
+  title: "Sign Up",
+  description: "X",
+};
 
 export default function SignUpPage() {
   return (

@@ -17,6 +17,16 @@ export async function createListing(
   prevState: ListingFormState,
   formData: FormData
 ): Promise<ListingFormState> {
+  // // Get the current user
+  // const { userId } = await auth();
+
+  // if (!userId) {
+  //   return {
+  //     success: false,
+  //     message: "Unauthorized: You must be logged in to delete a listing",
+  //   };
+  // }
+
   try {
     // Extract and validate form data
     const title = formData.get("title")?.toString();
@@ -103,6 +113,60 @@ export async function createListing(
       errors: {
         _form: ["An unexpected error occurred while creating the listing"],
       },
+    };
+  }
+}
+
+export async function deleteListing(
+  listingId: string
+): Promise<DeleteListingResponse> {
+  try {
+    // Get the current user
+    const { userId } = await auth();
+
+    if (!userId) {
+      return {
+        success: false,
+        message: "Unauthorized: You must be logged in to delete a listing",
+      };
+    }
+
+    // Find the listing first to verify ownership
+    const existingListing = await db.query.listings.findFirst({
+      where: eq(listings.id, parseInt(listingId)),
+    });
+
+    if (!existingListing) {
+      return {
+        success: false,
+        message: "Listing not found",
+      };
+    }
+
+    // Verify the user owns this listing
+    if (existingListing.userId !== userId) {
+      return {
+        success: false,
+        message: "Unauthorized: You can only delete your own listings",
+      };
+    }
+
+    // Delete the listing
+    await db.delete(listings).where(eq(listings.id, parseInt(listingId)));
+
+    // Revalidate the listings page and the specific listing page
+    revalidatePath("/listings");
+    revalidatePath(`/listings/${listingId}`);
+
+    return {
+      success: true,
+      message: "Listing deleted successfully",
+    };
+  } catch (error) {
+    console.error("Failed to delete listing:", error);
+    return {
+      success: false,
+      message: "An unexpected error occurred while deleting the listing",
     };
   }
 }

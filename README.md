@@ -16,7 +16,7 @@
 - [x] Sidebar
 - [x] Connect auth
 - [x] Configure auth (basic)
-- [] Clean up sidebar
+- [x] Clean up sidebar
 - [] CRUD Actions
 - [] Search and filter
 - [] Github Actions
