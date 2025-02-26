@@ -1,5 +1,14 @@
 "use client";
 
+// Import Tooltip components
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+// Rest of your imports remain the same
 import * as React from "react";
 import {
   AudioWaveform,
@@ -12,6 +21,10 @@ import {
   PieChart,
   Settings2,
   SquareTerminal,
+  Search,
+  LogIn,
+  UserPlus,
+  DotIcon,
 } from "lucide-react";
 import {
   SignInButton,
@@ -19,20 +32,22 @@ import {
   SignedIn,
   SignedOut,
   UserButton,
+  useUser,
 } from "@clerk/nextjs";
 
 import { NavMain } from "@/components/nav-main";
-import { NavProjects } from "@/components/nav-projects";
-import { NavUser } from "@/components/nav-user";
-import { TeamSwitcher } from "@/components/team-switcher";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar";
@@ -40,129 +55,34 @@ import { SearchForm } from "./ui/search-form";
 
 // This is sample data.
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  teams: [
+  news: [
     {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
-  navMain: [
-    {
-      title: "Playground",
-      url: "#",
+      title: "Latest Tennis News",
+      url: "/news",
       icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
     },
   ],
-  projects: [
+  listings: [
     {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
+      title: "View listings",
+      url: "/listings",
+      icon: SquareTerminal,
     },
     {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
+      title: "Create a listing",
+      url: "/listings/create",
+      icon: Map,
+    },
+  ],
+  support: [
+    {
+      title: "About us",
+      url: "/about",
+      icon: SquareTerminal,
     },
     {
-      name: "Travel",
-      url: "#",
+      title: "Get in touch",
+      url: "/contact",
       icon: Map,
     },
   ],
@@ -204,40 +124,72 @@ const EnhancedSidebar = React.forwardRef<
 EnhancedSidebar.displayName = "EnhancedSidebar";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { state } = useSidebar();
+  const { user } = useUser();
+
   return (
-    <EnhancedSidebar collapsible="icon" clickToToggle={true} {...props}>
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <a href="#">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <GalleryVerticalEnd className="size-4" />
-                </div>
-                <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-semibold">Tennis Addicts</span>
-                </div>
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-        <SearchForm />
-      </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
-      </SidebarContent>
-      <SidebarFooter>
-        <SignedOut>
-          <SignInButton />
-          <SignUpButton />
-        </SignedOut>
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
-        {/* <NavUser user={data.user} /> */}
-      </SidebarFooter>
-      <SidebarRail />
-    </EnhancedSidebar>
+    <TooltipProvider>
+      <EnhancedSidebar collapsible="icon" clickToToggle={true} {...props}>
+        <SidebarHeader>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton size="lg" asChild>
+                <a href="/">
+                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                    <GalleryVerticalEnd className="size-4" />
+                  </div>
+                  <div className="flex flex-col gap-0.5 leading-none">
+                    <span className="font-semibold">Tennis Addicts</span>
+                  </div>
+                </a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+          {state === "collapsed" ? <></> : <SearchForm />}
+        </SidebarHeader>
+        <SidebarContent>
+          <NavMain items={data.news} group="News" />
+          <NavMain items={data.listings} group="Listings" />
+          <NavMain items={data.support} group="Support" />
+        </SidebarContent>
+        <SidebarFooter>
+          <SignedOut>
+            {state === "collapsed" ? (
+              <div className="flex flex-col items-center gap-4 px-2 py-4">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button className="flex items-center justify-center rounded-md p-2 hover:bg-sidebar-muted">
+                      <UserPlus className="size-5" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Sign In</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            ) : (
+              <>
+                <SignInButton>
+                  <button className="pb-5">Sign In</button>
+                </SignInButton>
+              </>
+            )}
+          </SignedOut>
+          <SignedIn>
+            {state === "expanded" && user && (
+              <div className="items-center justify-center flex flex-col gap-4 px-2 py-4">
+                <UserButton showName={true} />
+              </div>
+            )}
+            {state === "collapsed" && user && (
+              <div className="items-center justify-center flex flex-col gap-4 px-2 py-4">
+                <UserButton />
+              </div>
+            )}
+          </SignedIn>
+        </SidebarFooter>
+        <SidebarRail />
+      </EnhancedSidebar>
+    </TooltipProvider>
   );
 }
