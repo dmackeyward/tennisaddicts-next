@@ -30,8 +30,13 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
+import { SearchForm } from "./ui/search-form";
 
 // This is sample data.
 const data = {
@@ -163,11 +168,60 @@ const data = {
   ],
 };
 
+// Enhanced Sidebar component with click-to-toggle functionality
+const EnhancedSidebar = React.forwardRef<
+  React.ComponentRef<typeof Sidebar>,
+  React.ComponentPropsWithoutRef<typeof Sidebar> & { clickToToggle?: boolean }
+>(({ clickToToggle = false, className, children, ...props }, ref) => {
+  const { toggleSidebar } = useSidebar();
+
+  const handleSidebarClick = React.useCallback(
+    (event: React.MouseEvent) => {
+      if (clickToToggle) {
+        // Prevent toggling when clicking on interactive elements
+        const isInteractiveElement = (event.target as HTMLElement).closest(
+          'button, a, input, select, textarea, [role="button"]'
+        );
+
+        if (!isInteractiveElement) {
+          event.preventDefault();
+          toggleSidebar();
+        }
+      }
+    },
+    [clickToToggle, toggleSidebar]
+  );
+
+  // We're using a wrapper div to catch clicks without modifying the Sidebar component
+  return (
+    <div onClick={clickToToggle ? handleSidebarClick : undefined}>
+      <Sidebar ref={ref} className={className} {...props}>
+        {children}
+      </Sidebar>
+    </div>
+  );
+});
+EnhancedSidebar.displayName = "EnhancedSidebar";
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <EnhancedSidebar collapsible="icon" clickToToggle={true} {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild>
+              <a href="#">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                  <GalleryVerticalEnd className="size-4" />
+                </div>
+                <div className="flex flex-col gap-0.5 leading-none">
+                  <span className="font-semibold">Tennis Addicts</span>
+                </div>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+        <SearchForm />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
@@ -184,6 +238,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {/* <NavUser user={data.user} /> */}
       </SidebarFooter>
       <SidebarRail />
-    </Sidebar>
+    </EnhancedSidebar>
   );
 }

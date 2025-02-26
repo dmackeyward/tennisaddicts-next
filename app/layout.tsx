@@ -40,7 +40,6 @@ export default function RootLayout({
               <div className="flex w-full h-full">
                 <AppSidebar className="flex-shrink-0" />
                 <main className="flex-1 overflow-auto">
-                  <SidebarTrigger />
                   {children}
                   {modal}
                   <div id="modal-root" />

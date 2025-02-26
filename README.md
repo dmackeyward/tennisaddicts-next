@@ -15,7 +15,7 @@
 - [x] Modal issues resolved
 - [x] Sidebar
 - [x] Connect auth
-- [] Configure auth (basic)
+- [x] Configure auth (basic)
 - [] Clean up sidebar
 - [] CRUD Actions
 - [] Search and filter
