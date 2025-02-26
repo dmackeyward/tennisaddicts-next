@@ -31,6 +31,7 @@ import {
   Users,
   Mail,
   Newspaper,
+  CirclePlus,
 } from "lucide-react";
 import {
   SignInButton,
@@ -79,7 +80,7 @@ const data = {
     {
       title: "Create a listing",
       url: "/listings/create",
-      icon: Plus,
+      icon: CirclePlus,
     },
   ],
   support: [
