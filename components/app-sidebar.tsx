@@ -52,6 +52,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { SearchForm } from "./ui/search-form";
+import Link from "next/link";
 
 // This is sample data.
 const data = {
@@ -158,9 +159,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <div className="flex flex-col items-center gap-4 px-2 py-4">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <button className="flex items-center justify-center rounded-md p-2 hover:bg-sidebar-muted">
-                      <UserPlus className="size-5" />
-                    </button>
+                    <Link href="/sign-in">
+                      <button className="flex items-center justify-center rounded-md p-2 hover:bg-sidebar-muted">
+                        <UserPlus className="size-5" />
+                      </button>
+                    </Link>
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>Sign In</p>

@@ -36,7 +36,7 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased flex h-screen overflow-hidden`}
         >
           <ErrorBoundary>
-            <SidebarProvider>
+            <SidebarProvider defaultOpen={false}>
               <div className="flex w-full h-full">
                 <AppSidebar className="flex-shrink-0" />
                 <main className="flex-1 overflow-auto">
