@@ -20,7 +20,7 @@ export default async function ListingsPage() {
     <div className="container mx-auto max-w-6xl px-6 py-8">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <CardTitle className="text-3xl font-bold">Listings</CardTitle>
+          <CardTitle className="text-2xl font-bold">Listings</CardTitle>
           <Link href="/listings/create">
             <Button>Create New Listing</Button>
           </Link>

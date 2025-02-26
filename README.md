@@ -17,6 +17,12 @@
 - [x] Connect auth
 - [x] Configure auth (basic)
 - [x] Clean up sidebar
-- [] CRUD Actions
+- [] Custom sidebar SVG
+- [] Delete Listing
+- [] Update Listing
 - [] Search and filter
+- [] Tags
+- [] Location
+- [] Price
+- [] Created At
 - [] Github Actions

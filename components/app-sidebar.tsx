@@ -25,6 +25,12 @@ import {
   LogIn,
   UserPlus,
   DotIcon,
+  List,
+  ListPlus,
+  Plus,
+  Users,
+  Mail,
+  Newspaper,
 } from "lucide-react";
 import {
   SignInButton,
@@ -53,6 +59,7 @@ import {
 } from "@/components/ui/sidebar";
 import { SearchForm } from "./ui/search-form";
 import Link from "next/link";
+import Icon from "./Icon";
 
 // This is sample data.
 const data = {
@@ -60,31 +67,31 @@ const data = {
     {
       title: "Latest Tennis News",
       url: "/news",
-      icon: SquareTerminal,
+      icon: Newspaper,
     },
   ],
   listings: [
     {
       title: "View listings",
       url: "/listings",
-      icon: SquareTerminal,
+      icon: List,
     },
     {
       title: "Create a listing",
       url: "/listings/create",
-      icon: Map,
+      icon: Plus,
     },
   ],
   support: [
     {
       title: "About us",
       url: "/about",
-      icon: SquareTerminal,
+      icon: Users,
     },
     {
       title: "Get in touch",
       url: "/contact",
-      icon: Map,
+      icon: Mail,
     },
   ],
 };
@@ -135,13 +142,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton size="lg" asChild>
-                <a href="/">
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                    <GalleryVerticalEnd className="size-4" />
+                <a href="/" className="flex items-center justify-center">
+                  <div className="flex justify-center">
+                    <Icon name="tennisball" size={24} />
                   </div>
-                  <div className="flex flex-col gap-0.5 leading-none">
-                    <span className="font-semibold">Tennis Addicts</span>
-                  </div>
+                  {state !== "collapsed" && (
+                    <div className="flex flex-col gap-0.5 leading-none">
+                      <span className="font-semibold">Tennis Addicts</span>
+                    </div>
+                  )}
                 </a>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -166,14 +175,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     </Link>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Sign In</p>
+                    <p>Sign In or Sign Up</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
             ) : (
               <>
                 <SignInButton>
-                  <button className="pb-5">Sign In</button>
+                  <button className="pb-5">Sign In or Sign Up</button>
                 </SignInButton>
               </>
             )}
