@@ -1,12 +1,27 @@
-"use client"
+"use client";
 
-import { useTheme } from "next-themes"
-import { Toaster as Sonner } from "sonner"
+import { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { useTheme } from "next-themes";
+import { Toaster as Sonner, toast } from "sonner";
 
-type ToasterProps = React.ComponentProps<typeof Sonner>
+type ToasterProps = React.ComponentProps<typeof Sonner>;
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
+  const { theme = "system" } = useTheme();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    // Check if redirected from auth middleware
+    const authRequired = searchParams.get("authRequired");
+
+    if (authRequired === "true") {
+      toast.error("Authentication required", {
+        description: "You need to be logged in to access this page.",
+        duration: 4000,
+      });
+    }
+  }, [searchParams]);
 
   return (
     <Sonner
@@ -25,7 +40,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }}
       {...props}
     />
-  )
-}
+  );
+};
 
-export { Toaster }
+export { Toaster };

@@ -18,7 +18,8 @@
 - [x] Configure auth (basic)
 - [x] Clean up sidebar
 - [x] Custom sidebar SVG
-- [] Delete Listing
+- [x] Delete Listing
+- [] Auth Guards - routes and buttons
 - [] Update Listing
 - [] Search and filter styling
 - [] Tags
@@ -26,3 +27,7 @@
 - [] Price
 - [] Created At
 - [] Github Actions
+- [] Player lookup - Tennis NZ API
+- [] Court lookup
+- [] News(?)
+- [] Search functionality - local versus API search - query params

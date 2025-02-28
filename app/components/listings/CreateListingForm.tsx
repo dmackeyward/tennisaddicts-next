@@ -32,6 +32,7 @@ import * as z from "zod";
 import { LocationErrorType } from "@/types/listings";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useAuth } from "@clerk/nextjs";
 
 const AVAILABLE_FRAMEWORKS = [
   "React",
@@ -98,6 +99,7 @@ export default function CreateListingForm({
   const [isPending, startTransition] = useTransition();
   const [isUploading, setIsUploading] = useState(false);
   const router = useRouter();
+  const { isSignedIn, isLoaded } = useAuth();
 
   const defaultValues: FormValues = {
     title: "",
@@ -469,8 +471,20 @@ export default function CreateListingForm({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isPending || isUploading}>
-              {isPending ? (
+            <Button
+              type="submit"
+              disabled={isPending || isUploading}
+              onClick={(e) => {
+                if (!isSignedIn && isLoaded) {
+                  e.preventDefault();
+                  toast.error("Please sign in to create a listing");
+                  router.push("/sign-in"); // Or your Clerk sign-in page
+                }
+              }}
+            >
+              {!isSignedIn && isLoaded ? (
+                "Sign in to Create"
+              ) : isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Creating...
