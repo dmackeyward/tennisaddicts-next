@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, memo } from "react";
 import Image from "next/image";
-import { Loader2 } from "lucide-react";
+import { DeleteIcon, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   MapPin,
@@ -137,6 +137,10 @@ const ListingDetail = ({
     }
   }, [listing]);
 
+  const handleDelete = async () => {
+    console.log("Deleted!");
+  };
+
   const handleKeyNavigation = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === "ArrowLeft") {
@@ -161,14 +165,29 @@ const ListingDetail = ({
       <CardHeader>
         <div className="flex justify-between items-start">
           <CardTitle className="text-2xl font-bold">{listing.title}</CardTitle>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleShare}
-            aria-label="Share listing"
-          >
-            <Share2 className="h-5 w-5" />
-          </Button>
+
+          {/* Button container */}
+          <div className="flex space-x-2">
+            {/* First button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleShare}
+              aria-label="Share listing"
+            >
+              <Share2 className="h-5 w-5" />
+            </Button>
+
+            {/* Second button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleDelete}
+              aria-label="Some other action"
+            >
+              <DeleteIcon className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
         <div className="flex items-center space-x-4 text-gray-600">
           <div className="flex items-center">
