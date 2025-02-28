@@ -172,7 +172,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   asChild
                   tooltip={"Sign In or Sign Up"}
                 >
-                  <a href="/" className="flex items-center justify-center">
+                  <a
+                    href="/sign-in"
+                    className="flex items-center justify-center"
+                  >
                     <div className="flex justify-center">
                       <UserPlus className="size-5" />
                     </div>

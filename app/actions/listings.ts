@@ -2,7 +2,7 @@
 "use server";
 
 import { z } from "zod";
-import { createListing } from "@/db/mutations/listings";
+import { createListing, deleteListing } from "@/db/mutations/listings";
 import { revalidatePath } from "next/cache";
 import type {
   ListingFormState,
@@ -10,6 +10,7 @@ import type {
   LocationErrorType,
 } from "@/types/listings";
 import { sanitizeInput } from "@/utils/validation";
+import { redirect } from "next/navigation";
 
 const AVAILABLE_FRAMEWORKS = [
   "React",
@@ -153,6 +154,38 @@ export async function createListingAction(
     return {
       success: false,
       error: "Something went wrong while creating the listing",
+    };
+  }
+}
+
+// Server Action
+export async function deleteListingAction(id: string, formData: FormData) {
+  try {
+    const response = await deleteListing(id);
+
+    if (!response.success) {
+      // If the DB function returned failure, pass that along
+      console.error("DB deletion failed:", response.message);
+      return {
+        success: false,
+        error: response.message,
+      };
+    }
+
+    // Only revalidate if the DB deletion was successful
+    revalidatePath("/listings");
+    revalidatePath(`/listings/view/${id}`);
+
+    // Return success response
+    console.log("Listing deleted successfully from server action");
+    return { success: true };
+  } catch (error) {
+    // Return error information that the client can use
+    console.error("Error in deleteListingAction:", error);
+    return {
+      success: false,
+      error: "Failed to delete listing",
+      details: error instanceof Error ? error.message : "Unknown error",
     };
   }
 }

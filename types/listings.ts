@@ -1,12 +1,16 @@
-import { sanitizeInput } from "@/utils/validation";
-
+// =======================================
+// PRIMITIVE TYPES
+// =======================================
 export type ListingId = string;
 export type UserId = string;
+export type ListingStatus = "active" | "sold" | "archived";
 
-// Base interfaces
+// =======================================
+// BASE INTERFACES
+// =======================================
 export interface Location {
   city: string;
-  club: string; // Keep as string since we're using empty string as default
+  club: string;
   formatted: string; // For display purposes (e.g., "Portland, OR")
 }
 
@@ -16,14 +20,31 @@ export interface ListingImage {
   id: string;
 }
 
-export type LocationErrorType = {
-  city?: string[];
-  club?: string[];
-};
+// =======================================
+// API RESPONSE PATTERNS
+// =======================================
+export interface ApiResponse {
+  success: boolean;
+  message: string;
+}
 
-export type ListingStatus = "active" | "sold" | "archived";
+export interface ApiDataResponse<T> extends ApiResponse {
+  data?: T;
+}
 
-// Core listing interfaces
+export interface FormResponse extends ApiResponse {
+  errors?: {
+    [key: string]: string[] | undefined;
+  };
+  data?: {
+    id?: string;
+    [key: string]: any;
+  };
+}
+
+// =======================================
+// LISTING CORE MODELS
+// =======================================
 export interface BaseListing {
   title: string;
   description: string;
@@ -41,7 +62,9 @@ export interface Listing extends BaseListing {
   updatedAt: string;
 }
 
-// Form-related interfaces
+// =======================================
+// FORM & INPUT INTERFACES
+// =======================================
 export interface ListingFormValues
   extends Omit<BaseListing, "location" | "price" | "images" | "status"> {
   price?: number;
@@ -53,13 +76,13 @@ export interface ListingFormValues
   status?: ListingStatus;
 }
 
-export interface UploadThingResponse {
-  uploadedBy: string;
-  url: string;
+export interface ListingInput extends Omit<BaseListing, "images"> {
+  images: ListingImage[];
+  userId?: UserId;
 }
 
-export interface ListingFormState {
-  message: string; // Note: this is required, not optional
+export interface ListingFormState extends FormResponse {
+  // Specific validation error fields
   errors?: {
     title?: string[];
     description?: string[];
@@ -68,23 +91,22 @@ export interface ListingFormState {
     _form?: string[];
     [key: string]: string[] | undefined;
   };
-  data?: {
-    id: string;
-  };
 }
 
-export interface ListingInput extends Omit<BaseListing, "images"> {
-  images: ListingImage[];
-  userId?: UserId;
+// =======================================
+// API RESPONSE INTERFACES
+// =======================================
+export interface DeleteListingResponse extends ApiResponse {
+  // No additional properties needed
 }
 
-// Response interfaces
-export interface DeleteListingResponse {
-  success: boolean;
-  message: string;
+export interface UpdateListingResponse extends FormResponse {
+  // No additional properties needed
 }
 
-// Component prop interfaces
+// =======================================
+// COMPONENT PROP INTERFACES
+// =======================================
 export interface ListingDetailProps {
   listing: Listing;
   isLoading?: boolean;
@@ -102,7 +124,9 @@ export interface ListingPageProps {
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
-// Filter interfaces
+// =======================================
+// FILTERING & SEARCH INTERFACES
+// =======================================
 export interface ListingFilters {
   location?: {
     city?: string;
@@ -114,39 +138,19 @@ export interface ListingFilters {
   sortOrder?: "asc" | "desc";
 }
 
-// Utility function
-export function convertFormValuesToListing(
-  formValues: ListingFormValues,
-  id: ListingId,
-  userId: UserId,
-  imageUrls: string[]
-): Listing {
-  return {
-    id,
-    userId,
-    title: sanitizeInput(formValues.title),
-    description: sanitizeInput(formValues.description),
-    price: formValues.price || 0,
-    status: formValues.status || "active",
-    location: {
-      city: formValues.location.city,
-      club: formValues.location.club,
-      formatted: `${
-        formValues.location.club ? formValues.location.club + ", " : ""
-      }${formValues.location.city}`,
-    },
-    images: imageUrls.map((url, index) => ({
-      url,
-      alt: sanitizeInput(`${formValues.title} image ${index + 1}`),
-      id: `${id}-image-${index}`,
-    })),
-    tags: formValues.tags,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+export type LocationErrorType = {
+  city?: string[];
+  club?: string[];
+};
+
+export interface UploadThingResponse {
+  uploadedBy: string;
+  url: string;
 }
 
-// Constants
+// =======================================
+// CONSTANTS
+// =======================================
 export const PLACEHOLDER_LISTING: Listing = {
   id: "placeholder",
   userId: "placeholder-user",

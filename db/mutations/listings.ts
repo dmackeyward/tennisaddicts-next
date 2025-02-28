@@ -18,14 +18,14 @@ export async function createListing(
   formData: FormData
 ): Promise<ListingFormState> {
   // // Get the current user
-  // const { userId } = await auth();
+  const { userId } = await auth();
 
-  // if (!userId) {
-  //   return {
-  //     success: false,
-  //     message: "Unauthorized: You must be logged in to delete a listing",
-  //   };
-  // }
+  if (!userId) {
+    return {
+      success: false,
+      message: "Unauthorized: You must be logged in to delete a listing",
+    };
+  }
 
   try {
     // Extract and validate form data
@@ -42,6 +42,7 @@ export async function createListing(
     // Validate required fields
     if (!title || !description || !city) {
       return {
+        success: false,
         message: "Missing required fields",
         errors: {
           title: !title ? ["Title is required"] : undefined,
@@ -56,6 +57,7 @@ export async function createListing(
     if (isNaN(price) || price < 0) {
       // Changed from price <= 0 to price < 0
       return {
+        success: false,
         message: "Invalid price",
         errors: {
           price: ["Price must be zero or a positive number"],
@@ -85,7 +87,7 @@ export async function createListing(
       location: locationData,
       tags,
       images,
-      userId: "temp-user-id", // This is now required and not optional
+      userId, // This is now required and not optional
     };
 
     // Insert new listing using the query builder
@@ -101,6 +103,7 @@ export async function createListing(
     revalidatePath("/listings");
 
     return {
+      success: true,
       message: "Listing created successfully!",
       data: {
         id: String(newListing.id), // Convert the ID to string
@@ -109,6 +112,7 @@ export async function createListing(
   } catch (error) {
     console.error("Failed to create listing:", error);
     return {
+      success: false,
       message: "Failed to create listing",
       errors: {
         _form: ["An unexpected error occurred while creating the listing"],
@@ -152,7 +156,12 @@ export async function deleteListing(
     }
 
     // Delete the listing
-    await db.delete(listings).where(eq(listings.id, parseInt(listingId)));
+    const result = await db
+      .delete(listings)
+      .where(eq(listings.id, parseInt(listingId)));
+
+    // Log the result to check if anything was deleted
+    console.log("Delete operation result:", result);
 
     // Revalidate the listings page and the specific listing page
     revalidatePath("/listings");

@@ -1,14 +1,25 @@
+// app/listings/page.tsx
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Contact Us",
-  description: "View available listings",
+  description: "Welcome to Tennis Addicts",
 };
 
-export default function Contact() {
+export default async function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <h1>Contact Us</h1>
+    <div className="container mx-auto max-w-6xl px-6 py-8">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+          <CardTitle className="text-2xl font-bold">Get In Touch</CardTitle>
+          <Link href="/listings/create">
+            <Button>Create New Listing</Button>
+          </Link>
+        </CardHeader>
+      </Card>
     </div>
   );
 }

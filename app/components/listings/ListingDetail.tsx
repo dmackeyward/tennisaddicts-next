@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, memo } from "react";
+import React, { useState, useCallback, memo, startTransition } from "react";
 import Image from "next/image";
 import { DeleteIcon, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,6 +20,9 @@ import {
   type ListingDetailProps,
 } from "@/types/listings";
 import { formatDate } from "@/utils/format-date";
+import { deleteListingAction } from "@/app/actions/listings";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 // Memoized loading skeleton component
 const LoadingSkeleton = memo(() => (
@@ -119,6 +122,7 @@ const ListingDetail = ({
 }: ListingDetailProps) => {
   const [selectedImage, setSelectedImage] = useState(0);
   const listing = propListing || PLACEHOLDER_LISTING;
+  const router = useRouter();
 
   const handleShare = useCallback(async () => {
     if (navigator.share) {
@@ -137,9 +141,30 @@ const ListingDetail = ({
     }
   }, [listing]);
 
-  const handleDelete = async () => {
-    console.log("Deleted!");
-  };
+  // Client Component Delete Handler
+  const handleDelete = useCallback(() => {
+    if (confirm("Are you sure you want to delete this listing?")) {
+      startTransition(async () => {
+        try {
+          const result = await deleteListingAction(listing.id, new FormData());
+
+          if (result.success) {
+            // Handle the redirect on the client side
+            console.log("Listing deleted successfully");
+            toast.success("Listing deleted successfully");
+            router.push("/listings");
+          } else {
+            // Handle the error with the specific message from the server
+            console.error("Delete error:", result.error);
+            toast.error(result.error || "Failed to delete listing");
+          }
+        } catch (error) {
+          console.error("Client-side delete error:", error);
+          toast.error("Failed to delete listing");
+        }
+      });
+    }
+  }, [listing.id, router]);
 
   const handleKeyNavigation = useCallback(
     (e: React.KeyboardEvent) => {
@@ -178,7 +203,7 @@ const ListingDetail = ({
               <Share2 className="h-5 w-5" />
             </Button>
 
-            {/* Second button */}
+            {/* Delete button */}
             <Button
               variant="ghost"
               size="icon"
