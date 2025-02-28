@@ -123,6 +123,7 @@ const ListingDetail = ({
   const [selectedImage, setSelectedImage] = useState(0);
   const listing = propListing || PLACEHOLDER_LISTING;
   const router = useRouter();
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
   const handleShare = useCallback(async () => {
     if (navigator.share) {
@@ -143,27 +144,25 @@ const ListingDetail = ({
 
   // Client Component Delete Handler
   const handleDelete = useCallback(() => {
-    if (confirm("Are you sure you want to delete this listing?")) {
-      startTransition(async () => {
-        try {
-          const result = await deleteListingAction(listing.id, new FormData());
+    startTransition(async () => {
+      try {
+        const result = await deleteListingAction(listing.id, new FormData());
 
-          if (result.success) {
-            // Handle the redirect on the client side
-            console.log("Listing deleted successfully");
-            toast.success("Listing deleted successfully");
-            router.push("/listings");
-          } else {
-            // Handle the error with the specific message from the server
-            console.error("Delete error:", result.error);
-            toast.error(result.error || "Failed to delete listing");
-          }
-        } catch (error) {
-          console.error("Client-side delete error:", error);
-          toast.error("Failed to delete listing");
+        if (result.success) {
+          // Handle the redirect on the client side
+          console.log("Listing deleted successfully");
+          toast.success("Listing deleted successfully");
+          router.push("/listings");
+        } else {
+          // Handle the error with the specific message from the server
+          console.error("Delete error:", result.error);
+          toast.error(result.error || "Failed to delete listing");
         }
-      });
-    }
+      } catch (error) {
+        console.error("Client-side delete error:", error);
+        toast.error("Failed to delete listing");
+      }
+    });
   }, [listing.id, router]);
 
   const handleKeyNavigation = useCallback(
@@ -193,25 +192,52 @@ const ListingDetail = ({
 
           {/* Button container */}
           <div className="flex space-x-2">
-            {/* First button */}
-            <Button
+            {/* Share button */}
+            {/* <Button
               variant="ghost"
               size="icon"
               onClick={handleShare}
               aria-label="Share listing"
             >
               <Share2 className="h-5 w-5" />
-            </Button>
-
+            </Button> */}
             {/* Delete button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleDelete}
-              aria-label="Some other action"
-            >
-              <DeleteIcon className="h-5 w-5" />
-            </Button>
+            {!isConfirmingDelete ? (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsConfirmingDelete(true)}
+                aria-label="Delete listing"
+              >
+                <DeleteIcon className="h-5 w-5" />
+              </Button>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <span className="text-sm">
+                  Are you sure you want to delete this item?
+                </span>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => {
+                    setIsConfirmingDelete(false);
+                    // Your delete logic here
+                    startTransition(async () => {
+                      handleDelete();
+                    });
+                  }}
+                >
+                  Yes
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsConfirmingDelete(false)}
+                >
+                  No
+                </Button>
+              </div>
+            )}
           </div>
         </div>
         <div className="flex items-center space-x-4 text-gray-600">
