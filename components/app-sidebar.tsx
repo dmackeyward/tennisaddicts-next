@@ -142,7 +142,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton size="lg" asChild>
+              <SidebarMenuButton size="lg" asChild tooltip={"Home"}>
                 <a href="/" className="flex items-center justify-center">
                   <div className="flex justify-center">
                     <Icon name="tennisball" size={24} />
@@ -165,25 +165,38 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarContent>
         <SidebarFooter>
           <SignedOut>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  size="lg"
+                  asChild
+                  tooltip={"Sign In or Sign Up"}
+                >
+                  <a href="/" className="flex items-center justify-center">
+                    <div className="flex justify-center">
+                      <UserPlus className="size-5" />
+                    </div>
+                    {state !== "collapsed" && (
+                      <div className="flex flex-col gap-0.5 leading-none">
+                        <span className="font-semibold">
+                          Sign In or Sign Up
+                        </span>
+                      </div>
+                    )}
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
             {state === "collapsed" ? (
               <div className="flex flex-col items-center gap-4 px-2 py-4">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link href="/sign-in">
-                      <button className="flex items-center justify-center rounded-md p-2 hover:bg-sidebar-muted">
-                        <UserPlus className="size-5" />
-                      </button>
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Sign In or Sign Up</p>
-                  </TooltipContent>
-                </Tooltip>
+                <Link href="/sign-in">
+                  <button className="flex items-center justify-center rounded-md p-2 hover:bg-sidebar-muted"></button>
+                </Link>
               </div>
             ) : (
               <>
                 <SignInButton>
-                  <button className="pb-5">Sign In or Sign Up</button>
+                  <button className="pb-5"></button>
                 </SignInButton>
               </>
             )}

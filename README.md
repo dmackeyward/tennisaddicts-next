@@ -17,10 +17,10 @@
 - [x] Connect auth
 - [x] Configure auth (basic)
 - [x] Clean up sidebar
-- [] Custom sidebar SVG
+- [x] Custom sidebar SVG
 - [] Delete Listing
 - [] Update Listing
-- [] Search and filter
+- [] Search and filter styling
 - [] Tags
 - [] Location
 - [] Price
