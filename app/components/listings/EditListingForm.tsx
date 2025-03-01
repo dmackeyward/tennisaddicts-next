@@ -120,11 +120,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
     formData.append("location.club", values.location.club || "");
     values.tags.forEach((tag) => formData.append("tags", tag));
     values.images.forEach((image) => formData.append("images", image));
-
-    // Only append status if it's different than the original
-    if (values.status !== listing.status) {
-      formData.append("status", values.status);
-    }
+    formData.append("status", values.status);
 
     if (values.price) {
       formData.append("price", values.price.toString());
@@ -347,6 +343,33 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                 <FormLabel>Images</FormLabel>
                 <FormControl>
                   <div className="space-y-4">
+                    {field.value.length > 0 && (
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4">
+                        {field.value.map((url, index) => (
+                          <div key={index} className="relative group">
+                            <Image
+                              src={url}
+                              alt={`Uploaded image ${index + 1}`}
+                              width={300}
+                              height={200}
+                              className="w-full h-32 object-cover rounded-lg"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newImages = [...field.value];
+                                newImages.splice(index, 1);
+                                field.onChange(newImages);
+                              }}
+                              className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
                     <UploadDropzone
                       endpoint="imageUploader"
                       onUploadBegin={(files) => {
@@ -410,64 +433,11 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                         setIsUploading(false);
                       }}
                     />
-
-                    {field.value.length > 0 && (
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-                        {field.value.map((url, index) => (
-                          <div key={index} className="relative group">
-                            <Image
-                              src={url}
-                              alt={`Uploaded image ${index + 1}`}
-                              width={300}
-                              height={200}
-                              className="w-full h-32 object-cover rounded-lg"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const newImages = [...field.value];
-                                newImages.splice(index, 1);
-                                field.onChange(newImages);
-                              }}
-                              className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 </FormControl>
                 <FormDescription>
                   Upload up to {MAX_FILE_COUNT} images (max {MAX_FILE_SIZE}{" "}
                   each)
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Status Field */}
-          <FormField
-            control={form.control}
-            name="status"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Listing Status</FormLabel>
-                <FormControl>
-                  <select
-                    className="w-full max-w-xs flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    value={field.value}
-                    onChange={field.onChange}
-                  >
-                    <option value="active">Active</option>
-                    <option value="sold">Sold</option>
-                    <option value="archived">Archived</option>
-                  </select>
-                </FormControl>
-                <FormDescription>
-                  Set the current status of your listing
                 </FormDescription>
                 <FormMessage />
               </FormItem>

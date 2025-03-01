@@ -20,15 +20,14 @@
 - [x] Custom sidebar SVG
 - [x] Delete Listing
 - [x] Auth Guards - routes and buttons
-- [] isAuthor check for delete listing
+- [x] isAuthor check for delete listing
 - [] Update Listing
-- [] Search and filter styling
-- [] Tags
-- [] Location
-- [] Price
-- [] Created At
+- [] Image Carousel
+- [] Update tag values
+- [] Sort - price, updatedAt, name
+- [] Filter - tags, location
+- [] Search functionality - local versus API search - query params
 - [] Github Actions
 - [] Player lookup - Tennis NZ API
 - [] Court lookup
 - [] News(?)
-- [] Search functionality - local versus API search - query params

@@ -121,6 +121,114 @@ export async function createListing(
   }
 }
 
+export async function updateListing(
+  id: string,
+  state: ListingFormState,
+  formData: FormData
+) {
+  try {
+    const { userId } = await auth();
+
+    // Check authentication
+    if (!userId) {
+      return {
+        ...state,
+        message: "Authentication required",
+        errors: {
+          _form: ["You must be logged in to update a listing"],
+        },
+      };
+    }
+
+    // Verify the listing exists and belongs to the user
+    const existingListing = await db.query.listings.findFirst({
+      where: eq(listings.id, parseInt(id)),
+    });
+
+    if (!existingListing) {
+      return {
+        ...state,
+        message: "Listing not found or you don't have permission to update it",
+        errors: {
+          _form: [
+            "Listing not found or you don't have permission to update it",
+          ],
+        },
+      };
+    }
+
+    // Check if the user owns this listing
+    if (existingListing.userId !== userId) {
+      return {
+        ...state,
+        message: "You don't have permission to update this listing",
+        errors: {
+          _form: ["You don't have permission to update this listing"],
+        },
+      };
+    }
+
+    // Process form data
+    const title = formData.get("title") as string;
+    const description = formData.get("description") as string;
+    const price = parseFloat((formData.get("price") as string) || "0");
+    const status = (formData.get("status") as string) || existingListing.status;
+    const city = formData.get("location.city") as string;
+    const club = formData.get("location.club") as string;
+    const tags = formData.getAll("tags").map((tag) => tag.toString());
+    const imageUrls = formData.getAll("images").map((url) => url.toString());
+
+    // Create updated location object
+    const locationData: Location = {
+      city: city,
+      club: club || "",
+      formatted: club ? `${club}, ${city}` : city,
+    };
+
+    // Create updated images array
+    const updatedImages: ListingImage[] = imageUrls.map((url, index) => ({
+      url,
+      alt: `Image for ${title}`,
+      id: `${Date.now()}-${index}`, // Generate a unique ID
+    }));
+
+    // Update the listing with all fields including images in one operation
+    const [updatedListing] = await db
+      .update(listings)
+      .set({
+        title,
+        description,
+        price,
+        status: status as any,
+        location: locationData,
+        tags,
+        updatedAt: new Date(),
+        images: updatedImages, // Include images in the same update
+      })
+      .where(eq(listings.id, parseInt(id)))
+      .returning();
+
+    return {
+      ...state,
+      success: true,
+      message: "Listing updated successfully",
+      data: {
+        id: String(updatedListing.id),
+      },
+    };
+  } catch (error) {
+    console.error("Error updating listing:", error);
+    return {
+      ...state,
+      success: false,
+      message: "Failed to update listing",
+      errors: {
+        _form: ["An error occurred while updating the listing"],
+      },
+    };
+  }
+}
+
 export async function deleteListing(
   listingId: string
 ): Promise<DeleteListingResponse> {

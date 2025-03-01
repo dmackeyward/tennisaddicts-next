@@ -2,23 +2,19 @@
 "use server";
 
 import { z } from "zod";
-import { createListing, deleteListing } from "@/db/mutations/listings";
+import {
+  createListing,
+  deleteListing,
+  updateListing,
+} from "@/db/mutations/listings";
 import { revalidatePath } from "next/cache";
-import type {
-  ListingFormState,
-  ListingStatus,
-  LocationErrorType,
+import {
+  AVAILABLE_FRAMEWORKS,
+  type ListingFormState,
+  type ListingStatus,
+  type LocationErrorType,
 } from "@/types/listings";
 import { sanitizeInput } from "@/utils/validation";
-import { redirect } from "next/navigation";
-
-const AVAILABLE_FRAMEWORKS = [
-  "React",
-  "Vue",
-  "Svelte",
-  "Angular",
-  "Next.js",
-] as const;
 
 const serverListingSchema = z.object({
   title: z.string().min(3).max(100).transform(sanitizeInput),
@@ -78,6 +74,7 @@ export async function createListingAction(
     }
 
     const prevState: ListingFormState = {
+      success: false,
       message: "Creating listing...",
       errors: {},
     };
@@ -132,12 +129,13 @@ export async function createListingAction(
     const result = await createListing(prevState, formData);
     console.log("Database mutation result:", result);
 
-    if (result.data) {
-      console.log("Listing created successfully:", result.data);
+    if (result.data && result.data.id) {
+      console.log("Listing updated successfully:", result.data);
       revalidatePath("/listings");
-      return { success: true, data: result.data };
+      revalidatePath(`/listings/${result.data.id}`);
+      return { success: true, data: { id: result.data.id } };
     } else {
-      console.log("Listing creation failed:", result);
+      console.log("Listing update failed:", result);
       if (result.errors) {
         return {
           success: false,
@@ -158,8 +156,104 @@ export async function createListingAction(
   }
 }
 
+export async function updateListingAction(
+  id: string,
+  formData: FormData
+): Promise<ServerActionResponse> {
+  try {
+    console.log("Update server action started for listing:", id);
+
+    // Log incoming FormData
+    console.log("Received FormData entries:");
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
+
+    const prevState: ListingFormState = {
+      success: false,
+      message: "Updating listing...",
+      errors: {},
+    };
+
+    // Log the validated data before Zod processing
+    const validatedData = {
+      title: sanitizeInput(formData.get("title")?.toString()),
+      description: sanitizeInput(formData.get("description")?.toString()),
+      price: formData.get("price")?.toString() || "0",
+      status: (formData.get("status")?.toString() || "active") as ListingStatus,
+      location: {
+        city: sanitizeInput(formData.get("location.city")?.toString() || ""),
+        club: sanitizeInput(formData.get("location.club")?.toString() || ""),
+      },
+      tags: formData.getAll("tags").map((tag) => tag.toString()),
+      images: formData.getAll("images").map((image) => image.toString()),
+    };
+
+    console.log("Validated data before Zod:", validatedData);
+
+    // Validate using Zod schema
+    const parsed = serverListingSchema.safeParse(validatedData);
+
+    if (!parsed.success) {
+      console.log("Zod validation failed");
+      console.log("Raw Zod error:", parsed.error);
+      console.log("Formatted Zod error:", parsed.error.format());
+
+      const errors = parsed.error.formErrors.fieldErrors;
+      console.log("Field errors:", errors);
+
+      const response = {
+        success: false,
+        error: {
+          ...errors,
+          location: errors.location || {
+            city: ["City must be selected"],
+          },
+        },
+      };
+
+      console.log("Sending error response:", response);
+      return response;
+    }
+
+    console.log("Zod validation passed");
+
+    // Log the parsed data
+    console.log("Parsed data:", parsed.data);
+
+    // Call the updateListing mutation
+    const result = await updateListing(id, prevState, formData);
+    console.log("Database mutation result:", result);
+
+    if (result.data && result.data.id) {
+      console.log("Listing updated successfully:", result.data);
+      revalidatePath("/listings");
+      revalidatePath(`/listings/${id}`);
+      return { success: true, data: { id: result.data.id } };
+    } else {
+      console.log("Listing update failed:", result);
+      if (result.errors) {
+        return {
+          success: false,
+          error: result.errors,
+        };
+      }
+      return {
+        success: false,
+        error: result.message,
+      };
+    }
+  } catch (error) {
+    console.error("Error in updateListingAction:", error);
+    return {
+      success: false,
+      error: "Something went wrong while updating the listing",
+    };
+  }
+}
+
 // Server Action
-export async function deleteListingAction(id: string, formData: FormData) {
+export async function deleteListingAction(id: string) {
   try {
     const response = await deleteListing(id);
 

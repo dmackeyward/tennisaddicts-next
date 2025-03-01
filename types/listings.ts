@@ -176,3 +176,16 @@ export const PLACEHOLDER_LISTING: Listing = {
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };
+
+// =======================================
+// FRAMEWORKS
+// =======================================
+export const AVAILABLE_FRAMEWORKS = [
+  "React",
+  "Vue",
+  "Svelte",
+  "Angular",
+  "Next.js",
+] as const;
+
+export type AvailableFramework = (typeof AVAILABLE_FRAMEWORKS)[number];

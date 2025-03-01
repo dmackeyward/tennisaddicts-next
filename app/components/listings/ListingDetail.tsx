@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, memo, startTransition } from "react";
 import Image from "next/image";
-import { DeleteIcon, Loader2 } from "lucide-react";
+import { DeleteIcon, Loader2, PencilIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   MapPin,
@@ -10,7 +10,6 @@ import {
   DollarSign,
   ChevronLeft,
   ChevronRight,
-  Share2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -126,28 +125,16 @@ const ListingDetail = ({
   const router = useRouter();
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
-  const handleShare = useCallback(async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: listing.title,
-          text: listing.description,
-          url: window.location.href,
-        });
-      } catch (error) {
-        console.error("Error sharing:", error);
-      }
-    } else {
-      // Fallback to copying to clipboard
-      navigator.clipboard.writeText(window.location.href);
-    }
-  }, [listing]);
+  // Navigate to edit page
+  const handleEdit = useCallback(() => {
+    router.push(`/listings/${listing.id}/edit`);
+  }, [listing.id, router]);
 
   // Client Component Delete Handler
   const handleDelete = useCallback(() => {
     startTransition(async () => {
       try {
-        const result = await deleteListingAction(listing.id, new FormData());
+        const result = await deleteListingAction(listing.id);
 
         if (result.success) {
           // Handle the redirect on the client side
@@ -193,19 +180,20 @@ const ListingDetail = ({
 
           {/* Button container */}
           <div className="flex space-x-2">
-            {/* Share button */}
-            {/* <Button
-    variant="ghost"
-    size="icon"
-    onClick={handleShare}
-    aria-label="Share listing"
-  >
-    <Share2 className="h-5 w-5" />
-  </Button> */}
-
-            {/* Delete button - only shown if isAuthor is true */}
+            {/* Edit and Delete buttons - only shown if isAuthor is true */}
             {isAuthor && (
               <>
+                {/* Edit button */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleEdit}
+                  aria-label="Edit listing"
+                >
+                  <PencilIcon className="h-5 w-5" />
+                </Button>
+
+                {/* Delete button */}
                 {!isConfirmingDelete ? (
                   <Button
                     variant="ghost"
