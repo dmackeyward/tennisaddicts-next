@@ -110,6 +110,7 @@ export interface UpdateListingResponse extends FormResponse {
 export interface ListingDetailProps {
   listing: Listing;
   isLoading?: boolean;
+  isAuthor?: boolean;
 }
 
 export interface ListingGridProps {

@@ -119,6 +119,7 @@ ListingImage.displayName = "ListingImage";
 const ListingDetail = ({
   listing: propListing,
   isLoading = false,
+  isAuthor = false,
 }: ListingDetailProps) => {
   const [selectedImage, setSelectedImage] = useState(0);
   const listing = propListing || PLACEHOLDER_LISTING;
@@ -194,49 +195,53 @@ const ListingDetail = ({
           <div className="flex space-x-2">
             {/* Share button */}
             {/* <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleShare}
-              aria-label="Share listing"
-            >
-              <Share2 className="h-5 w-5" />
-            </Button> */}
-            {/* Delete button */}
-            {!isConfirmingDelete ? (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsConfirmingDelete(true)}
-                aria-label="Delete listing"
-              >
-                <DeleteIcon className="h-5 w-5" />
-              </Button>
-            ) : (
-              <div className="flex items-center space-x-2">
-                <span className="text-sm">
-                  Are you sure you want to delete this item?
-                </span>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => {
-                    setIsConfirmingDelete(false);
-                    // Your delete logic here
-                    startTransition(async () => {
-                      handleDelete();
-                    });
-                  }}
-                >
-                  Yes
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsConfirmingDelete(false)}
-                >
-                  No
-                </Button>
-              </div>
+    variant="ghost"
+    size="icon"
+    onClick={handleShare}
+    aria-label="Share listing"
+  >
+    <Share2 className="h-5 w-5" />
+  </Button> */}
+
+            {/* Delete button - only shown if isAuthor is true */}
+            {isAuthor && (
+              <>
+                {!isConfirmingDelete ? (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsConfirmingDelete(true)}
+                    aria-label="Delete listing"
+                  >
+                    <DeleteIcon className="h-5 w-5" />
+                  </Button>
+                ) : (
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm">
+                      Are you sure you want to delete this item?
+                    </span>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => {
+                        setIsConfirmingDelete(false);
+                        startTransition(async () => {
+                          handleDelete();
+                        });
+                      }}
+                    >
+                      Yes
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsConfirmingDelete(false)}
+                    >
+                      No
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

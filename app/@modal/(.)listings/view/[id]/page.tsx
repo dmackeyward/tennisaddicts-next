@@ -6,6 +6,7 @@ import { getListing } from "@/db/queries/listings";
 import { PLACEHOLDER_LISTING } from "@/types/listings";
 import { Modal } from "./modal";
 import { ErrorBoundary } from "@/app/components/ErrorBoundary";
+import { auth } from "@clerk/nextjs/server";
 
 export const dynamic = "force-dynamic";
 
@@ -20,9 +21,15 @@ async function ListingContent({ id }: { id: string }) {
     notFound();
   }
 
+  // Get current user to check if they're the author
+  const { userId } = await auth();
+
+  // Check if the current user is the author of this listing
+  const isAuthor = userId ? userId === listing.userId : false;
+
   return (
     <div className="relative rounded-lg bg-white shadow-xl">
-      <ListingDetail listing={listing} isLoading={false} />
+      <ListingDetail listing={listing} isLoading={false} isAuthor={isAuthor} />
     </div>
   );
 }

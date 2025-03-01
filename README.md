@@ -19,7 +19,8 @@
 - [x] Clean up sidebar
 - [x] Custom sidebar SVG
 - [x] Delete Listing
-- [] Auth Guards - routes and buttons
+- [x] Auth Guards - routes and buttons
+- [] isAuthor check for delete listing
 - [] Update Listing
 - [] Search and filter styling
 - [] Tags

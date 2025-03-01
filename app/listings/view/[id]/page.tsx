@@ -5,6 +5,7 @@ import { getListing } from "@/db/queries/listings";
 import { ListingImage, PLACEHOLDER_LISTING } from "@/types/listings";
 import { Metadata } from "next";
 import { use } from "react";
+import { auth } from "@clerk/nextjs/server";
 
 export const dynamic = "force-dynamic";
 
@@ -25,9 +26,15 @@ async function ListingContent({ id }: { id: string }) {
     notFound();
   }
 
+  // Get current user to check if they're the author
+  const { userId } = await auth();
+
+  // Check if the current user is the author of this listing
+  const isAuthor = userId ? userId === listing.userId : false;
+
   return (
     <div className="container mx-auto max-w-6xl px-6 py-8 min-h-screen">
-      <ListingDetail listing={listing} isLoading={false} />
+      <ListingDetail listing={listing} isLoading={false} isAuthor={isAuthor} />
     </div>
   );
 }
