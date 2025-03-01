@@ -16,9 +16,9 @@ export const metadata: Metadata = {
 export default async function EditListingPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = params;
+  const { id } = await params;
   const listing = await getListing(id);
 
   if (!listing) {

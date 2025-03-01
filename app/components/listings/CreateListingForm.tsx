@@ -26,17 +26,21 @@ import {
   MultiSelectorTrigger,
 } from "@/components/ui/multi-select";
 import { UploadDropzone } from "@/utils/uploadthing";
-import { updateListingAction } from "@/app/actions/listings";
+import { createListingAction } from "@/app/actions/listings";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import {
-  LocationErrorType,
-  Listing,
-  AVAILABLE_FRAMEWORKS,
-  AvailableFramework,
-} from "@/types/listings";
+import { LocationErrorType } from "@/types/listings";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useAuth } from "@clerk/nextjs";
+
+const AVAILABLE_FRAMEWORKS = [
+  "React",
+  "Vue",
+  "Svelte",
+  "Angular",
+  "Next.js",
+] as const;
 
 const MAX_FILE_COUNT = 6;
 const MAX_FILE_SIZE = "4MB";
@@ -63,7 +67,7 @@ const formSchema = z.object({
   location: z.object({
     city: z
       .string({
-        required_error: "City must be selected",
+        required_error: "City must be selected", // This is the message that will be shown
         invalid_type_error: "City must be selected",
       })
       .min(1, "City must be selected"),
@@ -80,31 +84,34 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
+
 type FieldName = keyof FormValues | `location.${keyof FormValues["location"]}`;
 
-interface EditListingFormProps {
-  listing: Listing;
+interface CreateListingFormProps {
+  onSubmitSuccess?: () => void;
+  onDismiss?: () => void;
 }
 
-export default function EditListingForm({ listing }: EditListingFormProps) {
+export default function CreateListingForm({
+  onSubmitSuccess,
+  onDismiss,
+}: CreateListingFormProps) {
   const [isPending, startTransition] = useTransition();
   const [isUploading, setIsUploading] = useState(false);
   const router = useRouter();
+  const { isSignedIn, isLoaded } = useAuth();
 
-  // Prepare default values from existing listing
   const defaultValues: FormValues = {
-    title: listing.title,
-    description: listing.description,
-    price: listing.price.toString(),
-    status: (listing.status as "active" | "sold" | "archived") || "active",
+    title: "",
+    description: "",
+    price: "",
+    status: "active" as const, // explicitly type as const to match the enum
     location: {
-      city: listing.location.formatted || "",
-      club: listing.location.club || "",
+      city: "",
+      club: "",
     },
-    tags: listing.tags.filter((tag): tag is AvailableFramework =>
-      AVAILABLE_FRAMEWORKS.includes(tag as AvailableFramework)
-    ) || ["React"],
-    images: listing.images.map((img) => img.url),
+    tags: ["React" as const], // explicitly type as const to match the enum array
+    images: [],
   };
 
   const form = useForm<FormValues>({
@@ -121,22 +128,19 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
     values.tags.forEach((tag) => formData.append("tags", tag));
     values.images.forEach((image) => formData.append("images", image));
 
-    // Only append status if it's different than the original
-    if (values.status !== listing.status) {
-      formData.append("status", values.status);
-    }
-
     if (values.price) {
       formData.append("price", values.price.toString());
     }
 
     startTransition(async () => {
-      const result = await updateListingAction(listing.id, formData);
+      const result = await createListingAction(formData);
       console.log("Server action complete result:", result);
 
       if (result.success) {
-        toast.success("Listing updated successfully!");
-        router.push(`/listings/${listing.id}`);
+        toast.success("Listing created successfully!");
+        form.reset(defaultValues);
+        onSubmitSuccess?.();
+        router.push("/listings");
         router.refresh(); // Refresh the page to show the latest data
       } else {
         console.log("Submission failed, processing errors");
@@ -179,6 +183,16 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
         }
       }
     });
+  };
+
+  const handleDismiss = () => {
+    if (form.formState.isDirty) {
+      const confirmed = window.confirm(
+        "You have unsaved changes. Are you sure you want to close?"
+      );
+      if (!confirmed) return;
+    }
+    onDismiss?.();
   };
 
   return (
@@ -410,7 +424,6 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                         setIsUploading(false);
                       }}
                     />
-
                     {field.value.length > 0 && (
                       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
                         {field.value.map((url, index) => (
@@ -448,47 +461,33 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
             )}
           />
 
-          {/* Status Field */}
-          <FormField
-            control={form.control}
-            name="status"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Listing Status</FormLabel>
-                <FormControl>
-                  <select
-                    className="w-full max-w-xs flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    value={field.value}
-                    onChange={field.onChange}
-                  >
-                    <option value="active">Active</option>
-                    <option value="sold">Sold</option>
-                    <option value="archived">Archived</option>
-                  </select>
-                </FormControl>
-                <FormDescription>
-                  Set the current status of your listing
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           {/* Form Actions */}
           <div className="flex justify-end space-x-4">
             <Button
               type="button"
               variant="outline"
-              onClick={() => router.back()}
+              onClick={handleDismiss}
               disabled={isPending || isUploading}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isPending || isUploading}>
-              {isPending ? (
+            <Button
+              type="submit"
+              disabled={isPending || isUploading}
+              onClick={(e) => {
+                if (!isSignedIn && isLoaded) {
+                  e.preventDefault();
+                  toast.error("Please sign in to create a listing");
+                  router.push("/sign-in"); // Or your Clerk sign-in page
+                }
+              }}
+            >
+              {!isSignedIn && isLoaded ? (
+                "Sign in to Create"
+              ) : isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
+                  Creating...
                 </>
               ) : isUploading ? (
                 <>
@@ -496,7 +495,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                   Uploading...
                 </>
               ) : (
-                "Save Changes"
+                "Create Listing"
               )}
             </Button>
           </div>
