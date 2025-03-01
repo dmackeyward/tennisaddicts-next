@@ -1,6 +1,6 @@
 // app/listings/edit/[id]/page.tsx
 import { Metadata } from "next";
-import { Suspense, use } from "react";
+import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import EditListingForm from "@/app/components/listings/EditListingForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,9 +16,9 @@ export const metadata: Metadata = {
 export default async function EditListingPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) {
-  const { id } = use(params);
+  const { id } = params;
   const listing = await getListing(id);
 
   if (!listing) {
