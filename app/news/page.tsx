@@ -15,7 +15,7 @@ export default function News() {
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <CardTitle className="text-2xl font-bold">News</CardTitle>
           <Link href="/listings/create">
-            <Button>Create New's Item</Button>
+            <Button>Create New&apos;s Item</Button>
           </Link>
         </CardHeader>
       </Card>

@@ -69,7 +69,7 @@ export default function SignInPage() {
 
           <div className="mt-6 text-center text-sm text-muted-foreground w-full">
             <p>
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link
                 href="/sign-up"
                 className="text-primary hover:text-primary/90 font-medium"
