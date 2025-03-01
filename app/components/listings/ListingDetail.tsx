@@ -127,7 +127,7 @@ const ListingDetail = ({
 
   // Navigate to edit page
   const handleEdit = useCallback(() => {
-    router.push(`/listings/${listing.id}/edit`);
+    router.push(`/listings/edit/${listing.id}`);
   }, [listing.id, router]);
 
   // Client Component Delete Handler
