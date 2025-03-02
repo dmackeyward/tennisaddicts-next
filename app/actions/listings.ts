@@ -9,7 +9,7 @@ import {
 } from "@/db/mutations/listings";
 import { revalidatePath } from "next/cache";
 import {
-  AVAILABLE_FRAMEWORKS,
+  AVAILABLE_TAGS,
   type ListingFormState,
   type ListingStatus,
   type LocationErrorType,
@@ -41,7 +41,7 @@ const serverListingSchema = z.object({
       .transform(sanitizeInput),
     club: z.string().optional().default("").transform(sanitizeInput),
   }),
-  tags: z.array(z.enum(AVAILABLE_FRAMEWORKS)).min(1).max(3),
+  tags: z.array(z.enum(AVAILABLE_TAGS)).min(1).max(3),
   images: z.array(z.string()).min(1).max(6),
 });
 
@@ -78,12 +78,6 @@ export async function createListingAction(
         success: false,
         error: "You must be logged in to create a listing",
       };
-    }
-
-    // Log incoming FormData
-    console.log("Received FormData entries:");
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
     }
 
     const prevState: ListingFormState = {

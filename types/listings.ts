@@ -178,14 +178,15 @@ export const PLACEHOLDER_LISTING: Listing = {
 };
 
 // =======================================
-// FRAMEWORKS
+// TAGS
 // =======================================
-export const AVAILABLE_FRAMEWORKS = [
-  "React",
-  "Vue",
-  "Svelte",
-  "Angular",
-  "Next.js",
+export const AVAILABLE_TAGS = [
+  "Hitting Partner",
+  "Event",
+  "Equipment",
+  "Coaching",
+  "Service",
+  "Other",
 ] as const;
 
-export type AvailableFramework = (typeof AVAILABLE_FRAMEWORKS)[number];
+export type AvailableTags = (typeof AVAILABLE_TAGS)[number];

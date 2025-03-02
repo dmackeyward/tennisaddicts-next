@@ -29,7 +29,7 @@ import { UploadDropzone } from "@/utils/uploadthing";
 import { createListingAction } from "@/app/actions/listings";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { AVAILABLE_FRAMEWORKS, LocationErrorType } from "@/types/listings";
+import { AVAILABLE_TAGS, LocationErrorType } from "@/types/listings";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAuth } from "@clerk/nextjs";
@@ -66,9 +66,9 @@ const formSchema = z.object({
     club: z.string().optional().default(""),
   }),
   tags: z
-    .array(z.enum(AVAILABLE_FRAMEWORKS))
-    .min(1, "Select at least one framework")
-    .max(3, "Maximum 3 frameworks allowed"),
+    .array(z.enum(AVAILABLE_TAGS))
+    .min(1, "Select at least one tag")
+    .max(3, "Maximum 3 tags allowed"),
   images: z
     .array(z.string())
     .min(1, "At least one image is required")
@@ -102,7 +102,7 @@ export default function CreateListingForm({
       city: "",
       club: "",
     },
-    tags: ["React" as const], // explicitly type as const to match the enum array
+    tags: ["Other" as const], // explicitly type as const to match the enum array
     images: [],
   };
 
@@ -319,9 +319,9 @@ export default function CreateListingForm({
                     </MultiSelectorTrigger>
                     <MultiSelectorContent>
                       <MultiSelectorList>
-                        {AVAILABLE_FRAMEWORKS.map((framework) => (
-                          <MultiSelectorItem key={framework} value={framework}>
-                            {framework}
+                        {AVAILABLE_TAGS.map((tag) => (
+                          <MultiSelectorItem key={tag} value={tag}>
+                            {tag}
                           </MultiSelectorItem>
                         ))}
                       </MultiSelectorList>

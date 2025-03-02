@@ -32,8 +32,8 @@ import * as z from "zod";
 import {
   LocationErrorType,
   Listing,
-  AVAILABLE_FRAMEWORKS,
-  AvailableFramework,
+  AVAILABLE_TAGS,
+  AvailableTags,
 } from "@/types/listings";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -71,9 +71,9 @@ const formSchema = z.object({
     club: z.string().optional().default(""),
   }),
   tags: z
-    .array(z.enum(AVAILABLE_FRAMEWORKS))
-    .min(1, "Select at least one framework")
-    .max(3, "Maximum 3 frameworks allowed"),
+    .array(z.enum(AVAILABLE_TAGS))
+    .min(1, "Select at least one tag")
+    .max(3, "Maximum 3 tags allowed"),
   images: z
     .array(z.string())
     .min(1, "At least one image is required")
@@ -103,9 +103,9 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
       city: listing.location.city || listing.location.formatted || "",
       club: listing.location.club || "",
     },
-    tags: listing.tags.filter((tag): tag is AvailableFramework =>
-      AVAILABLE_FRAMEWORKS.includes(tag as AvailableFramework)
-    ) || ["React"],
+    tags: listing.tags.filter((tag): tag is AvailableTags =>
+      AVAILABLE_TAGS.includes(tag as AvailableTags)
+    ) || ["Other"],
     images: listing.images.map((img) => img.url),
   };
 
@@ -335,9 +335,9 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                     </MultiSelectorTrigger>
                     <MultiSelectorContent>
                       <MultiSelectorList>
-                        {AVAILABLE_FRAMEWORKS.map((framework) => (
-                          <MultiSelectorItem key={framework} value={framework}>
-                            {framework}
+                        {AVAILABLE_TAGS.map((tag) => (
+                          <MultiSelectorItem key={tag} value={tag}>
+                            {tag}
                           </MultiSelectorItem>
                         ))}
                       </MultiSelectorList>
