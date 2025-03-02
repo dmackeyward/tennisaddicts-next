@@ -30,7 +30,7 @@
 - [x] Permission check for edit listing buttons and routes
 - [x] Update tag values
 - [x] Update domain to point to new project
-- [] Create simple Home page - Info page with 1 button - view listings
+- [x] Create simple Home page - Info page with 1 button - view listings
 - [] Create simple About page - Info page
 - [] Create simple News page - Page displaying current tennis news - local file, for now
 - [] Create simple Contact Us page - form submission to database? - unsure

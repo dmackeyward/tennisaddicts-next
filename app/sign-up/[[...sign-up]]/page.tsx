@@ -2,13 +2,22 @@ import { Metadata } from "next";
 import { SignUp } from "@clerk/nextjs";
 import Link from "next/link";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Sign Up",
   description: "X",
 };
 
-export default function SignUpPage() {
+export default async function SignUpPage() {
+  const { userId } = await auth();
+
+  if (userId) {
+    // Add the alreadySignedIn query parameter when redirecting
+    redirect("/?alreadySignedIn=true");
+  }
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-white to-green-100">
       <div className="w-full max-w-md bg-white p-6">
