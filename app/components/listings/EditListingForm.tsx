@@ -132,8 +132,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
 
       if (result.success) {
         toast.success("Listing updated successfully!");
-        router.push(`/listings/${listing.id}`);
-        router.refresh(); // Refresh the page to show the latest data
+        router.push(`/listings/view/${listing.id}/success`);
       } else {
         console.log("Submission failed, processing errors");
         if (typeof result.error === "string") {
