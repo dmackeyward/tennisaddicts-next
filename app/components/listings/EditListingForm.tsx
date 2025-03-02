@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useTransition } from "react";
+import React, { useEffect, useState, useTransition, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -93,21 +93,24 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
   const [hasFormChanged, setHasFormChanged] = useState(false);
   const router = useRouter();
 
-  // Prepare default values from existing listing
-  const defaultValues: FormValues = {
-    title: listing.title,
-    description: listing.description,
-    price: listing.price.toString(),
-    status: (listing.status as "active" | "sold" | "archived") || "active",
-    location: {
-      city: listing.location.city || listing.location.formatted || "",
-      club: listing.location.club || "",
-    },
-    tags: listing.tags.filter((tag): tag is AvailableTags =>
-      AVAILABLE_TAGS.includes(tag as AvailableTags)
-    ) || ["Other"],
-    images: listing.images.map((img) => img.url),
-  };
+  // Memoize defaultValues to prevent recreation on every render
+  const defaultValues = useMemo<FormValues>(
+    () => ({
+      title: listing.title,
+      description: listing.description,
+      price: listing.price.toString(),
+      status: (listing.status as "active" | "sold" | "archived") || "active",
+      location: {
+        city: listing.location.city || listing.location.formatted || "",
+        club: listing.location.club || "",
+      },
+      tags: listing.tags.filter((tag): tag is AvailableTags =>
+        AVAILABLE_TAGS.includes(tag as AvailableTags)
+      ) || ["Other"],
+      images: listing.images.map((img) => img.url),
+    }),
+    [listing]
+  ); // Only depend on the listing object
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -116,7 +119,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
 
   // Add this useEffect to check for form changes
   useEffect(() => {
-    const subscription = form.watch((formValues) => {
+    const subscription = form.watch(() => {
       // Get current form values
       const currentValues = form.getValues();
 
@@ -127,7 +130,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
 
     // Clean up subscription
     return () => subscription.unsubscribe();
-  }, [form, form.watch, defaultValues]);
+  }, [form, defaultValues]);
 
   const handleSubmit = async (values: FormValues) => {
     const formData = new FormData();

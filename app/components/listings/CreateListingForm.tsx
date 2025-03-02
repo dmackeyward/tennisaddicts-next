@@ -86,7 +86,6 @@ interface CreateListingFormProps {
 
 export default function CreateListingForm({
   onSubmitSuccess,
-  onDismiss,
 }: CreateListingFormProps) {
   const [isPending, startTransition] = useTransition();
   const [isUploading, setIsUploading] = useState(false);
