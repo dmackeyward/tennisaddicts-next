@@ -100,7 +100,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
     price: listing.price.toString(),
     status: (listing.status as "active" | "sold" | "archived") || "active",
     location: {
-      city: listing.location.formatted || "",
+      city: listing.location.city || listing.location.formatted || "",
       club: listing.location.club || "",
     },
     tags: listing.tags.filter((tag): tag is AvailableFramework =>
