@@ -17,7 +17,7 @@ export async function createListing(
   prevState: ListingFormState,
   formData: FormData
 ): Promise<ListingFormState> {
-  // // Get the current user
+  // Get the current user
   const { userId } = await auth();
 
   if (!userId) {
@@ -53,9 +53,9 @@ export async function createListing(
       };
     }
 
-    const price = Number(priceRaw);
-    if (isNaN(price) || price < 0) {
-      // Changed from price <= 0 to price < 0
+    // Validate the price - still parse to number for validation
+    const priceNum = Number(priceRaw);
+    if (isNaN(priceNum) || priceNum < 0) {
       return {
         success: false,
         message: "Invalid price",
@@ -83,7 +83,7 @@ export async function createListing(
     const listingData: NewListing = {
       title,
       description,
-      price,
+      price: priceRaw, // Keep as string for Drizzle's decimal type
       location: locationData,
       tags,
       images,
@@ -171,7 +171,7 @@ export async function updateListing(
     // Process form data
     const title = formData.get("title") as string;
     const description = formData.get("description") as string;
-    const price = parseFloat((formData.get("price") as string) || "0");
+    const priceStr = (formData.get("price") as string) || "0"; // Keep as string
     const status = (formData.get("status") as string) || existingListing.status;
     const city = formData.get("location.city") as string;
     const club = formData.get("location.club") as string;
@@ -198,7 +198,7 @@ export async function updateListing(
       .set({
         title,
         description,
-        price,
+        price: priceStr, // Use string value for price
         status: status as any,
         location: locationData,
         tags,
