@@ -43,7 +43,8 @@ export default function RootLayout({
                   {children}
                   {modal}
                   <div id="modal-root" />
-                  <Toaster />
+                  {/* <Toaster position="bottom-center" /> */}
+                  <Toaster position="top-center" />
                 </main>
               </div>
             </SidebarProvider>

@@ -21,11 +21,12 @@
 - [x] Delete Listing
 - [x] Auth Guards - routes and buttons
 - [x] isAuthor check for delete listing
-- [] Edit Listing
-- [] Permission check for edit listing
-- [] Redirect after successful edit
-- [] Test Create, Read, Update, Delete
-- [] Image Carousel
+- [x] Edit Listing
+- [x] Redirect after successful edit
+- [x] Test Create, Read, Update, Delete
+- [x] Image Carousel
+- [] Disable button when edit values are changed
+- [] Permission check for edit listing buttons and routes
 - [] Update tag values
 - [] Sort - price, updatedAt, name
 - [] Filter - tags, location
