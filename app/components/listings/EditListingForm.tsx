@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -37,6 +37,7 @@ import {
 } from "@/types/listings";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import isEqual from "lodash/isEqual";
 
 const MAX_FILE_COUNT = 6;
 const MAX_FILE_SIZE = "4MB";
@@ -89,6 +90,7 @@ interface EditListingFormProps {
 export default function EditListingForm({ listing }: EditListingFormProps) {
   const [isPending, startTransition] = useTransition();
   const [isUploading, setIsUploading] = useState(false);
+  const [hasFormChanged, setHasFormChanged] = useState(false);
   const router = useRouter();
 
   // Prepare default values from existing listing
@@ -111,6 +113,21 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues,
   });
+
+  // Add this useEffect to check for form changes
+  useEffect(() => {
+    const subscription = form.watch((formValues) => {
+      // Get current form values
+      const currentValues = form.getValues();
+
+      // Deep comparison of current values with default values
+      const changed = !isEqual(currentValues, defaultValues);
+      setHasFormChanged(changed);
+    });
+
+    // Clean up subscription
+    return () => subscription.unsubscribe();
+  }, [form, form.watch, defaultValues]);
 
   const handleSubmit = async (values: FormValues) => {
     const formData = new FormData();
@@ -453,7 +470,10 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isPending || isUploading}>
+            <Button
+              type="submit"
+              disabled={isPending || isUploading || !hasFormChanged}
+            >
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
