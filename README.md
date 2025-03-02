@@ -31,9 +31,9 @@
 - [x] Update tag values
 - [x] Update domain to point to new project
 - [x] Create simple Home page - Info page with 1 button - view listings
-- [] Create simple About page - Info page
+- [x] Create simple About page - Info page
 - [] Create simple News page - Page displaying current tennis news - local file, for now
-- [] Create simple Contact Us page - form submission to database? - unsure
+- [] Create simple Contact Us page - form submission to tennisaddicts@gmail.com email inbox
 - [] Sort - price, updatedAt, name - cool
 - [] Filter - tags, location - cool
 - [] Search functionality - local versus API search - query params - cool
