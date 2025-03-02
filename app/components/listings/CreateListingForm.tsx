@@ -29,18 +29,10 @@ import { UploadDropzone } from "@/utils/uploadthing";
 import { createListingAction } from "@/app/actions/listings";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { LocationErrorType } from "@/types/listings";
+import { AVAILABLE_FRAMEWORKS, LocationErrorType } from "@/types/listings";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAuth } from "@clerk/nextjs";
-
-const AVAILABLE_FRAMEWORKS = [
-  "React",
-  "Vue",
-  "Svelte",
-  "Angular",
-  "Next.js",
-] as const;
 
 const MAX_FILE_COUNT = 6;
 const MAX_FILE_SIZE = "4MB";
@@ -183,16 +175,6 @@ export default function CreateListingForm({
         }
       }
     });
-  };
-
-  const handleDismiss = () => {
-    if (form.formState.isDirty) {
-      const confirmed = window.confirm(
-        "You have unsaved changes. Are you sure you want to close?"
-      );
-      if (!confirmed) return;
-    }
-    onDismiss?.();
   };
 
   return (
@@ -361,6 +343,35 @@ export default function CreateListingForm({
                 <FormLabel>Images</FormLabel>
                 <FormControl>
                   <div className="space-y-4">
+                    {/* Display uploaded images first, matching EditListingForm pattern */}
+                    {field.value.length > 0 && (
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4">
+                        {field.value.map((url, index) => (
+                          <div key={index} className="relative group">
+                            <Image
+                              src={url}
+                              alt={`Uploaded image ${index + 1}`}
+                              width={300}
+                              height={200}
+                              className="w-full h-32 object-cover rounded-lg"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newImages = [...field.value];
+                                newImages.splice(index, 1);
+                                field.onChange(newImages);
+                              }}
+                              className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Upload dropzone after displaying images */}
                     <UploadDropzone
                       endpoint="imageUploader"
                       onUploadBegin={(files) => {
@@ -424,32 +435,6 @@ export default function CreateListingForm({
                         setIsUploading(false);
                       }}
                     />
-                    {field.value.length > 0 && (
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-                        {field.value.map((url, index) => (
-                          <div key={index} className="relative group">
-                            <Image
-                              src={url}
-                              alt={`Uploaded image ${index + 1}`}
-                              width={300}
-                              height={200}
-                              className="w-full h-32 object-cover rounded-lg"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const newImages = [...field.value];
-                                newImages.splice(index, 1);
-                                field.onChange(newImages);
-                              }}
-                              className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 </FormControl>
                 <FormDescription>
@@ -466,7 +451,7 @@ export default function CreateListingForm({
             <Button
               type="button"
               variant="outline"
-              onClick={handleDismiss}
+              onClick={() => router.back()}
               disabled={isPending || isUploading}
             >
               Cancel

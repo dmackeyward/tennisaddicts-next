@@ -25,7 +25,8 @@
 - [x] Redirect after successful edit
 - [x] Test Create, Read, Update, Delete
 - [x] Image Carousel
-- [] Disable button when edit values are changed
+- [x] Disable button when edit values are changed
+- [] Fix bugs with location and price fields
 - [] Permission check for edit listing buttons and routes
 - [] Update tag values
 - [] Sort - price, updatedAt, name
