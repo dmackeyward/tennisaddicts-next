@@ -306,10 +306,10 @@ const ListingDetail = ({
           <div className="space-y-4">
             <div
               className="flex items-center text-2xl font-bold text-green-600"
-              aria-label={`Price: $${listing.price.toFixed(2)}`}
+              aria-label={`Price: $${Number(listing.price).toFixed(2)}`}
             >
               <DollarSign className="w-6 h-6" />
-              {listing.price.toFixed(2)}
+              {Number(listing.price).toFixed(2)}
             </div>
 
             <div>

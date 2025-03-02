@@ -6,6 +6,7 @@ import {
   timestamp,
   varchar,
   index,
+  decimal,
 } from "drizzle-orm/pg-core";
 import { ListingImage, Location } from "@/types/listings";
 
@@ -16,7 +17,7 @@ export const listings = pgTable(
     userId: varchar("user_id", { length: 256 }).notNull(),
     title: varchar("title", { length: 256 }).notNull(),
     description: varchar("description", { length: 1024 }).notNull(),
-    price: integer("price").notNull().default(0),
+    price: decimal("price", { precision: 10, scale: 2 }).notNull().default("0"),
     location: jsonb("location").$type<Location>().notNull(),
     tags: varchar("tags", { length: 256 }).array(),
     images: jsonb("images").$type<ListingImage[]>().notNull(),

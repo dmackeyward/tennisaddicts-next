@@ -121,7 +121,7 @@ const ListingCard: React.FC<ListingCardProps> = memo(
               className="text-lg font-semibold"
               aria-label={`Price: ${formatPrice(displayData.price)}`}
             >
-              ${displayData.price.toFixed(2)}
+              ${Number(displayData.price).toFixed(2)}
             </div>
             <div
               className="text-gray-500 text-sm truncate max-w-[150px]"
