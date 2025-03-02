@@ -16,6 +16,7 @@ function formatListing(listing: typeof listings.$inferSelect): Listing {
   return {
     ...listing,
     id: String(listing.id),
+    price: Number(listing.price), // Convert string price to number
     createdAt: new Date(listing.createdAt).toISOString(),
     updatedAt: listing.updatedAt
       ? new Date(listing.updatedAt).toISOString()
@@ -55,11 +56,11 @@ export async function getListings(
       }
 
       if (filters?.minPrice !== undefined) {
-        conditions.push(sql`${fields.price} >= ${filters.minPrice}`);
+        conditions.push(sql`${fields.price} >= ${String(filters.minPrice)}`); // Convert to string
       }
 
       if (filters?.maxPrice !== undefined) {
-        conditions.push(sql`${fields.price} <= ${filters.maxPrice}`);
+        conditions.push(sql`${fields.price} <= ${String(filters.maxPrice)}`); // Convert to string
       }
 
       return conditions.length > 0 ? and(...conditions) : undefined;
