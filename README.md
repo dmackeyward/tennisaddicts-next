@@ -26,7 +26,7 @@
 - [x] Test Create, Read, Update, Delete
 - [x] Image Carousel
 - [x] Disable button when edit values are changed
-- [] Fix bugs with location and price fields
+- [x] Fix bugs with location and price fields
 - [] Permission check for edit listing buttons and routes
 - [] Update tag values
 - [] Sort - price, updatedAt, name
