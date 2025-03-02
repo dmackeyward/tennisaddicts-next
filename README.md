@@ -27,12 +27,14 @@
 - [x] Image Carousel
 - [x] Disable button when edit values are changed
 - [x] Fix bugs with location and price fields
-- [] Permission check for edit listing buttons and routes
-- [] Update tag values
-- [] Sort - price, updatedAt, name
-- [] Filter - tags, location
-- [] Search functionality - local versus API search - query params
-- [] Github Actions
-- [] Player lookup - Tennis NZ API
-- [] Court lookup
-- [] News(?)
+- [x] Permission check for edit listing buttons and routes - boring
+- [] Update tag values - cool
+- [] Sort - price, updatedAt, name - cool
+- [] Filter - tags, location - cool
+- [] Search functionality - local versus API search - query params - cool
+- [] Github Actions - cool
+- [] Player lookup - Tennis NZ API - cool
+- [] Court lookup - cool
+- [] News(?) - cool
+- [] Error handling/exception flows - boring
+- [] In-depth testing

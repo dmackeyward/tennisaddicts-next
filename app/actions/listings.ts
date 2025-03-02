@@ -15,6 +15,8 @@ import {
   type LocationErrorType,
 } from "@/types/listings";
 import { sanitizeInput } from "@/utils/validation";
+import { auth } from "@clerk/nextjs/server";
+import { getListing } from "@/db/queries/listings";
 
 const serverListingSchema = z.object({
   title: z.string().min(3).max(100).transform(sanitizeInput),
@@ -66,6 +68,17 @@ export async function createListingAction(
 ): Promise<ServerActionResponse> {
   try {
     console.log("Server action started");
+
+    // Add authentication check
+    const { userId } = await auth();
+
+    if (!userId) {
+      console.log("Authentication required for creating a listing");
+      return {
+        success: false,
+        error: "You must be logged in to create a listing",
+      };
+    }
 
     // Log incoming FormData
     console.log("Received FormData entries:");
@@ -163,10 +176,35 @@ export async function updateListingAction(
   try {
     console.log("Update server action started for listing:", id);
 
-    // Log incoming FormData
-    console.log("Received FormData entries:");
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
+    // Get current user ID for authorization check
+    const { userId } = await auth();
+
+    if (!userId) {
+      console.log("Authentication required");
+      return {
+        success: false,
+        error: "Authentication required",
+      };
+    }
+
+    // Fetch the listing to verify ownership
+    const listing = await getListing(id);
+
+    if (!listing) {
+      console.log("Listing not found");
+      return {
+        success: false,
+        error: "Listing not found",
+      };
+    }
+
+    // Verify the current user is the author
+    if (listing.userId !== userId) {
+      console.log("Authorization failed: User is not the listing owner");
+      return {
+        success: false,
+        error: "You are not authorized to edit this listing",
+      };
     }
 
     const prevState: ListingFormState = {
@@ -255,6 +293,37 @@ export async function updateListingAction(
 // Server Action
 export async function deleteListingAction(id: string) {
   try {
+    // Get current user ID for authorization check
+    const { userId } = await auth();
+
+    if (!userId) {
+      console.log("Authentication required for deletion");
+      return {
+        success: false,
+        error: "Authentication required",
+      };
+    }
+
+    // Fetch the listing to verify ownership
+    const listing = await getListing(id);
+
+    if (!listing) {
+      console.log("Listing not found for deletion");
+      return {
+        success: false,
+        error: "Listing not found",
+      };
+    }
+
+    // Verify the current user is the author
+    if (listing.userId !== userId) {
+      console.log("Authorization failed: User is not the listing owner");
+      return {
+        success: false,
+        error: "You are not authorized to delete this listing",
+      };
+    }
+
     const response = await deleteListing(id);
 
     if (!response.success) {
