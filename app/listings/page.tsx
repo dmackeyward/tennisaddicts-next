@@ -19,7 +19,7 @@ export default async function ListingsPage() {
   const { userId } = await auth();
 
   return (
-    <div className="container mx-auto max-w-6xl px-6 py-8">
+    <div className="container mx-auto max-w-6xl px-6 py-8 bg-gradient-to-b from-white to-green-100">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <CardTitle className="text-2xl font-bold">Listings</CardTitle>

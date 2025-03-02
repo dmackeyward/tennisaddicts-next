@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function SignUpPage() {
   return (
-    <div className="flex justify-center items-center min-h-screen">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-white to-green-100">
       <div className="w-full max-w-md bg-white p-6">
         <CardHeader className="px-0 pt-0 pb-4">
           <CardTitle className="text-2xl font-bold text-center">

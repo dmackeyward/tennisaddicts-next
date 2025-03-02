@@ -27,14 +27,18 @@
 - [x] Image Carousel
 - [x] Disable button when edit values are changed
 - [x] Fix bugs with location and price fields
-- [x] Permission check for edit listing buttons and routes - boring
-- [] Update tag values - cool
+- [x] Permission check for edit listing buttons and routes
+- [x] Update tag values
+- [x] Update domain to point to new project
+- [] Create simple Home page - Info page with 1 button - view listings
+- [] Create simple About page - Info page
+- [] Create simple News page - Page displaying current tennis news - local file, for now
+- [] Create simple Contact Us page - form submission to database? - unsure
 - [] Sort - price, updatedAt, name - cool
 - [] Filter - tags, location - cool
 - [] Search functionality - local versus API search - query params - cool
 - [] Github Actions - cool
 - [] Player lookup - Tennis NZ API - cool
 - [] Court lookup - cool
-- [] News(?) - cool
 - [] Error handling/exception flows - boring
-- [] In-depth testing
+- [] In-depth testing - boring

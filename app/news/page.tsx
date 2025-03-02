@@ -10,15 +10,17 @@ export const metadata: Metadata = {
 
 export default function News() {
   return (
-    <div className="container mx-auto max-w-6xl px-6 py-8">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <CardTitle className="text-2xl font-bold">News</CardTitle>
-          <Link href="/listings/create">
-            <Button>Create New&apos;s Item</Button>
-          </Link>
-        </CardHeader>
-      </Card>
+    <div className="min-h-screen bg-gradient-to-b from-white to-green-100">
+      <div className="container mx-auto max-w-6xl px-6 py-8 ">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+            <CardTitle className="text-2xl font-bold">News</CardTitle>
+            <Link href="/listings/create">
+              <Button>Create New&apos;s Item</Button>
+            </Link>
+          </CardHeader>
+        </Card>
+      </div>
     </div>
   );
 }

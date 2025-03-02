@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 // Loading component stays the same
 function ListingLoading() {
   return (
-    <div className="container mx-auto max-w-6xl px-6 py-8 min-h-screen">
+    <div className="container mx-auto max-w-6xl px-6 py-8 min-h-screen bg-gradient-to-b from-white to-green-100">
       <ListingDetail listing={PLACEHOLDER_LISTING} isLoading={true} />
     </div>
   );
@@ -33,7 +33,7 @@ async function ListingContent({ id }: { id: string }) {
   const isAuthor = userId ? userId === listing.userId : false;
 
   return (
-    <div className="container mx-auto max-w-6xl px-6 py-8 min-h-screen">
+    <div className="container mx-auto max-w-6xl px-6 py-8 min-h-screen bg-gradient-to-b from-white to-green-100">
       <ListingDetail listing={listing} isLoading={false} isAuthor={isAuthor} />
     </div>
   );
