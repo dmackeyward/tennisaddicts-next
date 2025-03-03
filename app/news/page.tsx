@@ -65,7 +65,7 @@ export default function News() {
                   </CardContent>
                   <CardFooter className="flex justify-between items-center mt-auto">
                     <p className="text-sm text-gray-500">By {item.author}</p>
-                    <Link href={`/news/${item.id}`}>
+                    <Link href={`/news/view/${item.id}`}>
                       <Button variant="outline">Read More</Button>
                     </Link>
                   </CardFooter>
