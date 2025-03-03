@@ -25,9 +25,7 @@ export default function AboutPage() {
           <div className="bg-white rounded-full p-4 shadow-lg">
             <Icon name="tennisball" size={48} className="text-green-600" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold">
-            About Tennis Addicts
-          </h1>
+          <h1 className="text-4xl md:text-5xl font-bold">About Us</h1>
           <p className="text-xl max-w-3xl">
             We're passionate about building a community of tennis enthusiasts
             who share a love for the game.
