@@ -1,0 +1,40 @@
+{
+  "newsItems": [
+    {
+      "id": 1,
+      "title": "New Environmental Initiative Launched",
+      "date": "2025-02-28",
+      "summary": "Our organization has launched a new initiative focused on sustainable practices in local communities.",
+      "content": "The initiative aims to reduce carbon footprints through education and practical support for businesses and residents alike.",
+      "author": "Jane Smith",
+      "imageUrl": "/images/1.jpg"
+    },
+    {
+      "id": 2,
+      "title": "Annual Conference Announced",
+      "date": "2025-02-15",
+      "summary": "Registration is now open for our annual conference taking place in September.",
+      "content": "This year's conference will feature keynote speakers from around the world discussing the latest developments in sustainability.",
+      "author": "Michael Johnson",
+      "imageUrl": "/images/2.jpg"
+    },
+    {
+      "id": 3,
+      "title": "Community Garden Project Expansion",
+      "date": "2025-02-10",
+      "summary": "Our popular community garden project is expanding to three new locations this spring.",
+      "content": "The expansion will provide more opportunities for local residents to grow their own produce and learn about sustainable gardening practices.",
+      "author": "Sarah Williams",
+      "imageUrl": "/images/3.jpg"
+    },
+    {
+      "id": 4,
+      "title": "New Partnership with Local Schools",
+      "date": "2025-01-25",
+      "summary": "We're excited to announce a new partnership with the local school district to bring environmental education to classrooms.",
+      "content": "The program will include hands-on activities, field trips, and curriculum materials focusing on environmental conservation and sustainability.",
+      "author": "Robert Davis",
+      "imageUrl": "/images/4.jpg"
+    }
+  ]
+}

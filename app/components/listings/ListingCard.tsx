@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatPrice, formatDate } from "@/lib/format"; // Assuming you'll create these utilities
+import { formatPrice, formatDate } from "@/lib/format";
 
 interface ListingCardProps {
   listing?: Listing;
