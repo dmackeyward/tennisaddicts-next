@@ -43,4 +43,7 @@
 - [] Player lookup - Tennis NZ API - cool
 - [] Court lookup - cool
 - [] Error handling/exception flows - boring
-- [] In-depth testing - boring
+
+## Bugs
+
+- [] Bug - hacky implementation of navigating to success after a successful edit and unable to display an updated=true because when the query parameters are removed it triggers the modal view

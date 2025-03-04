@@ -151,7 +151,6 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
       console.log("Server action complete result:", result);
 
       if (result.success) {
-        toast.success("Listing updated successfully!");
         router.push(`/listings/view/${listing.id}/success`);
       } else {
         console.log("Submission failed, processing errors");
