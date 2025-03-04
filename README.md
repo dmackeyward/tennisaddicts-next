@@ -35,7 +35,7 @@
 - [x] Create simple News page - Page displaying current tennis news - local file, for now
 - [x] Create simple Contact Us page - form submission to tennisaddicts@gmail.com email inbox
 - [x] Individual News Page
-- [] Mobile
+- [x] Mobile
 - [] Sort - price, updatedAt, name - cool
 - [] Filter - tags, location - cool
 - [] Search functionality - local versus API search - query params - cool
@@ -46,4 +46,7 @@
 
 ## Bugs
 
+- [] Cannot click logout on mobile sidebar
+- [] Homepage background gradiant
+- [] Create form background gradiant
 - [] Bug - hacky implementation of navigating to success after a successful edit and unable to display an updated=true because when the query parameters are removed it triggers the modal view

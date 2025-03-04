@@ -1,9 +1,5 @@
 "use client";
 
-// Import Tooltip components
-import { TooltipProvider } from "@/components/ui/tooltip";
-
-// Rest of your imports remain the same
 import * as React from "react";
 import {
   UserPlus,
@@ -12,6 +8,7 @@ import {
   Mail,
   Newspaper,
   CirclePlus,
+  X,
 } from "lucide-react";
 import {
   SignInButton,
@@ -33,9 +30,12 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
 import { SearchForm } from "./ui/search-form";
 import Link from "next/link";
 import Icon from "./Icon";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { SheetTitle, SheetDescription } from "@/components/ui/sheet";
 
 // This is sample data.
 const data = {
@@ -72,72 +72,82 @@ const data = {
   ],
 };
 
-// Enhanced Sidebar component with click-to-toggle functionality
-const EnhancedSidebar = React.forwardRef<
-  React.ComponentRef<typeof Sidebar>,
-  React.ComponentPropsWithoutRef<typeof Sidebar> & { clickToToggle?: boolean }
->(({ clickToToggle = false, className, children, ...props }, ref) => {
-  const { toggleSidebar } = useSidebar();
-
-  const handleSidebarClick = React.useCallback(
-    (event: React.MouseEvent) => {
-      if (clickToToggle) {
-        // Prevent toggling when clicking on interactive elements
-        const isInteractiveElement = (event.target as HTMLElement).closest(
-          'button, a, input, select, textarea, [role="button"]'
-        );
-
-        if (!isInteractiveElement) {
-          event.preventDefault();
-          toggleSidebar();
-        }
-      }
-    },
-    [clickToToggle, toggleSidebar]
-  );
-
-  // We're using a wrapper div to catch clicks without modifying the Sidebar component
-  return (
-    <div onClick={clickToToggle ? handleSidebarClick : undefined}>
-      <Sidebar ref={ref} className={className} {...props}>
-        {children}
-      </Sidebar>
-    </div>
-  );
-});
-EnhancedSidebar.displayName = "EnhancedSidebar";
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { state } = useSidebar();
+  const { state, isMobile, openMobile, setOpenMobile } = useSidebar();
   const { user } = useUser();
+
+  // Close mobile sidebar when route changes
+  React.useEffect(() => {
+    if (openMobile) {
+      const handleRouteChange = () => {
+        setOpenMobile(false);
+      };
+
+      // App Router approach
+      window.addEventListener("popstate", handleRouteChange);
+      return () => window.removeEventListener("popstate", handleRouteChange);
+    }
+  }, [openMobile, setOpenMobile]);
 
   return (
     <TooltipProvider>
-      <EnhancedSidebar collapsible="icon" clickToToggle={true} {...props}>
+      <Sidebar
+        collapsible={isMobile ? "offcanvas" : "icon"}
+        clickToToggle={!isMobile}
+        {...props}
+      >
+        {/* Add these components to fix accessibility warnings using sr-only class */}
+        {isMobile && (
+          <>
+            <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+            <SheetDescription className="sr-only">
+              Main navigation links for Tennis Addicts website
+            </SheetDescription>
+          </>
+        )}
+
         <SidebarHeader>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton size="lg" asChild tooltip={"Home"}>
-                <Link href="/" className="flex items-center justify-center">
-                  <div className="flex justify-center">
-                    <Icon name="tennisball" size={24} />
-                  </div>
-                  {state !== "collapsed" && (
-                    <div className="flex flex-col gap-0.5 leading-none">
-                      <span className="font-semibold">Tennis Addicts</span>
+          <div className="flex items-center justify-between w-full">
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton size="lg" asChild tooltip={"Home"}>
+                  <Link href="/" className="flex items-center justify-center">
+                    <div className="flex justify-center">
+                      <Icon name="tennisball" size={24} />
                     </div>
-                  )}
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
+                    {state !== "collapsed" && (
+                      <div className="flex flex-col gap-0.5 leading-none">
+                        <span className="font-semibold">Tennis Addicts</span>
+                      </div>
+                    )}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+
+            {/* Mobile close button */}
+            {isMobile && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setOpenMobile(false)}
+                className="mr-2"
+                aria-label="Close Menu"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            )}
+          </div>
+
           {state === "collapsed" ? <></> : <SearchForm />}
         </SidebarHeader>
+
         <SidebarContent>
           <NavMain items={data.news} group="News" />
           <NavMain items={data.listings} group="Listings" />
           <NavMain items={data.support} group="Support" />
         </SidebarContent>
+
         <SidebarFooter>
           <SignedOut>
             <SidebarMenu>
@@ -192,8 +202,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             )}
           </SignedIn>
         </SidebarFooter>
-        <SidebarRail />
-      </EnhancedSidebar>
+        {!isMobile && <SidebarRail />}
+      </Sidebar>
     </TooltipProvider>
   );
 }

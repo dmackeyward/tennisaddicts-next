@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { MobileTrigger } from "@/components/MobileTrigger";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,6 +41,7 @@ export default function RootLayout({
               <div className="flex w-full h-full">
                 <AppSidebar className="flex-shrink-0" />
                 <main className="flex-1 overflow-auto">
+                  <MobileTrigger />
                   {children}
                   {modal}
                   <div id="modal-root" />
