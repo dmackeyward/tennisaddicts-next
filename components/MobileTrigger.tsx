@@ -3,9 +3,9 @@
 "use client";
 
 import * as React from "react";
-import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
+import Icon from "./Icon";
 
 export function MobileTrigger() {
   const { setOpenMobile, isMobile } = useSidebar();
@@ -21,7 +21,7 @@ export function MobileTrigger() {
       onClick={() => setOpenMobile(true)}
       aria-label="Open Menu"
     >
-      <Menu className="h-5 w-5" />
+      <Icon name="tennisball" size={24} />
     </Button>
   );
 }

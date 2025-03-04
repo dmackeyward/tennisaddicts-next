@@ -18,7 +18,8 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-green-100">
+    // Changed from min-h-screen to h-full to allow the div to grow with content
+    <div className="h-full bg-gradient-to-b from-white to-green-100">
       {/* Hero Section */}
       <div className="container mx-auto max-w-6xl px-6 py-16">
         <div className="flex flex-col items-center text-center space-y-6">
