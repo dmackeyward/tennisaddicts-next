@@ -11,22 +11,7 @@ export const metadata: Metadata = {
   description: "Create a new listing to sell your tennis equipment",
 };
 
-async function checkCreatePermission() {
-  // Add your permission check logic here
-  // For example:
-  // const session = await getSession();
-  // if (!session?.user) return false;
-  // return session.user.canCreateListings;
-  return true;
-}
-
 export default async function CreateListingPage() {
-  const hasPermission = await checkCreatePermission();
-
-  if (!hasPermission) {
-    notFound();
-  }
-
   return (
     <div className="container mx-auto max-w-6xl px-6 py-8 bg-gradient-to-b from-white to-green-100">
       <Card>
