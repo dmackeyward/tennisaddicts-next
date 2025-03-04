@@ -34,7 +34,7 @@
 - [x] Create simple About page - Info page
 - [x] Create simple News page - Page displaying current tennis news - local file, for now
 - [x] Create simple Contact Us page - form submission to tennisaddicts@gmail.com email inbox
-- [] Individual News Page
+- [x] Individual News Page
 - [] Mobile
 - [] Sort - price, updatedAt, name - cool
 - [] Filter - tags, location - cool

@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/format";
 import Link from "next/link";
 import { ArrowLeft, Calendar } from "lucide-react";
+import ViewFullArticleButton from "./ViewFullArticleButton";
 
 export const dynamic = "force-dynamic";
 
@@ -86,9 +87,10 @@ async function NewsContent({ id }: { id: string }) {
               Published {formatDate(newsItem.date)}
             </span>
           </div>
-          <Link href={`/news/view/${newsItem.id}`}>
+          {/* <Link href={`/news/view/${newsItem.id}`}>
             <Button variant="outline">View Full Article</Button>
-          </Link>
+          </Link> */}
+          <ViewFullArticleButton />
         </CardFooter>
       </Card>
     </div>
