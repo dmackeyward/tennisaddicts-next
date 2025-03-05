@@ -73,7 +73,8 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { state, isMobile, openMobile, setOpenMobile } = useSidebar();
+  const { state, isMobile, openMobile, setOpenMobile, toggleSidebar } =
+    useSidebar();
   const { user } = useUser();
   const [userMenuOpen, setUserMenuOpen] = React.useState(false);
 
@@ -113,6 +114,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     }
   }, [userMenuOpen]);
 
+  // Handle close button click based on device type
+  const handleCloseClick = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+    } else {
+      // For desktop mode, use toggleSidebar to collapse the sidebar
+      // This will toggle between expanded and collapsed states
+      toggleSidebar();
+    }
+  };
+
   return (
     <TooltipProvider>
       <Sidebar
@@ -150,12 +162,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               </SidebarMenuItem>
             </SidebarMenu>
 
-            {/* Mobile close button */}
-            {isMobile && (
+            {/* Close button for both mobile and desktop */}
+            {/* Only show when expanded in desktop or always in mobile */}
+            {(isMobile || state === "expanded") && (
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setOpenMobile(false)}
+                onClick={handleCloseClick}
                 className="mr-2"
                 aria-label="Close Menu"
               >
