@@ -115,7 +115,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     <div className="flex justify-center">
                       <Icon name="tennisball" size={24} />
                     </div>
-                    {state !== "collapsed" && (
+                    {/* Show title always on mobile, or when expanded on desktop */}
+                    {(isMobile || state !== "collapsed") && (
                       <div className="flex flex-col gap-0.5 leading-none">
                         <span className="font-semibold">Tennis Addicts</span>
                       </div>
@@ -139,7 +140,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             )}
           </div>
 
-          {state === "collapsed" ? <></> : <SearchForm />}
+          {/* Show search form always on mobile, or based on original logic for desktop */}
+          {isMobile || state !== "collapsed" ? <SearchForm /> : <></>}
         </SidebarHeader>
 
         <SidebarContent>
@@ -164,7 +166,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     <div className="flex justify-center">
                       <UserPlus className="size-5" />
                     </div>
-                    {state !== "collapsed" && (
+                    {/* Show title always on mobile, or when expanded on desktop */}
+                    {(isMobile || state !== "collapsed") && (
                       <div className="flex flex-col gap-0.5 leading-none">
                         <span className="font-semibold">
                           Sign In or Sign Up
@@ -175,7 +178,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
-            {state === "collapsed" ? (
+
+            {/* Maintain desktop behavior but ensure mobile shows the sign-in button */}
+            {state === "collapsed" && !isMobile ? (
               <div className="flex flex-col items-center gap-4 px-2 py-4">
                 <Link href="/sign-in">
                   <button className="flex items-center justify-center rounded-md p-2 hover:bg-sidebar-muted"></button>
@@ -190,12 +195,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             )}
           </SignedOut>
           <SignedIn>
-            {state === "expanded" && user && (
+            {/* Keep original desktop behavior but ensure user button displays on mobile */}
+            {(state === "expanded" || isMobile) && user && (
               <div className="items-center justify-center flex flex-col gap-4 px-2 py-4">
                 <UserButton showName={true} />
               </div>
             )}
-            {state === "collapsed" && user && (
+            {state === "collapsed" && !isMobile && user && (
               <div className="items-center justify-center flex flex-col gap-4 px-2 py-4">
                 <UserButton />
               </div>

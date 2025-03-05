@@ -48,6 +48,7 @@
 ## Bugs
 
 - [x] Create form background gradiant
+- [] Sidebar differs in mobile from desktop view
 - [] Homepage background gradiant
 - [] Cannot click logout on mobile sidebar cause of the overlay
 - [] Bug - hacky implementation of navigating to success after a successful edit and unable to display an updated=true because when the query parameters are removed it triggers the modal view
