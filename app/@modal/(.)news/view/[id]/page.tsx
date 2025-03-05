@@ -12,11 +12,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/format";
-import Link from "next/link";
-import { ArrowLeft, Calendar } from "lucide-react";
+import { Calendar } from "lucide-react";
 import ViewFullArticleButton from "./ViewFullArticleButton";
+import Image from "next/image";
 
 export const dynamic = "force-dynamic";
 
@@ -55,10 +54,13 @@ async function NewsContent({ id }: { id: string }) {
       <Card className="border-0 shadow-none">
         <div className="h-64 relative bg-gray-200">
           <div className="absolute inset-0 overflow-hidden">
-            <img
+            <Image
               src={newsItem.imageUrl}
               alt={newsItem.title}
+              width={800} // A reasonable width for article images
+              height={256} // Matching your h-64 container height
               className="w-full h-full object-cover"
+              priority // Add this if it's above the fold
             />
           </div>
         </div>

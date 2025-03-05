@@ -42,11 +42,12 @@
 - [] Github Actions - cool
 - [] Player lookup - Tennis NZ API - cool
 - [] Court lookup - cool
+- [] Improve mobile UI - boring
 - [] Error handling/exception flows - boring
 
 ## Bugs
 
-- [] Cannot click logout on mobile sidebar
+- [x] Create form background gradiant
 - [] Homepage background gradiant
-- [] Create form background gradiant
+- [] Cannot click logout on mobile sidebar cause of the overlay
 - [] Bug - hacky implementation of navigating to success after a successful edit and unable to display an updated=true because when the query parameters are removed it triggers the modal view

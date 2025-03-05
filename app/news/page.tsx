@@ -13,6 +13,7 @@ import newsData from "@/data/news-items.json";
 import { formatDate } from "@/lib/format";
 import { NewsItem } from "@/types/news";
 import Icon from "@/components/Icon";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "News",
@@ -43,9 +44,11 @@ export default function News() {
               <div className="flex flex-col md:flex-row md:h-64">
                 <div className="md:w-1/3 h-48 md:h-full relative bg-gray-200">
                   <div className="absolute inset-0 overflow-hidden">
-                    <img
+                    <Image
                       src={item.imageUrl}
                       alt={item.title}
+                      width={400} // Reasonable width for a card thumbnail
+                      height={256} // Matching your largest container height (md:h-full which inherits md:h-64)
                       className="w-full h-full object-cover"
                       style={{ objectPosition: "center" }}
                     />

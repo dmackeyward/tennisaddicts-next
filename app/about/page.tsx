@@ -1,12 +1,6 @@
 // app/about/page.tsx
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Metadata } from "next";
 import Link from "next/link";
 import Icon from "@/components/Icon";
@@ -27,8 +21,8 @@ export default function AboutPage() {
           </div>
           <h1 className="text-4xl md:text-5xl font-bold">About Us</h1>
           <p className="text-xl max-w-3xl">
-            We're passionate about building a community of tennis enthusiasts
-            who share a love for the game.
+            We&apos;re passionate about building a community of tennis
+            enthusiasts who share a love for the game.
           </p>
         </div>
 
@@ -51,9 +45,10 @@ export default function AboutPage() {
                 listings, local news, equipment exchanges, and community events.
               </p>
               <p>
-                Whether you're a beginner looking for lessons, a competitive
-                player searching for worthy opponents, or simply a fan of the
-                sport, Tennis Addicts is your home for everything tennis.
+                Whether you&apos;re a beginner looking for lessons, a
+                competitive player searching for worthy opponents, or simply a
+                fan of the sport, Tennis Addicts is your home for everything
+                tennis.
               </p>
             </div>
           </CardContent>
@@ -89,7 +84,7 @@ export default function AboutPage() {
                     className="text-green-600"
                   />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Court Listings</h3>
+                <h3 className="text-xl font-semibold mb-2">Listings</h3>
                 <p>
                   Find and review local tennis courts, check availability, and
                   book court time directly through our platform.

@@ -16,6 +16,7 @@ import { ArrowLeft, Calendar } from "lucide-react";
 import newsData from "@/data/news-items.json";
 import { formatDate } from "@/lib/format";
 import { NewsItem } from "@/types/news";
+import Image from "next/image";
 
 export const dynamic = "force-dynamic";
 
@@ -71,10 +72,13 @@ async function NewsContent({ id }: { id: string }) {
         <Card className="overflow-hidden">
           <div className="h-80 relative bg-gray-200">
             <div className="absolute inset-0 overflow-hidden">
-              <img
+              <Image
                 src={newsItem.imageUrl}
                 alt={newsItem.title}
+                width={1200} // A larger width for full-width article images
+                height={320} // Matching your h-80 container height
                 className="w-full h-full object-cover"
+                priority // Add priority since this is likely above the fold
               />
             </div>
           </div>

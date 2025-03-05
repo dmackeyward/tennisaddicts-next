@@ -1,12 +1,6 @@
 // app/page.tsx
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Metadata } from "next";
 import Link from "next/link";
 import Icon from "@/components/Icon";
@@ -18,8 +12,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    // Changed from min-h-screen to h-full to allow the div to grow with content
-    <div className="h-full bg-gradient-to-b from-white to-green-100">
+    <div className="min-h-screen bg-gradient-to-b from-white to-green-100 flex flex-col">
       {/* Hero Section */}
       <div className="container mx-auto max-w-6xl px-6 py-16">
         <div className="flex flex-col items-center text-center space-y-6">
@@ -38,7 +31,7 @@ export default function Home() {
             </Link>
             <Link href="/listings">
               <Button className="bg-white hover:bg-gray-100 text-green-600 font-medium text-lg px-6 py-6 h-auto">
-                Court Listings
+                See Listings
               </Button>
             </Link>
           </div>

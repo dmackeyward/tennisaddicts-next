@@ -70,7 +70,7 @@ export default function ContactForm() {
         <CardHeader>
           <CardTitle>Send us a message</CardTitle>
           <CardDescription>
-            Fill out the form below and we'll get back to you as soon as
+            Fill out the form below and we&apos;ll get back to you as soon as
             possible.
           </CardDescription>
         </CardHeader>
@@ -83,7 +83,7 @@ export default function ContactForm() {
             </div>
             <h3 className="text-xl font-semibold">Message Sent!</h3>
             <p className="text-gray-600">
-              Thank you for contacting us. We'll respond to your inquiry
+              Thank you for contacting us. We&apos;ll respond to your inquiry
               shortly.
             </p>
             <Button

@@ -60,7 +60,7 @@ export async function submitContactForm(formData: ContactFormData) {
     // 3. Handle additional processing
 
     // Using the defined email service
-    const emailResult = await sendEmail({
+    await sendEmail({
       to: "nztennisaddicts@gmail.com",
       from: validatedData.email,
       subject: `Contact Form: ${validatedData.subject}`,
