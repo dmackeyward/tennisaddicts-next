@@ -130,3 +130,76 @@
   border: 0 !important;
   box-shadow: none !important;
 }
+
+/* ============== MOBILE SIDEBAR CLERK FIXES ============== */
+/* Ensure sign-in/sign-up pages are on top */
+.cl-card,
+.cl-main,
+.cl-signIn-root,
+.cl-signUp-root {
+  z-index: 5000 !important;
+}
+
+/* Fix for Sheet modal overlay */
+.fixed.inset-0[aria-hidden="true"] {
+  pointer-events: none !important;
+}
+
+/* Important: Make the Clerk popover portal positioned relative to the viewport */
+#clerk-frontend .cl-userButtonPopoverPortal {
+  position: fixed !important;
+  z-index: 10000 !important;
+}
+
+/* Main Clerk component fixes */
+.cl-rootBox {
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+/* Ensure all Clerk buttons receive clicks */
+[class*="cl-userButton"],
+[class*="cl-userButtonPopover"],
+.cl-userButtonPopoverCard,
+.cl-userButtonPopoverCard_root,
+.cl-userButtonPopoverActions,
+.cl-userButtonPopoverAction,
+.cl-userButtonPopoverActionButton,
+.cl-internal-1dvonsa,
+.cl-internal-1wpsm6d {
+  pointer-events: auto !important;
+  position: relative !important;
+  z-index: 10000 !important;
+}
+
+/* Stop clicks on clerk menu from triggering sidebar toggle */
+[class*="cl-userButtonPopover"] * {
+  pointer-events: auto !important;
+}
+
+/* Fix for the backdrop */
+.cl-userButtonPopoverCard_backdrop {
+  pointer-events: none !important;
+}
+
+/* Fix for clerk portal placement */
+.cl-userButtonPopoverCard {
+  pointer-events: auto !important;
+  position: absolute !important;
+  z-index: 10000 !important;
+}
+
+/* Force the Sheet content to have overflow visible for dropdown menus */
+[data-mobile="true"][data-sidebar="sidebar"] {
+  overflow: visible !important;
+}
+
+/* Make sure the Sheet doesn't block any clicks */
+[role="dialog"].fixed.inset-0 {
+  pointer-events: auto !important;
+}
+
+/* Ensure the Sheet backdrop doesn't block clerk elements */
+[role="dialog"].fixed.inset-0[data-state="open"] > .fixed.inset-0 {
+  pointer-events: none !important;
+}

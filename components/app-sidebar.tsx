@@ -75,6 +75,7 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { state, isMobile, openMobile, setOpenMobile } = useSidebar();
   const { user } = useUser();
+  const [userMenuOpen, setUserMenuOpen] = React.useState(false);
 
   // Close mobile sidebar when route changes
   React.useEffect(() => {
@@ -88,6 +89,29 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       return () => window.removeEventListener("popstate", handleRouteChange);
     }
   }, [openMobile, setOpenMobile]);
+
+  // Completely stop event propagation for Clerk components
+  const handleClerkInteraction = (e: React.MouseEvent) => {
+    // Stop propagation to prevent sidebar click handler from firing
+    e.stopPropagation();
+  };
+
+  // Handle clicks outside Clerk menu to close it
+  React.useEffect(() => {
+    if (userMenuOpen) {
+      const handleOutsideClick = (e: MouseEvent) => {
+        const target = e.target as HTMLElement;
+        // If clicking outside Clerk elements and menu is open, update state
+        if (!target.closest('[class*="cl-"]')) {
+          setUserMenuOpen(false);
+        }
+      };
+
+      document.addEventListener("mousedown", handleOutsideClick);
+      return () =>
+        document.removeEventListener("mousedown", handleOutsideClick);
+    }
+  }, [userMenuOpen]);
 
   return (
     <TooltipProvider>
@@ -195,15 +219,39 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             )}
           </SignedOut>
           <SignedIn>
-            {/* Keep original desktop behavior but ensure user button displays on mobile */}
+            {/* Enhanced user button container with better event handling */}
             {(state === "expanded" || isMobile) && user && (
-              <div className="items-center justify-center flex flex-col gap-4 px-2 py-4">
-                <UserButton showName={true} />
+              <div
+                className="items-center justify-center flex flex-col gap-4 px-2 py-4 relative z-50"
+                onClick={handleClerkInteraction}
+                style={{ position: "relative", zIndex: 50 }}
+              >
+                <UserButton
+                  showName={true}
+                  userProfileMode="modal"
+                  appearance={{
+                    elements: {
+                      rootBox: "z-[10000]",
+                      userButtonPopoverCard: "z-[10000]",
+                    },
+                  }}
+                />
               </div>
             )}
             {state === "collapsed" && !isMobile && user && (
-              <div className="items-center justify-center flex flex-col gap-4 px-2 py-4">
-                <UserButton />
+              <div
+                className="items-center justify-center flex flex-col gap-4 px-2 py-4"
+                onClick={handleClerkInteraction}
+              >
+                <UserButton
+                  userProfileMode="modal"
+                  appearance={{
+                    elements: {
+                      rootBox: "z-[10000]",
+                      userButtonPopoverCard: "z-[10000]",
+                    },
+                  }}
+                />
               </div>
             )}
           </SignedIn>

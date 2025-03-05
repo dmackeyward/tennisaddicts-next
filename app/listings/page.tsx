@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { getListings } from "@/db/queries/listings";
 import { auth } from "@clerk/nextjs/server";
+import Icon from "@/components/Icon";
 
 export const metadata: Metadata = {
   title: "Listings",

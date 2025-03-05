@@ -231,7 +231,18 @@ const Sidebar = React.forwardRef<
           >
             <div
               className="flex h-full w-full flex-col"
-              onClick={handleSidebarClick}
+              onClick={(e) => {
+                // This ensures that clicks on Clerk components are not affected by the sidebar click handler
+                // Find if the click target is within a Clerk component
+                const isClerkElement = (e.target as HTMLElement).closest(
+                  '[class*="cl-"]'
+                );
+
+                // Only call handleSidebarClick if not clicking on a Clerk element
+                if (!isClerkElement) {
+                  handleSidebarClick(e);
+                }
+              }}
             >
               {children}
             </div>
