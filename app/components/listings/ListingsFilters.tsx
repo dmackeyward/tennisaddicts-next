@@ -1,9 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { ListingFilters, Location } from "@/types/listings";
 
 interface ListingsFiltersProps {
@@ -16,7 +20,43 @@ export function ListingsFilters({ onFiltersChange }: ListingsFiltersProps) {
     sortOrder: "desc",
   });
 
-  const [locationInput, setLocationInput] = useState("");
+  const [selectedTag, setSelectedTag] = useState<string>("all");
+  const [selectedSort, setSelectedSort] = useState<string>("newest");
+
+  const handleSortChange = (value: string) => {
+    setSelectedSort(value);
+
+    let sortBy: ListingFilters["sortBy"] = "date";
+    let sortOrder: ListingFilters["sortOrder"] = "desc";
+
+    // Map the user-friendly sort options to the actual filter values
+    switch (value) {
+      case "newest":
+        sortBy = "date";
+        sortOrder = "desc";
+        break;
+      case "oldest":
+        sortBy = "date";
+        sortOrder = "asc";
+        break;
+      case "highest":
+        sortBy = "price";
+        sortOrder = "desc";
+        break;
+      case "lowest":
+        sortBy = "price";
+        sortOrder = "asc";
+        break;
+    }
+
+    handleFilterChange({ sortBy, sortOrder });
+  };
+
+  const handleTagChange = (tag: string) => {
+    setSelectedTag(tag);
+    // The parent component will need to handle filtering by tag
+    // since the ListingFilters interface doesn't include tags
+  };
 
   const handleFilterChange = (newFilters: Partial<ListingFilters>) => {
     const updatedFilters = { ...filters, ...newFilters };
@@ -24,65 +64,36 @@ export function ListingsFilters({ onFiltersChange }: ListingsFiltersProps) {
     onFiltersChange(updatedFilters);
   };
 
-  const handleLocationChange = (value: string) => {
-    setLocationInput(value);
-
-    // Simple logic to determine if input looks like a state or city
-    // You might want to enhance this logic based on your needs
-    const locationObject: Partial<Location> = {
-      club: value,
-      city: value,
-      formatted: value,
-    };
-
-    handleFilterChange({ location: locationObject });
-  };
-
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Input
-          placeholder="Location (Club or City)"
-          onChange={(e) => handleLocationChange(e.target.value)}
-          value={locationInput}
-        />
-        <Input
-          type="number"
-          placeholder="Min Price"
-          onChange={(e) =>
-            handleFilterChange({ minPrice: Number(e.target.value) })
-          }
-          value={filters.minPrice || ""}
-        />
-        <Input
-          type="number"
-          placeholder="Max Price"
-          onChange={(e) =>
-            handleFilterChange({ maxPrice: Number(e.target.value) })
-          }
-          value={filters.maxPrice || ""}
-        />
-        <Select
-          value={filters.sortBy || "date"}
-          onValueChange={(value) =>
-            handleFilterChange({ sortBy: value as ListingFilters["sortBy"] })
-          }
-        >
-          <option value="date">Date</option>
-          <option value="price">Price</option>
-          <option value="location">Location</option>
-        </Select>
-        <Button
-          variant="outline"
-          onClick={() =>
-            handleFilterChange({
-              sortOrder: filters.sortOrder === "asc" ? "desc" : "asc",
-            })
-          }
-        >
-          {filters.sortOrder === "asc" ? "↑" : "↓"}
-        </Button>
-      </div>
+    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-screen-lg mx-auto py-4">
+      {/* Sort Dropdown - Simplified to 4 common options */}
+      <Select value={selectedSort} onValueChange={handleSortChange}>
+        <SelectTrigger className="w-full sm:w-48">
+          <SelectValue placeholder="Sort by" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="newest">Most Recent</SelectItem>
+          <SelectItem value="oldest">Oldest First</SelectItem>
+          <SelectItem value="highest">Highest Price</SelectItem>
+          <SelectItem value="lowest">Lowest Price</SelectItem>
+        </SelectContent>
+      </Select>
+
+      {/* Tags Filter Dropdown */}
+      <Select value={selectedTag} onValueChange={handleTagChange}>
+        <SelectTrigger className="w-full sm:w-48">
+          <SelectValue placeholder="Filter by tag" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Items</SelectItem>
+          <SelectItem value="Hitting Partner">Hitting Partner</SelectItem>
+          <SelectItem value="Event">Event</SelectItem>
+          <SelectItem value="Equipment">Equipment</SelectItem>
+          <SelectItem value="Coaching">Coaching</SelectItem>
+          <SelectItem value="Service">Service</SelectItem>
+          <SelectItem value="Other">Other</SelectItem>
+        </SelectContent>
+      </Select>
     </div>
   );
 }

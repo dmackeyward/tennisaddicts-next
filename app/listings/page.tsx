@@ -24,7 +24,7 @@ export default async function ListingsPage() {
       <div className="flex-grow bg-gradient-to-b from-white to-green-100">
         {/* Hero Section */}
         <div className="container mx-auto max-w-6xl px-6 py-12">
-          <div className="flex flex-col items-center text-center space-y-6 mb-12">
+          <div className="flex flex-col items-center text-center space-y-6 mb-6">
             <div className="bg-white rounded-full p-4 shadow-lg">
               <Icon name="tennisball" size={48} className="text-green-600" />
             </div>

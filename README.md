@@ -36,6 +36,8 @@
 - [x] Create simple Contact Us page - form submission to tennisaddicts@gmail.com email inbox
 - [x] Individual News Page
 - [x] Mobile
+- [] Modularize Modal
+- [] Add padding to bottom of the pages for mobile
 - [] Sort - price, updatedAt, name - cool
 - [] Filter - tags, location - cool
 - [] Search functionality - local versus API search - query params - cool
@@ -48,7 +50,7 @@
 ## Bugs
 
 - [x] Create form background gradiant
-- [] Sidebar differs in mobile from desktop view
-- [] Homepage background gradiant
-- [] Cannot click logout on mobile sidebar cause of the overlay
+- [x] Sidebar differs in mobile from desktop view
+- [x] Homepage background gradiant
+- [x] Cannot click logout on mobile sidebar cause of the overlay
 - [] Bug - hacky implementation of navigating to success after a successful edit and unable to display an updated=true because when the query parameters are removed it triggers the modal view
