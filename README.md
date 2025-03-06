@@ -37,15 +37,15 @@
 - [x] Individual News Page
 - [x] Mobile
 - [] Modularize Modal
+- [] Improve Modal
 - [] Add padding to bottom of the pages for mobile
 - [] Sort - price, updatedAt, name - cool
 - [] Filter - tags, location - cool
 - [] Search functionality - local versus API search - query params - cool
 - [] Github Actions - cool
+- [] Court lookup - cool - allow users to contribute to info
 - [] Player lookup - Tennis NZ API - cool
-- [] Court lookup - cool
-- [] Improve mobile UI - boring
-- [] Error handling/exception flows - boring
+- [] Add Comments to News / Listings / Courts etc.
 
 ## Bugs
 

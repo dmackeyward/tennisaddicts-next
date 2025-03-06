@@ -4,9 +4,9 @@ import { notFound } from "next/navigation";
 import ListingDetail from "@/components/listings/ListingDetail";
 import { getListing } from "@/db/queries/listings";
 import { PLACEHOLDER_LISTING } from "@/types/listings";
-import { Modal } from "./modal";
-import { ErrorBoundary } from "@/app/components/ErrorBoundary";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { auth } from "@clerk/nextjs/server";
+import { Modal } from "@/components/Modal";
 
 export const dynamic = "force-dynamic";
 

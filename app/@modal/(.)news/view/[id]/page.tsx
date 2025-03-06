@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { Modal } from "./modal";
-import { ErrorBoundary } from "@/app/components/ErrorBoundary";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import newsData from "@/data/news-items.json";
 import { NewsItem } from "@/types/news";
 import {
@@ -16,6 +15,7 @@ import { formatDate } from "@/lib/format";
 import { Calendar } from "lucide-react";
 import ViewFullArticleButton from "./ViewFullArticleButton";
 import Image from "next/image";
+import { Modal } from "@/components/Modal";
 
 export const dynamic = "force-dynamic";
 
