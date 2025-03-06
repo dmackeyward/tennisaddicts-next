@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { ListingFilters, Location } from "@/types/listings";
+import type { ListingFilters } from "@/types/listings";
 
 interface ListingsFiltersProps {
   onFiltersChange: (filters: ListingFilters) => void;

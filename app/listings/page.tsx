@@ -2,7 +2,6 @@ import { Metadata } from "next";
 import { Suspense } from "react";
 import { ClientSideListings } from "../components/listings/ClientSideListings";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { getListings } from "@/db/queries/listings";
 import { auth } from "@clerk/nextjs/server";

@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { SignUp } from "@clerk/nextjs";
 import Link from "next/link";
-import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardHeader } from "@/components/ui/card";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Icon from "@/components/Icon";
