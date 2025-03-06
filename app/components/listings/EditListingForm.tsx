@@ -151,7 +151,20 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
       console.log("Server action complete result:", result);
 
       if (result.success) {
-        router.push(`/listings/view/${listing.id}/success`);
+        // Set the skipModal flag in sessionStorage
+        sessionStorage.setItem("skipModal", "true");
+
+        // Store a success message in sessionStorage to show after navigation
+        sessionStorage.setItem("listingUpdateSuccess", "true");
+
+        // Reset form to avoid unsaved changes warnings
+        form.reset(form.getValues());
+
+        // Use a slight delay and then perform a hard navigation
+        setTimeout(() => {
+          // Use window.location for a hard navigation instead of router.push
+          window.location.href = `/listings/view/${listing.id}`;
+        }, 100);
       } else {
         console.log("Submission failed, processing errors");
         if (typeof result.error === "string") {

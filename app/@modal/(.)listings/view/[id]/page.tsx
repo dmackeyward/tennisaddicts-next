@@ -7,6 +7,7 @@ import { PLACEHOLDER_LISTING } from "@/types/listings";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { auth } from "@clerk/nextjs/server";
 import { Modal } from "@/components/Modal";
+import ModalController from "@/components/ModalController";
 
 export const dynamic = "force-dynamic";
 
@@ -42,24 +43,26 @@ export default async function ListingModal({
   const { id } = await params;
 
   return (
-    <Modal>
-      <ErrorBoundary
-        fallback={
-          <div className="p-6 bg-white rounded-lg">
-            <h2 className="text-xl font-semibold text-red-600">
-              Error Loading Listing
-            </h2>
-            <p className="mt-2 text-gray-600">
-              There was a problem loading this listing.
-            </p>
-          </div>
-        }
-      >
-        <Suspense fallback={<ListingLoading />}>
-          <ListingContent id={id} />
-        </Suspense>
-      </ErrorBoundary>
-    </Modal>
+    <ModalController>
+      <Modal>
+        <ErrorBoundary
+          fallback={
+            <div className="p-6 bg-white rounded-lg">
+              <h2 className="text-xl font-semibold text-red-600">
+                Error Loading Listing
+              </h2>
+              <p className="mt-2 text-gray-600">
+                There was a problem loading this listing.
+              </p>
+            </div>
+          }
+        >
+          <Suspense fallback={<ListingLoading />}>
+            <ListingContent id={id} />
+          </Suspense>
+        </ErrorBoundary>
+      </Modal>
+    </ModalController>
   );
 }
 

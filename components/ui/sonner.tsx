@@ -7,7 +7,7 @@ import { Toaster as Sonner, toast } from "sonner";
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
-// Create a separate component for the part that uses useSearchParams
+// Create a separate component for the part that uses useSearchParams and checks sessionStorage
 const ToasterContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -16,9 +16,6 @@ const ToasterContent = () => {
   useEffect(() => {
     // Check if redirected from auth middleware
     const authRequired = searchParams.get("authRequired");
-
-    // Check if user is already signed in when trying to access sign-in page
-    const alreadySignedIn = searchParams.get("alreadySignedIn");
 
     if (authRequired === "true") {
       toast.error("Authentication required", {
@@ -32,20 +29,87 @@ const ToasterContent = () => {
       const newQuery = params.toString() ? `?${params.toString()}` : "";
       router.replace(`${pathname}${newQuery}`);
     }
-
-    if (alreadySignedIn === "true") {
-      toast.info("Already signed in", {
-        description: "You're already signed in to your account.",
-        duration: 3000,
-      });
-
-      // Clear the alreadySignedIn parameter
-      const params = new URLSearchParams(Array.from(searchParams.entries()));
-      params.delete("alreadySignedIn");
-      const newQuery = params.toString() ? `?${params.toString()}` : "";
-      router.replace(`${pathname}${newQuery}`);
-    }
   }, [searchParams, router, pathname]);
+
+  // Add a separate effect for checking sessionStorage
+  useEffect(() => {
+    // Check sessionStorage for messages, wrapped in try/catch for SSR safety
+    try {
+      // Check for listing update success message
+      if (sessionStorage.getItem("listingUpdateSuccess") === "true") {
+        toast.success("Listing updated successfully", {
+          duration: 3000,
+        });
+        sessionStorage.removeItem("listingUpdateSuccess");
+      }
+
+      if (sessionStorage.getItem("alreadySignedIn") === "true") {
+        toast.error("You are already signed in", {
+          duration: 3000,
+        });
+        sessionStorage.removeItem("alreadySignedIn");
+      }
+
+      // You can add more sessionStorage checks here as needed
+      // For example:
+      if (sessionStorage.getItem("listingCreated") === "true") {
+        toast.success("Listing created successfully", {
+          duration: 3000,
+        });
+        sessionStorage.removeItem("listingCreated");
+      }
+
+      if (sessionStorage.getItem("accountUpdated") === "true") {
+        toast.success("Account updated successfully", {
+          duration: 3000,
+        });
+        sessionStorage.removeItem("accountUpdated");
+      }
+
+      // Check for generic message
+      const genericMessage = sessionStorage.getItem("toastMessage");
+      if (genericMessage) {
+        const messageData = JSON.parse(genericMessage);
+
+        switch (messageData.type) {
+          case "success":
+            toast.success(messageData.title, {
+              description: messageData.description,
+              duration: messageData.duration || 3000,
+            });
+            break;
+          case "error":
+            toast.error(messageData.title, {
+              description: messageData.description,
+              duration: messageData.duration || 4000,
+            });
+            break;
+          case "info":
+            toast.info(messageData.title, {
+              description: messageData.description,
+              duration: messageData.duration || 3000,
+            });
+            break;
+          case "warning":
+            toast.warning(messageData.title, {
+              description: messageData.description,
+              duration: messageData.duration || 3500,
+            });
+            break;
+          default:
+            toast(messageData.title, {
+              description: messageData.description,
+              duration: messageData.duration || 3000,
+            });
+        }
+
+        sessionStorage.removeItem("toastMessage");
+      }
+    } catch (e) {
+      // Handle any sessionStorage access errors (like in SSR context)
+      console.error("Error accessing sessionStorage:", e);
+    }
+  }, []);
 
   return null;
 };

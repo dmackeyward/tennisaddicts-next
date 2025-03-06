@@ -15,8 +15,9 @@ export default async function SignUpPage() {
   const { userId } = await auth();
 
   if (userId) {
-    // Add the alreadySignedIn query parameter when redirecting
-    redirect("/?alreadySignedIn=true");
+    // Set the alreadySignedIn flag in sessionStorage
+    sessionStorage.setItem("alreadySignedIn", "true");
+    redirect("/");
   }
 
   return (
