@@ -37,7 +37,7 @@
 - [x] Individual News Page
 - [x] Mobile
 - [x] Modularize Modal
-- [] Add padding to bottom of the pages for mobile
+- [] Disable the image upload when page is submitting
 - [] Sort - price, updatedAt, name - cool
 - [] Filter - tags, location - cool
 - [] Search functionality - local versus API search - query params - cool
@@ -53,3 +53,8 @@
 - [x] Homepage background gradiant
 - [x] Cannot click logout on mobile sidebar cause of the overlay
 - [x] Remove the successful edit redirect and display a notification without rendering the modal
+
+## Mobile
+
+- [] Add padding to bottom of the pages for mobile
+- [] Not display a modal on mobile?
