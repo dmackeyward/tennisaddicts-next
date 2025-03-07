@@ -123,7 +123,7 @@
 @layer utilities {
   /* Bottom padding for mobile devices with home indicators/tab bars */
   .pb-safe {
-    padding-bottom: env(safe-area-inset-bottom, 1rem);
+    padding-bottom: env(safe-area-inset-bottom, 3.5rem);
   }
 
   /* Additional safe area utilities */
@@ -145,7 +145,11 @@
   */
 @media (max-width: 767px) {
   main {
-    padding-bottom: calc(1rem + env(safe-area-inset-bottom, 1rem));
+    padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0));
+  }
+
+  main > *:last-child {
+    margin-bottom: 2rem;
   }
 }
 
