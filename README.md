@@ -42,6 +42,7 @@
 - [] Filter - tags, location
 - [] Search functionality - local versus API search - query params
 - [] Github Actions
+- [] Modularize prompts
 
 ## Bugs
 

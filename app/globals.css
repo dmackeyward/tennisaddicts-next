@@ -1,9 +1,16 @@
+/**
+ * Tailwind CSS Imports
+ */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/**
+  * Root Variables & Theme Configuration
+  */
 @layer base {
   :root {
+    /* Core colors */
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
@@ -20,15 +27,21 @@
     --accent-foreground: 0 0% 9%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
+
+    /* UI elements */
     --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
     --ring: 0 0% 3.9%;
+    --radius: 0.5rem;
+
+    /* Chart colors */
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
+
+    /* Sidebar specific */
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
@@ -40,6 +53,7 @@
   }
 
   .dark {
+    /* Core colors - dark mode */
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
     --card: 0 0% 3.9%;
@@ -56,14 +70,20 @@
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
+
+    /* UI elements - dark mode */
     --border: 0 0% 14.9%;
     --input: 0 0% 14.9%;
     --ring: 0 0% 83.1%;
+
+    /* Chart colors - dark mode */
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+
+    /* Sidebar specific - dark mode */
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -75,6 +95,9 @@
   }
 }
 
+/**
+  * Base Element Styles
+  */
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -90,11 +113,46 @@
   }
 
   main {
-    @apply relative flex-1 flex flex-col min-h-0 overflow-auto;
+    @apply relative flex-1 flex flex-col min-h-0 overflow-auto pb-safe;
   }
 }
 
-/* Clerk components border removal */
+/**
+  * Custom Utilities - Safe Areas for Mobile
+  */
+@layer utilities {
+  /* Bottom padding for mobile devices with home indicators/tab bars */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 1rem);
+  }
+
+  /* Additional safe area utilities */
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0);
+  }
+
+  .pl-safe {
+    padding-left: env(safe-area-inset-left, 0);
+  }
+
+  .pr-safe {
+    padding-right: env(safe-area-inset-right, 0);
+  }
+}
+
+/**
+  * Mobile-specific Adjustments
+  */
+@media (max-width: 767px) {
+  main {
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom, 1rem));
+  }
+}
+
+/**
+  * Clerk Authentication UI Overrides
+  */
+/* Base Clerk component styling */
 .cl-card,
 .cl-rootBox,
 .cl-main,
@@ -105,21 +163,21 @@
   border-radius: 0 !important;
 }
 
-/* Target Clerk internal classes that might be responsible for borders/shadows */
+/* Internal Clerk classes */
 [class^="cl-internal-"],
 [class*=" cl-internal-"] {
   border: none !important;
   box-shadow: none !important;
 }
 
-/* Target any Clerk element with card in the name */
+/* Card elements */
 [class*="cl-card"],
 [class*="Card"] {
   border: none !important;
   box-shadow: none !important;
 }
 
-/* Ensure no Clerk container has border or shadow */
+/* Container elements */
 .cl-rootBox,
 .cl-card,
 .cl-cardWrapper,
@@ -131,8 +189,10 @@
   box-shadow: none !important;
 }
 
-/* ============== MOBILE SIDEBAR CLERK FIXES ============== */
-/* Ensure sign-in/sign-up pages are on top */
+/**
+  * Mobile Sidebar & Clerk Integration Fixes
+  */
+/* Sign-in/Sign-up page z-index */
 .cl-card,
 .cl-main,
 .cl-signIn-root,
@@ -140,24 +200,24 @@
   z-index: 5000 !important;
 }
 
-/* Fix for Sheet modal overlay */
+/* Sheet modal overlay fix */
 .fixed.inset-0[aria-hidden="true"] {
   pointer-events: none !important;
 }
 
-/* Important: Make the Clerk popover portal positioned relative to the viewport */
+/* Clerk popover portal positioning */
 #clerk-frontend .cl-userButtonPopoverPortal {
   position: fixed !important;
   z-index: 10000 !important;
 }
 
-/* Main Clerk component fixes */
+/* Main Clerk component positioning */
 .cl-rootBox {
   position: relative !important;
   z-index: 10 !important;
 }
 
-/* Ensure all Clerk buttons receive clicks */
+/* Button click handling */
 [class*="cl-userButton"],
 [class*="cl-userButtonPopover"],
 .cl-userButtonPopoverCard,
@@ -172,34 +232,34 @@
   z-index: 10000 !important;
 }
 
-/* Stop clicks on clerk menu from triggering sidebar toggle */
+/* Clerk menu click propagation */
 [class*="cl-userButtonPopover"] * {
   pointer-events: auto !important;
 }
 
-/* Fix for the backdrop */
+/* Backdrop handling */
 .cl-userButtonPopoverCard_backdrop {
   pointer-events: none !important;
 }
 
-/* Fix for clerk portal placement */
+/* Portal placement */
 .cl-userButtonPopoverCard {
   pointer-events: auto !important;
   position: absolute !important;
   z-index: 10000 !important;
 }
 
-/* Force the Sheet content to have overflow visible for dropdown menus */
+/* Sheet content overflow */
 [data-mobile="true"][data-sidebar="sidebar"] {
   overflow: visible !important;
 }
 
-/* Make sure the Sheet doesn't block any clicks */
+/* Dialog click handling */
 [role="dialog"].fixed.inset-0 {
   pointer-events: auto !important;
 }
 
-/* Ensure the Sheet backdrop doesn't block clerk elements */
+/* Backdrop click handling */
 [role="dialog"].fixed.inset-0[data-state="open"] > .fixed.inset-0 {
   pointer-events: none !important;
 }
