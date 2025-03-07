@@ -37,12 +37,12 @@
 - [x] Individual News Page
 - [x] Mobile
 - [x] Modularize Modal
-- [] Disable the image upload when page is submitting
+- [x] Disable the image upload when page is submitting
+- [] Github Actions
+- [] Modularize prompts
 - [] Sort - price, updatedAt, name
 - [] Filter - tags, location
 - [] Search functionality - local versus API search - query params
-- [] Github Actions
-- [] Modularize prompts
 
 ## Bugs
 
