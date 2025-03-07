@@ -16,6 +16,7 @@ import { Calendar } from "lucide-react";
 import ViewFullArticleButton from "./ViewFullArticleButton";
 import Image from "next/image";
 import { Modal } from "@/components/Modal";
+import ModalController from "@/components/ModalController";
 
 export const dynamic = "force-dynamic";
 
@@ -107,24 +108,26 @@ export default async function NewsModal({
   const { id } = await params;
 
   return (
-    <Modal>
-      <ErrorBoundary
-        fallback={
-          <div className="p-6 bg-white rounded-lg">
-            <h2 className="text-xl font-semibold text-red-600">
-              Error Loading News
-            </h2>
-            <p className="mt-2 text-gray-600">
-              There was a problem loading this news article.
-            </p>
-          </div>
-        }
-      >
-        <Suspense fallback={<NewsItemLoading />}>
-          <NewsContent id={id} />
-        </Suspense>
-      </ErrorBoundary>
-    </Modal>
+    <ModalController>
+      <Modal>
+        <ErrorBoundary
+          fallback={
+            <div className="p-6 bg-white rounded-lg">
+              <h2 className="text-xl font-semibold text-red-600">
+                Error Loading News
+              </h2>
+              <p className="mt-2 text-gray-600">
+                There was a problem loading this news article.
+              </p>
+            </div>
+          }
+        >
+          <Suspense fallback={<NewsItemLoading />}>
+            <NewsContent id={id} />
+          </Suspense>
+        </ErrorBoundary>
+      </Modal>
+    </ModalController>
   );
 }
 

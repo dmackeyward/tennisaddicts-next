@@ -1,3 +1,5 @@
+"use client";
+
 import React, { memo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -12,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatPrice, formatDate } from "@/lib/format";
-import { handleModalNavigation } from "@/utils/device"; // Import the utility
+import { handleModalNavigation } from "@/utils/device";
 
 interface ListingCardProps {
   listing?: Listing;
@@ -20,6 +22,7 @@ interface ListingCardProps {
   onError?: (error: Error) => void;
 }
 
+// LoadingSkeleton component unchanged...
 const LoadingSkeleton = memo(() => (
   <div role="status" aria-label="Loading listing card">
     <Card className="h-full">
@@ -41,6 +44,7 @@ const LoadingSkeleton = memo(() => (
 
 LoadingSkeleton.displayName = "LoadingSkeleton";
 
+// ListingImage component unchanged...
 const ListingImage = memo(
   ({ image, title }: { image?: Listing["images"][0]; title: string }) => {
     const [isImageError, setIsImageError] = useState(false);
@@ -89,7 +93,7 @@ const ListingCard: React.FC<ListingCardProps> = memo(
     // Get the listing URL
     const listingUrl = `/listings/view/${displayData.id}`;
 
-    // Handle navigation and link click
+    // Handle link click - set skipModal flag if on mobile
     const handleLinkClick = () => {
       handleModalNavigation(listingUrl);
     };

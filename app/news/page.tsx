@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,13 +7,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Metadata } from "next";
-import Link from "next/link";
 import newsData from "@/data/news-items.json";
 import { formatDate } from "@/lib/format";
 import { NewsItem } from "@/types/news";
 import Icon from "@/components/Icon";
 import Image from "next/image";
-import { handleModalNavigation } from "@/utils/device"; // Import the utility
+import ModalLinkButton from "@/components/ModalLinkButton"; // Make sure this path is correct
 
 export const metadata: Metadata = {
   title: "News",
@@ -43,11 +41,6 @@ export default function News() {
           {newsItems.map((item) => {
             // Get the news article URL
             const newsUrl = `/news/view/${item.id}`;
-
-            // Handle click for Read More button
-            const handleReadMoreClick = () => {
-              handleModalNavigation(newsUrl);
-            };
 
             return (
               <Card key={item.id} className="overflow-hidden">
@@ -78,9 +71,9 @@ export default function News() {
                     </CardContent>
                     <CardFooter className="flex justify-between items-center mt-auto">
                       <p className="text-sm text-gray-500">By {item.author}</p>
-                      <Link href={newsUrl} onClick={handleReadMoreClick}>
-                        <Button variant="outline">Read More</Button>
-                      </Link>
+                      <ModalLinkButton href={newsUrl} variant="outline">
+                        Read More
+                      </ModalLinkButton>
                     </CardFooter>
                   </div>
                 </div>

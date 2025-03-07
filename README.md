@@ -52,6 +52,7 @@
 - [x] Cannot click logout on mobile sidebar cause of the overlay
 - [x] Remove the successful edit redirect and display a notification without rendering the modal
 - [x] Fix the View Listing gradient container
+- [] Close sidebar from header and footer on sidebar
 
 ## Mobile
 
