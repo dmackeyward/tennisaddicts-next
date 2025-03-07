@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatPrice, formatDate } from "@/lib/format";
+import { handleModalNavigation } from "@/utils/device"; // Import the utility
 
 interface ListingCardProps {
   listing?: Listing;
@@ -85,12 +86,21 @@ const ListingCard: React.FC<ListingCardProps> = memo(
     // Format the listing date for screen readers
     const formattedDate = formatDate(displayData.updatedAt);
 
+    // Get the listing URL
+    const listingUrl = `/listings/view/${displayData.id}`;
+
+    // Handle navigation and link click
+    const handleLinkClick = () => {
+      handleModalNavigation(listingUrl);
+    };
+
     return (
       <Link
-        href={`/listings/view/${displayData.id}`}
+        href={listingUrl}
         className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg"
         aria-label={`View details for ${displayData.title}`}
         tabIndex={isPlaceholder ? -1 : 0}
+        onClick={handleLinkClick}
       >
         <Card className="h-full hover:shadow-lg transition-shadow duration-200">
           <CardHeader>
