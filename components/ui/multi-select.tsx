@@ -25,6 +25,7 @@ interface MultiSelectorProps
   values: string[];
   onValuesChange: (value: string[]) => void;
   loop?: boolean;
+  disabled?: boolean; // Add disabled prop to interface
 }
 
 interface MultiSelectContextProps {
@@ -38,6 +39,7 @@ interface MultiSelectContextProps {
   setActiveIndex: React.Dispatch<React.SetStateAction<number>>;
   inputRef: MutableRefObject<HTMLInputElement | null>;
   handleSelect: (e: React.SyntheticEvent<HTMLInputElement>) => void;
+  disabled?: boolean; // Add disabled to context
 }
 
 const MultiSelectContext = createContext<MultiSelectContextProps | undefined>(
@@ -59,6 +61,7 @@ const MultiSelector = ({
   className,
   children,
   dir,
+  disabled = false, // Default to false
   ...props
 }: MultiSelectorProps) => {
   const [inputValue, setInputValue] = useState("");
@@ -70,17 +73,21 @@ const MultiSelector = ({
 
   const onValueChangeHandler = useCallback(
     (val: string) => {
+      if (disabled) return; // Skip if disabled
+
       if (value.includes(val)) {
         onValueChange(value.filter((item) => item !== val));
       } else {
         onValueChange([...value, val]);
       }
     },
-    [value, onValueChange]
+    [value, onValueChange, disabled]
   );
 
   const handleSelect = React.useCallback(
     (e: React.SyntheticEvent<HTMLInputElement>) => {
+      if (disabled) return; // Skip if disabled
+
       e.preventDefault();
       const target = e.currentTarget;
       const selection = target.value.substring(
@@ -91,11 +98,13 @@ const MultiSelector = ({
       setSelectedValue(selection);
       setIsValueSelected(selection === inputValue);
     },
-    [inputValue]
+    [inputValue, disabled]
   );
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLDivElement>) => {
+      if (disabled) return; // Skip if disabled
+
       e.stopPropagation();
       const target = inputRef.current;
 
@@ -194,7 +203,18 @@ const MultiSelector = ({
       selectedValue,
       isValueSelected,
       open,
+      disabled,
     ]
+  );
+
+  // Only allow opening the selector if not disabled
+  const handleSetOpen = useCallback(
+    (newOpen: boolean) => {
+      if (!disabled) {
+        setOpen(newOpen);
+      }
+    },
+    [disabled]
   );
 
   return (
@@ -203,20 +223,22 @@ const MultiSelector = ({
         value,
         onValueChange: onValueChangeHandler,
         open,
-        setOpen,
+        setOpen: handleSetOpen,
         inputValue,
         setInputValue,
         activeIndex,
         setActiveIndex,
         inputRef,
         handleSelect,
+        disabled,
       }}
     >
       <Command
         onKeyDown={handleKeyDown}
         className={cn(
           "flex flex-col space-y-2 overflow-visible bg-transparent",
-          className
+          className,
+          disabled && "opacity-70 pointer-events-none" // Add disabled styling
         )}
         dir={dir}
         {...props}
@@ -231,7 +253,7 @@ const MultiSelectorTrigger = forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, children, ...props }, ref) => {
-  const { value, onValueChange, activeIndex } = useMultiSelect();
+  const { value, onValueChange, activeIndex, disabled } = useMultiSelect();
 
   const mousePreventDefault = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -245,6 +267,7 @@ const MultiSelectorTrigger = forwardRef<
         "flex flex-wrap gap-1 rounded-lg bg-background p-1 py-2 ring-1 ring-muted",
         {
           "ring-1 focus-within:ring-ring": activeIndex === -1,
+          "opacity-70 cursor-not-allowed": disabled, // Add disabled styling
         },
         className
       )}
@@ -265,10 +288,16 @@ const MultiSelectorTrigger = forwardRef<
             aria-roledescription="button to remove option"
             type="button"
             onMouseDown={mousePreventDefault}
-            onClick={() => onValueChange(item)}
+            onClick={() => !disabled && onValueChange(item)}
+            disabled={disabled}
           >
             <span className="sr-only">Remove {item} option</span>
-            <RemoveIcon className="h-4 w-4 hover:stroke-destructive" />
+            <RemoveIcon
+              className={cn(
+                "h-4 w-4 hover:stroke-destructive",
+                disabled && "hover:stroke-current"
+              )}
+            />
           </button>
         </Badge>
       ))}
@@ -283,7 +312,6 @@ const MultiSelectorInput = forwardRef<
   React.ComponentRef<typeof CommandPrimitive.Input>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
 >(({ className, ...props }, ref) => {
-  // Added ref parameter here
   const {
     setOpen,
     inputValue,
@@ -291,23 +319,28 @@ const MultiSelectorInput = forwardRef<
     activeIndex,
     setActiveIndex,
     handleSelect,
+    disabled,
   } = useMultiSelect();
 
   return (
     <CommandPrimitive.Input
       {...props}
-      tabIndex={0}
-      ref={ref} // Using the forwarded ref instead of inputRef
+      tabIndex={disabled ? -1 : 0} // Make non-focusable when disabled
+      ref={ref}
       value={inputValue}
-      onValueChange={activeIndex === -1 ? setInputValue : undefined}
+      onValueChange={
+        activeIndex === -1 && !disabled ? setInputValue : undefined
+      }
       onSelect={handleSelect}
       onBlur={() => setOpen(false)}
-      onFocus={() => setOpen(true)}
-      onClick={() => setActiveIndex(-1)}
+      onFocus={() => !disabled && setOpen(true)}
+      onClick={() => !disabled && setActiveIndex(-1)}
+      disabled={disabled} // Add native disabled attribute
       className={cn(
         "ml-2 flex-1 bg-transparent outline-none placeholder:text-sm placeholder:text-muted-foreground",
         className,
-        activeIndex !== -1 && "caret-transparent"
+        activeIndex !== -1 && "caret-transparent",
+        disabled && "cursor-not-allowed"
       )}
     />
   );
@@ -320,10 +353,12 @@ const MultiSelectorContent = forwardRef<
   React.HTMLAttributes<HTMLDivElement>
 >((props, ref) => {
   const { children, ...rest } = props;
-  const { open } = useMultiSelect();
+  const { open, disabled } = useMultiSelect();
+
+  // Don't render content if disabled
   return (
     <div ref={ref} className="relative" {...rest}>
-      {open && children}
+      {open && !disabled && children}
     </div>
   );
 });
@@ -358,7 +393,15 @@ const MultiSelectorItem = forwardRef<
     typeof CommandPrimitive.Item
   >
 >(({ className, value, children, ...props }, ref) => {
-  const { value: Options, onValueChange, setInputValue } = useMultiSelect();
+  const {
+    value: Options,
+    onValueChange,
+    setInputValue,
+    disabled: contextDisabled,
+  } = useMultiSelect();
+
+  // Combine component disabled prop with context disabled
+  const isDisabled = props.disabled || contextDisabled;
 
   const mousePreventDefault = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -370,15 +413,18 @@ const MultiSelectorItem = forwardRef<
     <CommandItem
       ref={ref}
       {...props}
+      disabled={isDisabled} // Pass combined disabled state
       onSelect={() => {
-        onValueChange(value);
-        setInputValue("");
+        if (!isDisabled) {
+          onValueChange(value);
+          setInputValue("");
+        }
       }}
       className={cn(
         "flex cursor-pointer justify-between rounded-md px-2 py-1 transition-colors",
         className,
         isIncluded && "cursor-default opacity-50",
-        props.disabled && "cursor-not-allowed opacity-50"
+        isDisabled && "cursor-not-allowed opacity-50"
       )}
       onMouseDown={mousePreventDefault}
     >

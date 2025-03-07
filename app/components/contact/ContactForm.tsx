@@ -36,6 +36,9 @@ export default function ContactForm() {
     error: "",
   });
 
+  // Determine if form should be disabled
+  const isFormDisabled = status.loading;
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStatus({ ...status, loading: true, error: "" });
@@ -112,6 +115,7 @@ export default function ContactForm() {
                 onChange={(e) =>
                   setFormState({ ...formState, name: e.target.value })
                 }
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -127,6 +131,7 @@ export default function ContactForm() {
                 onChange={(e) =>
                   setFormState({ ...formState, email: e.target.value })
                 }
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -139,6 +144,7 @@ export default function ContactForm() {
                   setFormState({ ...formState, subject: value })
                 }
                 required
+                disabled={isFormDisabled}
               >
                 <SelectTrigger id="subject">
                   <SelectValue placeholder="Select a subject" />
@@ -164,10 +170,11 @@ export default function ContactForm() {
                 onChange={(e) =>
                   setFormState({ ...formState, message: e.target.value })
                 }
+                disabled={isFormDisabled}
               />
             </div>
 
-            <Button type="submit" className="w-full" disabled={status.loading}>
+            <Button type="submit" className="w-full" disabled={isFormDisabled}>
               {status.loading ? "Sending..." : "Send Message"}
             </Button>
           </form>

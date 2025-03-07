@@ -92,6 +92,9 @@ export default function CreateListingForm({
   const router = useRouter();
   const { isSignedIn, isLoaded } = useAuth();
 
+  // Determine if form should be disabled
+  const isFormDisabled = isPending || isUploading || (!isSignedIn && isLoaded);
+
   const defaultValues: FormValues = {
     title: "",
     description: "",
@@ -111,6 +114,13 @@ export default function CreateListingForm({
   });
 
   const handleSubmit = async (values: FormValues) => {
+    // Prevent form submission if not signed in
+    if (!isSignedIn && isLoaded) {
+      toast.error("Please sign in to create a listing");
+      router.push("/sign-in");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("title", values.title);
     formData.append("description", values.description);
@@ -195,6 +205,7 @@ export default function CreateListingForm({
                     placeholder="E.g. Wilson Blade"
                     {...field}
                     className="w-full"
+                    disabled={isFormDisabled}
                   />
                 </FormControl>
                 <FormDescription>
@@ -205,7 +216,6 @@ export default function CreateListingForm({
               </FormItem>
             )}
           />
-
           {/* Description Field */}
           <FormField
             control={form.control}
@@ -218,6 +228,7 @@ export default function CreateListingForm({
                     placeholder="Describe your item in detail..."
                     className="min-h-32 resize-none"
                     {...field}
+                    disabled={isFormDisabled}
                   />
                 </FormControl>
                 <FormDescription>
@@ -228,7 +239,6 @@ export default function CreateListingForm({
               </FormItem>
             )}
           />
-
           {/* Price Field */}
           <FormField
             control={form.control}
@@ -253,6 +263,7 @@ export default function CreateListingForm({
                         const value = e.target.value.replace(/^0+(?=\d)/, "");
                         onChange(value);
                       }}
+                      disabled={isFormDisabled}
                     />
                   </div>
                 </FormControl>
@@ -263,7 +274,6 @@ export default function CreateListingForm({
               </FormItem>
             )}
           />
-
           {/* Location Field */}
           <FormField
             control={form.control}
@@ -287,6 +297,7 @@ export default function CreateListingForm({
                         console.log("Club changed to:", location);
                         field.onChange(location);
                       }}
+                      disabled={isFormDisabled}
                     />
                   </FormControl>
                   {errorMessage && (
@@ -298,7 +309,6 @@ export default function CreateListingForm({
               );
             }}
           />
-
           {/* Tags Field */}
           <FormField
             control={form.control}
@@ -312,6 +322,7 @@ export default function CreateListingForm({
                     onValuesChange={field.onChange}
                     loop
                     className="max-w-xs"
+                    disabled={isFormDisabled}
                   >
                     <MultiSelectorTrigger>
                       <MultiSelectorInput placeholder="Select tags (max 3)" />
@@ -332,7 +343,6 @@ export default function CreateListingForm({
               </FormItem>
             )}
           />
-
           {/* Image Upload Field */}
           <FormField
             control={form.control}
@@ -342,7 +352,7 @@ export default function CreateListingForm({
                 <FormLabel>Images</FormLabel>
                 <FormControl>
                   <div className="space-y-4">
-                    {/* Display uploaded images first, matching EditListingForm pattern */}
+                    {/* Display uploaded images first */}
                     {field.value.length > 0 && (
                       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4">
                         {field.value.map((url, index) => (
@@ -362,6 +372,7 @@ export default function CreateListingForm({
                                 field.onChange(newImages);
                               }}
                               className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                              disabled={isFormDisabled}
                             >
                               ×
                             </button>
@@ -370,10 +381,15 @@ export default function CreateListingForm({
                       </div>
                     )}
 
-                    {/* Upload dropzone after displaying images */}
+                    {/* Use the native disabled prop */}
                     <UploadDropzone
                       endpoint="imageUploader"
+                      disabled={isFormDisabled}
                       onUploadBegin={(files) => {
+                        if (isFormDisabled) {
+                          return false;
+                        }
+
                         const fileArray: File[] =
                           typeof files === "string"
                             ? [new File([], files, { type: "image/jpeg" })]
@@ -444,28 +460,17 @@ export default function CreateListingForm({
               </FormItem>
             )}
           />
-
           {/* Form Actions */}
           <div className="flex justify-end space-x-4">
             <Button
               type="button"
               variant="outline"
               onClick={() => router.back()}
-              disabled={isPending || isUploading}
+              disabled={isFormDisabled}
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={isPending || isUploading}
-              onClick={(e) => {
-                if (!isSignedIn && isLoaded) {
-                  e.preventDefault();
-                  toast.error("Please sign in to create a listing");
-                  router.push("/sign-in"); // Or your Clerk sign-in page
-                }
-              }}
-            >
+            <Button type="submit" disabled={isFormDisabled}>
               {!isSignedIn && isLoaded ? (
                 "Sign in to Create"
               ) : isPending ? (

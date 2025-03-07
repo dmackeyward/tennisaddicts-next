@@ -93,6 +93,9 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
   const [hasFormChanged, setHasFormChanged] = useState(false);
   const router = useRouter();
 
+  // Determine if form should be disabled
+  const isFormDisabled = isPending || isUploading;
+
   // Memoize defaultValues to prevent recreation on every render
   const defaultValues = useMemo<FormValues>(
     () => ({
@@ -227,6 +230,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                     placeholder="E.g. Wilson Blade"
                     {...field}
                     className="w-full"
+                    disabled={isFormDisabled}
                   />
                 </FormControl>
                 <FormDescription>
@@ -237,7 +241,6 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
               </FormItem>
             )}
           />
-
           {/* Description Field */}
           <FormField
             control={form.control}
@@ -250,6 +253,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                     placeholder="Describe your item in detail..."
                     className="min-h-32 resize-none"
                     {...field}
+                    disabled={isFormDisabled}
                   />
                 </FormControl>
                 <FormDescription>
@@ -260,7 +264,6 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
               </FormItem>
             )}
           />
-
           {/* Price Field */}
           <FormField
             control={form.control}
@@ -285,6 +288,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                         const value = e.target.value.replace(/^0+(?=\d)/, "");
                         onChange(value);
                       }}
+                      disabled={isFormDisabled}
                     />
                   </div>
                 </FormControl>
@@ -295,7 +299,6 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
               </FormItem>
             )}
           />
-
           {/* Location Field */}
           <FormField
             control={form.control}
@@ -319,6 +322,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                         console.log("Club changed to:", location);
                         field.onChange(location);
                       }}
+                      disabled={isFormDisabled}
                     />
                   </FormControl>
                   {errorMessage && (
@@ -330,7 +334,6 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
               );
             }}
           />
-
           {/* Tags Field */}
           <FormField
             control={form.control}
@@ -344,6 +347,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                     onValuesChange={field.onChange}
                     loop
                     className="max-w-xs"
+                    disabled={isFormDisabled}
                   >
                     <MultiSelectorTrigger>
                       <MultiSelectorInput placeholder="Select tags (max 3)" />
@@ -364,7 +368,6 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
               </FormItem>
             )}
           />
-
           {/* Image Upload Field */}
           <FormField
             control={form.control}
@@ -374,6 +377,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                 <FormLabel>Images</FormLabel>
                 <FormControl>
                   <div className="space-y-4">
+                    {/* Display uploaded images first */}
                     {field.value.length > 0 && (
                       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4">
                         {field.value.map((url, index) => (
@@ -393,6 +397,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                                 field.onChange(newImages);
                               }}
                               className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                              disabled={isFormDisabled}
                             >
                               ×
                             </button>
@@ -401,9 +406,15 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                       </div>
                     )}
 
+                    {/* Use the native disabled prop */}
                     <UploadDropzone
                       endpoint="imageUploader"
+                      disabled={isFormDisabled}
                       onUploadBegin={(files) => {
+                        if (isFormDisabled) {
+                          return false;
+                        }
+
                         const fileArray: File[] =
                           typeof files === "string"
                             ? [new File([], files, { type: "image/jpeg" })]
@@ -474,21 +485,17 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
               </FormItem>
             )}
           />
-
           {/* Form Actions */}
           <div className="flex justify-end space-x-4">
             <Button
               type="button"
               variant="outline"
               onClick={() => router.back()}
-              disabled={isPending || isUploading}
+              disabled={isFormDisabled}
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={isPending || isUploading || !hasFormChanged}
-            >
+            <Button type="submit" disabled={isFormDisabled || !hasFormChanged}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
