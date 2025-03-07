@@ -38,13 +38,10 @@
 - [x] Mobile
 - [x] Modularize Modal
 - [] Disable the image upload when page is submitting
-- [] Sort - price, updatedAt, name - cool
-- [] Filter - tags, location - cool
-- [] Search functionality - local versus API search - query params - cool
-- [] Github Actions - cool
-- [] Court lookup - cool - allow users to contribute to info
-- [] Player lookup - Tennis NZ API - cool
-- [] Add Comments to News / Listings / Courts etc.
+- [] Sort - price, updatedAt, name
+- [] Filter - tags, location
+- [] Search functionality - local versus API search - query params
+- [] Github Actions
 
 ## Bugs
 
@@ -53,8 +50,15 @@
 - [x] Homepage background gradiant
 - [x] Cannot click logout on mobile sidebar cause of the overlay
 - [x] Remove the successful edit redirect and display a notification without rendering the modal
+- [x] Fix the View Listing gradient container
 
 ## Mobile
 
 - [] Add padding to bottom of the pages for mobile
-- [] Not display a modal on mobile?
+- [] Disable modal view on mobile
+
+## Future features
+
+- [] Court lookup - cool - allow users to contribute to info
+- [] Player lookup - Tennis NZ API - cool
+- [] Add Comments to News / Listings / Courts

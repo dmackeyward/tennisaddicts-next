@@ -9,16 +9,18 @@ import { auth } from "@clerk/nextjs/server";
 
 export const dynamic = "force-dynamic";
 
-// Loading component stays the same
+// Loading component with full-width gradient
 function ListingLoading() {
   return (
-    <div className="container mx-auto max-w-6xl px-6 py-8 min-h-screen bg-gradient-to-b from-white to-green-100">
-      <ListingDetail listing={PLACEHOLDER_LISTING} isLoading={true} />
+    <div className="min-h-screen w-full bg-gradient-to-b from-white to-green-100">
+      <div className="container mx-auto max-w-6xl px-6 py-8">
+        <ListingDetail listing={PLACEHOLDER_LISTING} isLoading={true} />
+      </div>
     </div>
   );
 }
 
-// Main listing content stays the same
+// Main listing content with full-width gradient
 async function ListingContent({ id }: { id: string }) {
   const listing = await getListing(id);
 
@@ -33,13 +35,19 @@ async function ListingContent({ id }: { id: string }) {
   const isAuthor = userId ? userId === listing.userId : false;
 
   return (
-    <div className="container mx-auto max-w-6xl px-6 py-8 min-h-screen bg-gradient-to-b from-white to-green-100">
-      <ListingDetail listing={listing} isLoading={false} isAuthor={isAuthor} />
+    <div className="min-h-screen w-full bg-gradient-to-b from-white to-green-100">
+      <div className="container mx-auto max-w-6xl px-6 py-8">
+        <ListingDetail
+          listing={listing}
+          isLoading={false}
+          isAuthor={isAuthor}
+        />
+      </div>
     </div>
   );
 }
 
-// Main page component - simplified props type
+// Main page component
 export default function ListingPage({
   params,
 }: {
@@ -53,7 +61,7 @@ export default function ListingPage({
   );
 }
 
-// Generate metadata - using the same simplified type
+// Generate metadata
 export async function generateMetadata({
   params,
 }: {
