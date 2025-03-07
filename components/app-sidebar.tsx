@@ -125,6 +125,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     }
   };
 
+  // New function to handle navigation link clicks
+  const handleNavLinkClick = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+    } else if (state === "expanded") {
+      toggleSidebar();
+    }
+  };
+
   return (
     <TooltipProvider>
       <Sidebar
@@ -147,7 +156,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton size="lg" asChild tooltip={"Home"}>
-                  <Link href="/" className="flex items-center justify-center">
+                  <Link
+                    href="/"
+                    className="flex items-center justify-center"
+                    onClick={handleNavLinkClick}
+                  >
                     <div className="flex justify-center">
                       <Icon name="tennisball" size={24} />
                     </div>
@@ -199,6 +212,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <Link
                     href="/sign-in"
                     className="flex items-center justify-center"
+                    onClick={handleNavLinkClick}
                   >
                     <div className="flex justify-center">
                       <UserPlus className="size-5" />
@@ -219,14 +233,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             {/* Maintain desktop behavior but ensure mobile shows the sign-in button */}
             {state === "collapsed" && !isMobile ? (
               <div className="flex flex-col items-center gap-4 px-2 py-4">
-                <Link href="/sign-in">
+                <Link href="/sign-in" onClick={handleNavLinkClick}>
                   <button className="flex items-center justify-center rounded-md p-2 hover:bg-sidebar-muted"></button>
                 </Link>
               </div>
             ) : (
               <>
                 <SignInButton>
-                  <button className="pb-5"></button>
+                  <button
+                    className="pb-5"
+                    onClick={handleNavLinkClick}
+                  ></button>
                 </SignInButton>
               </>
             )}
