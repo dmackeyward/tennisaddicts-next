@@ -57,7 +57,7 @@
 ## Mobile
 
 - [x] Add padding to bottom of the pages for mobile
-- [] Disable modal view on mobile
+- [x] Disable modal view on mobile
 
 ## Future features
 
