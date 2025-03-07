@@ -38,7 +38,8 @@
 - [x] Mobile
 - [x] Modularize Modal
 - [x] Disable the image upload when page is submitting
-- [] Github Actions
+- [x] Github Actions
+- [] Test Github Actions
 - [] Modularize prompts
 - [] Sort - price, updatedAt, name
 - [] Filter - tags, location
