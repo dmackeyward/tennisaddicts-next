@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="bg-gradient-to-b from-white to-green-100">
+    <div className="bg-gradient-to-b from-white to-green-100 gradient-extender">
       {/* Hero Section */}
       <div className="container mx-auto max-w-6xl px-6 py-12">
         <div className="flex flex-col items-center text-center space-y-6 mb-12">

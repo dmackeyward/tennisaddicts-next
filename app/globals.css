@@ -154,6 +154,41 @@
 }
 
 /**
+ * Gradient Extensions for Mobile
+ */
+/* Gradient extender for mobile that preserves the gradient */
+.gradient-extender {
+  position: relative;
+  min-height: 100vh;
+  /* Keeps content from being cut off */
+  padding-bottom: env(safe-area-inset-bottom, 2.5rem);
+}
+
+/* A pseudo-element that extends the gradient beyond the safe area */
+.gradient-extender::after {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: env(safe-area-inset-bottom, 2.5rem);
+  /* The background will match whatever gradient is applied to the parent */
+  background: inherit;
+  background-position: bottom;
+  /* Ensures it's at the bottom of the gradient */
+  background-attachment: fixed;
+  z-index: -1;
+}
+
+/* Ensures any container wrapping a page doesn't crop the extended gradient */
+html,
+body,
+#__next,
+main {
+  min-height: 100vh;
+}
+
+/**
   * Clerk Authentication UI Overrides
   */
 /* Base Clerk component styling */
