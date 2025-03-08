@@ -26,7 +26,6 @@ const createSearchParams = (
   // Handle location object by using individual parts
   if (filters.location) {
     const locationParts = [];
-    if (filters.location.club) locationParts.push(filters.location.club);
     if (filters.location.city) locationParts.push(filters.location.city);
     if (locationParts.length > 0) {
       params.location = locationParts.join(", ");

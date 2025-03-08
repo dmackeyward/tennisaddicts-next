@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
   Select,
   SelectContent,
@@ -14,6 +15,7 @@ import { AVAILABLE_TAGS } from "@/types/listings";
 interface ListingsFiltersProps {
   onFiltersChange: (filters: ListingFilters) => Promise<void>;
   initialFilters?: ListingFilters;
+  disabled?: boolean;
 }
 
 export function ListingsFilters({
@@ -22,43 +24,81 @@ export function ListingsFilters({
     sortBy: "date",
     sortOrder: "desc",
   },
+  disabled = false,
 }: ListingsFiltersProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // State for filters
   const [filters, setFilters] = useState<ListingFilters>(initialFilters);
 
+  // UI state for dropdowns
   const [selectedTag, setSelectedTag] = useState<string>("all");
   const [selectedSort, setSelectedSort] = useState<string>("newest");
   const [selectedCity, setSelectedCity] = useState<string>("all");
-  const [selectedClub, setSelectedClub] = useState<string>("all");
 
-  // Initialize UI states from initialFilters
+  // Function to create query string with updated parameters
+  const createQueryString = useCallback(
+    (params: Record<string, string | undefined>) => {
+      const urlParams = new URLSearchParams(searchParams.toString());
+
+      // Update or remove parameters
+      Object.entries(params).forEach(([name, value]) => {
+        if (value === undefined) {
+          urlParams.delete(name);
+        } else {
+          urlParams.set(name, value);
+        }
+      });
+
+      return urlParams.toString();
+    },
+    [searchParams]
+  );
+
+  // Initialize filters from URL parameters on component mount - only once on initial mount
   useEffect(() => {
-    // Set sort option
-    if (initialFilters.sortBy === "date") {
-      setSelectedSort(
-        initialFilters.sortOrder === "desc" ? "newest" : "oldest"
-      );
-    } else if (initialFilters.sortBy === "price") {
-      setSelectedSort(
-        initialFilters.sortOrder === "desc" ? "highest" : "lowest"
-      );
+    console.log("ListingsFilters: Reading URL parameters once on mount");
+    const sortBy = searchParams.get("sortBy") || initialFilters.sortBy;
+    const sortOrder = searchParams.get("sortOrder") || initialFilters.sortOrder;
+    const tag = searchParams.get("tag") || undefined;
+    const city = searchParams.get("city") || undefined;
+
+    // Create location object if city is present
+    const location = city
+      ? {
+          city: city || undefined,
+        }
+      : undefined;
+
+    // Create filters object from URL params
+    const urlFilters: ListingFilters = {
+      sortBy: sortBy as "date" | "price",
+      sortOrder: sortOrder as "asc" | "desc",
+      tag,
+      location,
+    };
+
+    // Update state with URL values
+    setFilters(urlFilters);
+
+    // Update UI states based on URL
+    if (sortBy === "date") {
+      setSelectedSort(sortOrder === "desc" ? "newest" : "oldest");
+    } else if (sortBy === "price") {
+      setSelectedSort(sortOrder === "desc" ? "highest" : "lowest");
     }
 
-    // Set tag if present
-    if (initialFilters.tag) {
-      setSelectedTag(initialFilters.tag);
-    }
+    setSelectedTag(tag || "all");
+    setSelectedCity(city || "all");
 
-    // Set location options
-    if (initialFilters.location?.city) {
-      setSelectedCity(initialFilters.location.city);
+    // Notify parent component of the initial filter state only if different from default
+    if (JSON.stringify(urlFilters) !== JSON.stringify(initialFilters)) {
+      onFiltersChange(urlFilters);
     }
-
-    if (initialFilters.location?.club) {
-      setSelectedClub(initialFilters.location.club);
-    }
-
-    setFilters(initialFilters);
-  }, [initialFilters]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSortChange = (value: string) => {
     setSelectedSort(value);
@@ -100,48 +140,52 @@ export function ListingsFilters({
   const handleCityChange = (city: string) => {
     setSelectedCity(city);
 
-    // Create updated location object based on current club and new city
-    const location = {
-      ...(filters.location || {}),
-      city: city === "all" ? undefined : city,
-    };
-
-    // If both city and club are "all" (undefined), set location to undefined
-    if (!location.city && !location.club) {
+    // Create updated location object for the new city
+    if (city === "all") {
+      // If city is "all", remove location filter entirely
       handleFilterChange({ location: undefined });
     } else {
-      handleFilterChange({ location });
-    }
-  };
-
-  const handleClubChange = (club: string) => {
-    setSelectedClub(club);
-
-    // Create updated location object based on current city and new club
-    const location = {
-      ...(filters.location || {}),
-      club: club === "all" ? undefined : club,
-    };
-
-    // If both city and club are "all" (undefined), set location to undefined
-    if (!location.city && !location.club) {
-      handleFilterChange({ location: undefined });
-    } else {
-      handleFilterChange({ location });
+      // Otherwise set the city filter
+      handleFilterChange({
+        location: { city },
+      });
     }
   };
 
   const handleFilterChange = async (newFilters: Partial<ListingFilters>) => {
     const updatedFilters = { ...filters, ...newFilters };
     setFilters(updatedFilters);
+
+    // Update URL with new filter parameters
+    const queryParams: Record<string, string | undefined> = {
+      sortBy: updatedFilters.sortBy,
+      sortOrder: updatedFilters.sortOrder,
+      tag: updatedFilters.tag,
+      city: updatedFilters.location?.city,
+    };
+
+    // Update URL without full page reload
+    router.push(`${pathname}?${createQueryString(queryParams)}`, {
+      scroll: false,
+    });
+
+    // Notify parent component
     await onFiltersChange(updatedFilters);
   };
 
   return (
     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-screen-lg mx-auto py-4">
       {/* Sort Dropdown - Simplified to 4 common options */}
-      <Select value={selectedSort} onValueChange={handleSortChange}>
-        <SelectTrigger className="w-full sm:w-48">
+      <Select
+        value={selectedSort}
+        onValueChange={handleSortChange}
+        disabled={disabled}
+      >
+        <SelectTrigger
+          className={`w-full sm:w-48 ${
+            disabled ? "opacity-70 cursor-not-allowed" : ""
+          }`}
+        >
           <SelectValue placeholder="Sort by" />
         </SelectTrigger>
         <SelectContent>
@@ -153,8 +197,16 @@ export function ListingsFilters({
       </Select>
 
       {/* Tags Filter Dropdown */}
-      <Select value={selectedTag} onValueChange={handleTagChange}>
-        <SelectTrigger className="w-full sm:w-48">
+      <Select
+        value={selectedTag}
+        onValueChange={handleTagChange}
+        disabled={disabled}
+      >
+        <SelectTrigger
+          className={`w-full sm:w-48 ${
+            disabled ? "opacity-70 cursor-not-allowed" : ""
+          }`}
+        >
           <SelectValue placeholder="Filter by tag" />
         </SelectTrigger>
         <SelectContent>
@@ -168,8 +220,16 @@ export function ListingsFilters({
       </Select>
 
       {/* City Filter Dropdown */}
-      <Select value={selectedCity} onValueChange={handleCityChange}>
-        <SelectTrigger className="w-full sm:w-48">
+      <Select
+        value={selectedCity}
+        onValueChange={handleCityChange}
+        disabled={disabled}
+      >
+        <SelectTrigger
+          className={`w-full sm:w-48 ${
+            disabled ? "opacity-70 cursor-not-allowed" : ""
+          }`}
+        >
           <SelectValue placeholder="Filter by city" />
         </SelectTrigger>
         <SelectContent>
@@ -181,26 +241,6 @@ export function ListingsFilters({
           <SelectItem value="Houston">Houston</SelectItem>
           <SelectItem value="Online">Online</SelectItem>
           {/* Add more cities as needed */}
-        </SelectContent>
-      </Select>
-
-      {/* Club Filter Dropdown */}
-      <Select value={selectedClub} onValueChange={handleClubChange}>
-        <SelectTrigger className="w-full sm:w-48">
-          <SelectValue placeholder="Filter by club" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Clubs</SelectItem>
-          <SelectItem value="Tennis Club NYC">Tennis Club NYC</SelectItem>
-          <SelectItem value="LA Tennis Center">LA Tennis Center</SelectItem>
-          <SelectItem value="Chicago Tennis Academy">
-            Chicago Tennis Academy
-          </SelectItem>
-          <SelectItem value="Miami Beach Tennis">Miami Beach Tennis</SelectItem>
-          <SelectItem value="Houston Tennis League">
-            Houston Tennis League
-          </SelectItem>
-          {/* Add more clubs as needed */}
         </SelectContent>
       </Select>
     </div>

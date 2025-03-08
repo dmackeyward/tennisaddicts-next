@@ -1,184 +1,203 @@
 "use client";
 // components/listings/ClientSideListings.tsx
-import { useEffect, useState } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { ListingsFilters } from "@/components/listings/ListingsFilters";
 import { ListingGrid } from "@/components/listings/ListingGrid";
-import { useListingsStore } from "@/store/useListings";
-import type { Listing, ListingFilters } from "@/types/listings";
+import type {
+  Listing,
+  ListingFilters as ListingFiltersType,
+} from "@/types/listings";
 
 interface ClientSideListingsProps {
   initialListings: Listing[];
-  rawSearchParams?: { [key: string]: string | string[] | undefined };
 }
 
 export function ClientSideListings({
   initialListings,
-  rawSearchParams,
 }: ClientSideListingsProps) {
-  const {
-    listings,
-    isLoading,
-    hasMore,
-    filters,
-    initializeListings,
-    updateFilters,
-  } = useListingsStore();
-
-  // For URL management
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Initialize store with server-fetched data
-  useEffect(() => {
-    initializeListings(initialListings);
+  const [listings, setListings] = useState<Listing[]>(initialListings);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFilterOperationInProgress, setIsFilterOperationInProgress] =
+    useState(false);
+  const latestFilterRef = useRef<ListingFiltersType | null>(null);
 
-    // Extract initial filters from URL or from passed rawSearchParams
-    const initialFilters: ListingFilters = {
-      sortBy: "date",
-      sortOrder: "desc",
+  // Initial filters from URL
+  const getInitialFilters = useCallback((): ListingFiltersType => {
+    const sortBy = (searchParams.get("sortBy") as "date" | "price") || "date";
+    const sortOrder =
+      (searchParams.get("sortOrder") as "asc" | "desc") || "desc";
+    const tag = searchParams.get("tag") || undefined;
+    const city = searchParams.get("city") || undefined;
+
+    // Create location object if city is present
+    const location = city ? { city } : undefined;
+
+    const filters = {
+      sortBy,
+      sortOrder,
+      tag,
+      location,
     };
 
-    // Function to get value regardless of source (URL or rawSearchParams)
-    // Make sure we're handling all parameters safely
-    const getParamValue = (key: string): string | null => {
-      try {
-        // First try URL searchParams (for client-side navigation)
-        if (searchParams && searchParams.has(key)) {
-          return searchParams.get(key);
-        }
-        // Then try rawSearchParams (for initial server render)
-        if (rawSearchParams && key in rawSearchParams) {
-          const value = rawSearchParams[key];
-          return typeof value === "string"
-            ? value
-            : Array.isArray(value)
-            ? value[0]
-            : null;
-        }
-        return null;
-      } catch (error) {
-        console.error(`Error accessing parameter ${key}:`, error);
-        return null;
-      }
-    };
+    console.log("Initial filters from URL:", filters);
+    return filters;
+  }, [searchParams]);
 
-    // Parse sort options
-    const sortBy = getParamValue("sortBy");
-    if (sortBy) {
-      initialFilters.sortBy = sortBy as "price" | "date" | "location";
+  // Handle filter changes
+  const handleFiltersChange = async (filters: ListingFiltersType) => {
+    console.log("Filter change requested with filters:", filters);
+
+    // Save the latest filters requested
+    latestFilterRef.current = filters;
+
+    // If a filter operation is already in progress, don't start another one
+    if (isFilterOperationInProgress) {
+      console.log("Filter operation already in progress, skipping");
+      return;
     }
 
-    const sortOrder = getParamValue("sortOrder");
-    if (sortOrder) {
-      initialFilters.sortOrder = sortOrder as "asc" | "desc";
+    console.log("Starting filter operation");
+    setIsFilterOperationInProgress(true);
+    setIsLoading(true);
+
+    try {
+      console.log("Fetching filtered listings...");
+      // Use the latest filters from the ref to ensure we're using the most recent request
+      const currentFilters = latestFilterRef.current || filters;
+      const response = await fetchFilteredListings(currentFilters);
+      console.log("Fetch completed, updating listings");
+      setListings(response);
+    } catch (error) {
+      console.error("Error fetching filtered listings:", error);
     }
 
-    // Parse tag
-    const tag = getParamValue("tag");
-    if (tag) {
-      initialFilters.tag = tag;
-    }
-
-    // Parse location
-    const city = getParamValue("city");
-    const club = getParamValue("club");
-    if (city || club) {
-      initialFilters.location = {};
-
-      if (city) {
-        initialFilters.location.city = city;
-      }
-
-      if (club) {
-        initialFilters.location.club = club;
-      }
-    }
-
-    // Parse price range
-    const minPrice = getParamValue("minPrice");
-    if (minPrice) {
-      initialFilters.minPrice = parseFloat(minPrice);
-    }
-
-    const maxPrice = getParamValue("maxPrice");
-    if (maxPrice) {
-      initialFilters.maxPrice = parseFloat(maxPrice);
-    }
-
-    // Set initial filters in store without triggering an API call
-    if (
-      Object.keys(initialFilters).length > 2 ||
-      initialFilters.sortBy !== "date" ||
-      initialFilters.sortOrder !== "desc"
-    ) {
-      updateFilters(initialFilters);
-    }
-  }, [
-    initialListings,
-    initializeListings,
-    searchParams,
-    updateFilters,
-    rawSearchParams,
-  ]);
-
-  // Handle filter changes and update URL
-  const handleFiltersChange = async (newFilters: ListingFilters) => {
-    // Create URL search params
-    const params = new URLSearchParams();
-
-    // Add sort params
-    if (newFilters.sortBy) {
-      params.set("sortBy", newFilters.sortBy);
-    }
-
-    if (newFilters.sortOrder) {
-      params.set("sortOrder", newFilters.sortOrder);
-    }
-
-    // Add tag param
-    if (newFilters.tag) {
-      params.set("tag", newFilters.tag);
-    }
-
-    // Add location params
-    if (newFilters.location?.city) {
-      params.set("city", newFilters.location.city);
-    }
-
-    if (newFilters.location?.club) {
-      params.set("club", newFilters.location.club);
-    }
-
-    // Add price range params
-    if (newFilters.minPrice !== undefined) {
-      params.set("minPrice", newFilters.minPrice.toString());
-    }
-
-    if (newFilters.maxPrice !== undefined) {
-      params.set("maxPrice", newFilters.maxPrice.toString());
-    }
-
-    // Update URL without refreshing the page
-    router.push(`${pathname}?${params.toString()}`);
-
-    // Update filters in store which will trigger a refresh
-    await updateFilters(newFilters);
+    console.log("Setting loading state to false");
+    setIsLoading(false);
+    setIsFilterOperationInProgress(false);
   };
+
+  // Simulated API call - replace with your actual data fetching logic
+  const fetchFilteredListings = async (
+    filters: ListingFiltersType
+  ): Promise<Listing[]> => {
+    console.log("fetchFilteredListings started with filters:", filters);
+
+    // This is where you would make an API call to your backend
+    // For example:
+    // const response = await fetch(`/api/listings?${new URLSearchParams(filterParams)}`)
+    // return response.json()
+
+    // For now, we'll just simulate a delay and filter the initial listings client-side
+    console.log("Simulating network delay...");
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // Longer delay to make loading state more visible
+    console.log("Network delay completed");
+
+    // Apply filters to initialListings
+    const filteredResults = initialListings
+      .filter((listing) => {
+        // Filter by tag
+        if (
+          filters.tag &&
+          listing.tags &&
+          !listing.tags.includes(filters.tag)
+        ) {
+          return false;
+        }
+
+        // Filter by city
+        if (
+          filters.location?.city &&
+          listing.location?.city !== filters.location.city
+        ) {
+          return false;
+        }
+
+        return true;
+      })
+      .sort((a, b) => {
+        // Sort by date or price
+        if (filters.sortBy === "date") {
+          const dateA = new Date(a.createdAt).getTime();
+          const dateB = new Date(b.createdAt).getTime();
+          return filters.sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+        } else {
+          // Sort by price
+          return filters.sortOrder === "asc"
+            ? (a.price || 0) - (b.price || 0)
+            : (b.price || 0) - (a.price || 0);
+        }
+      });
+
+    console.log(`Filter complete, returning ${filteredResults.length} results`);
+    return filteredResults;
+  };
+
+  // Effect to apply initial filters only once when component mounts
+  useEffect(() => {
+    const initialFilters = getInitialFilters();
+    console.log("INITIALIZATION: Using initial filters", initialFilters);
+
+    // Skip the initial filter operation if we already have initialListings
+    if (initialListings.length > 0) {
+      console.log(
+        "INITIALIZATION: Using provided initialListings, skipping initial fetch"
+      );
+      // Just update the latest filter ref without triggering a fetch
+      latestFilterRef.current = initialFilters;
+      setListings(initialListings);
+    } else {
+      console.log(
+        "INITIALIZATION: No initial listings, applying filters from URL"
+      );
+      // Set flag directly to prevent any other filter operations from starting
+      setIsFilterOperationInProgress(true);
+
+      // Simulate a small delay to ensure our state updates
+      setTimeout(async () => {
+        try {
+          const response = await fetchFilteredListings(initialFilters);
+          setListings(response);
+        } catch (error) {
+          console.error("Error during initialization:", error);
+        } finally {
+          setIsFilterOperationInProgress(false);
+        }
+      }, 100);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div>
-      <ListingsFilters
-        onFiltersChange={handleFiltersChange}
-        initialFilters={filters}
-      />
       <div className="mt-8">
-        <ListingGrid
-          listings={listings}
-          isLoading={isLoading}
-          hasMore={hasMore}
+        {/* Prevent the ListingsFilters component from re-initializing on each render */}
+        <ListingsFilters
+          key="listings-filters"
+          onFiltersChange={handleFiltersChange}
+          initialFilters={getInitialFilters()}
+          disabled={isFilterOperationInProgress}
         />
+
+        {isLoading ? (
+          <div className="flex justify-center py-12">
+            <div className="animate-pulse text-center">
+              <p className="text-gray-500">Loading results...</p>
+              <div className="h-2 bg-gray-200 rounded-full max-w-md mx-auto mt-4"></div>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="text-sm text-gray-500 mb-4 px-4">
+              {listings.length} listings found
+            </div>
+            <ListingGrid listings={listings} />
+          </>
+        )}
       </div>
     </div>
   );
