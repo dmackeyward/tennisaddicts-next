@@ -27,6 +27,11 @@ export default function News() {
             <Icon name="tennisball" size={48} className="text-green-600" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold">News</h1>
+          <p className="text-xl max-w-3xl">
+            Find and book the perfect tennis court in your area. Browse our
+            listings to discover top-rated courts, availability, and special
+            offers.
+          </p>
         </div>
         <div className="space-y-6">
           {newsItems.map((item) => (
