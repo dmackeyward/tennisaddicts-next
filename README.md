@@ -41,6 +41,7 @@
 - [x] Github Actions
 - [] Test Github Actions
 - [] Modularize prompts
+- [] Relocate city and club values to prompts or types
 - [] Sort - price, updatedAt, name
 - [] Filter - tags, location
 - [] Search functionality - local versus API search - query params
@@ -54,6 +55,7 @@
 - [x] Remove the successful edit redirect and display a notification without rendering the modal
 - [x] Fix the View Listing gradient container
 - [x] Close sidebar from header and footer on sidebar
+- [] Testing auth
 
 ## Mobile
 

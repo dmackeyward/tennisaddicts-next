@@ -1,3 +1,4 @@
+// app/listings/page.tsx
 import { Metadata } from "next";
 import { Suspense } from "react";
 import { ClientSideListings } from "../components/listings/ClientSideListings";
@@ -7,16 +8,49 @@ import { getListings } from "@/db/queries/listings";
 import { auth } from "@clerk/nextjs/server";
 import Icon from "@/components/Icon";
 import { Plus, Loader2 } from "lucide-react";
+import type { ListingFilters } from "@/types/listings";
 
 export const metadata: Metadata = {
   title: "Tennis Court Listings",
   description: "Discover and book tennis courts in your area",
 };
 
-export default async function ListingsPage() {
-  // Fetch initial listings on the server
+export default async function ListingsPage({
+  searchParams,
+}: {
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) {
+  // Get initial listings without filters first
   const initialListings = await getListings();
   const { userId } = await auth();
+
+  // Extract parameters individually without using 'in' operator
+  const serializableParams: Record<string, string | string[]> = {};
+
+  // Safely extract parameters using direct access
+  if (searchParams) {
+    // Handle each parameter individually
+    const sortBy = searchParams.sortBy;
+    if (sortBy !== undefined) serializableParams.sortBy = sortBy;
+
+    const sortOrder = searchParams.sortOrder;
+    if (sortOrder !== undefined) serializableParams.sortOrder = sortOrder;
+
+    const tag = searchParams.tag;
+    if (tag !== undefined) serializableParams.tag = tag;
+
+    const city = searchParams.city;
+    if (city !== undefined) serializableParams.city = city;
+
+    const club = searchParams.club;
+    if (club !== undefined) serializableParams.club = club;
+
+    const minPrice = searchParams.minPrice;
+    if (minPrice !== undefined) serializableParams.minPrice = minPrice;
+
+    const maxPrice = searchParams.maxPrice;
+    if (maxPrice !== undefined) serializableParams.maxPrice = maxPrice;
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -57,7 +91,10 @@ export default async function ListingsPage() {
               </div>
             }
           >
-            <ClientSideListings initialListings={initialListings} />
+            <ClientSideListings
+              initialListings={initialListings}
+              rawSearchParams={serializableParams}
+            />
           </Suspense>
         </div>
       </div>

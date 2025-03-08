@@ -248,11 +248,6 @@ export async function updateListingAction(
       return response;
     }
 
-    console.log("Zod validation passed");
-
-    // Log the parsed data
-    console.log("Parsed data:", parsed.data);
-
     // Call the updateListing mutation
     const result = await updateListing(id, prevState, formData);
     console.log("Database mutation result:", result);

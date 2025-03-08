@@ -35,7 +35,6 @@ function formatListing(listing: typeof listings.$inferSelect): Listing {
     status: status,
   };
 }
-
 export async function getListings(
   filters?: ListingFilters
 ): Promise<Listing[]> {
@@ -56,11 +55,24 @@ export async function getListings(
       }
 
       if (filters?.minPrice !== undefined) {
-        conditions.push(sql`${fields.price} >= ${String(filters.minPrice)}`); // Convert to string
+        conditions.push(sql`${fields.price} >= ${String(filters.minPrice)}`);
       }
 
       if (filters?.maxPrice !== undefined) {
-        conditions.push(sql`${fields.price} <= ${String(filters.maxPrice)}`); // Convert to string
+        conditions.push(sql`${fields.price} <= ${String(filters.maxPrice)}`);
+      }
+
+      // Add tag filtering
+      if (filters?.tag) {
+        // This assumes tags are stored in a JSONB array field
+        // Adjust based on your actual database schema
+        conditions.push(
+          sql`${fields.tags} @> ${JSON.stringify([filters.tag])}`
+        );
+
+        // Alternative if tags are stored differently:
+        // For PostgreSQL array: sql`${filters.tag} = ANY(${fields.tags})`
+        // For string with comma separation: sql`${fields.tags} LIKE ${`%${filters.tag}%`}`
       }
 
       return conditions.length > 0 ? and(...conditions) : undefined;

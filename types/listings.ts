@@ -133,6 +133,7 @@ export interface ListingFilters {
     city?: string;
     club?: string;
   };
+  tag?: string;
   minPrice?: number;
   maxPrice?: number;
   sortBy?: "price" | "date" | "location";

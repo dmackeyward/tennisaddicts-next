@@ -33,6 +33,11 @@ const createSearchParams = (
     }
   }
 
+  // Handle tag filtering - add to search params
+  if (filters.tag) {
+    params.tag = filters.tag;
+  }
+
   if (filters.minPrice) params.minPrice = filters.minPrice.toString();
   if (filters.maxPrice) params.maxPrice = filters.maxPrice.toString();
   if (filters.sortBy) params.sortBy = filters.sortBy;
@@ -63,7 +68,7 @@ export const useListingsStore = create<ListingsState>((set, get) => ({
 
   setLoading: (isLoading) => set({ isLoading }),
 
-  // Updated to handle filter changes
+  // Updated to handle filter changes including tag filtering
   updateFilters: async (newFilters) => {
     set({ filters: newFilters, isLoading: true });
     try {
