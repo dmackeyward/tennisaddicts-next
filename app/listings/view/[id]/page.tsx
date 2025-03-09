@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import ListingDetail from "@/components/listings/ListingDetail";
+import ListingDetail from "@/app/listings/components/ListingDetail";
 import { getListing } from "@/db/queries/listings";
 import { ListingImage, PLACEHOLDER_LISTING } from "@/types/listings";
 import { Metadata } from "next";

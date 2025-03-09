@@ -17,6 +17,7 @@ import ViewFullArticleButton from "./ViewFullArticleButton";
 import Image from "next/image";
 import { Modal } from "@/components/Modal";
 import ModalController from "@/components/ModalController";
+import prompts from "@/prompts/prompts";
 
 export const dynamic = "force-dynamic";
 
@@ -58,10 +59,10 @@ async function NewsContent({ id }: { id: string }) {
             <Image
               src={newsItem.imageUrl}
               alt={newsItem.title}
-              width={800} // A reasonable width for article images
-              height={256} // Matching your h-64 container height
+              width={800}
+              height={256}
               className="w-full h-full object-cover"
-              priority // Add this if it's above the fold
+              priority
             />
           </div>
         </div>
@@ -90,9 +91,6 @@ async function NewsContent({ id }: { id: string }) {
               Published {formatDate(newsItem.date)}
             </span>
           </div>
-          {/* <Link href={`/news/view/${newsItem.id}`}>
-            <Button variant="outline">View Full Article</Button>
-          </Link> */}
           <ViewFullArticleButton />
         </CardFooter>
       </Card>
@@ -114,10 +112,10 @@ export default async function NewsModal({
           fallback={
             <div className="p-6 bg-white rounded-lg">
               <h2 className="text-xl font-semibold text-red-600">
-                Error Loading News
+                {prompts.error.errorLoadingNews}
               </h2>
               <p className="mt-2 text-gray-600">
-                There was a problem loading this news article.
+                {prompts.error.errorLoadingNewsDetails}
               </p>
             </div>
           }
@@ -136,13 +134,12 @@ export async function generateMetadata({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  // Await the params object to get the id
   const { id } = await params;
   const newsItem = getNewsItem(id);
 
   if (!newsItem) {
     return {
-      title: "News Not Found",
+      title: prompts.error.newsNotFound,
     };
   }
 

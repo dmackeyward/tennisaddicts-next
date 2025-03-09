@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import newsData from "@/assets/data/news-items.json";
 import { NewsItem } from "@/types/news";
 import Icon from "@/components/Icon";
-import NewsCard from "@/components/news/NewsCard";
+import NewsCard from "@/app/news/components/NewsCard";
 import prompts from "@/prompts/prompts";
 
 export const metadata: Metadata = {

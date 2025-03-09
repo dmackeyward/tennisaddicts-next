@@ -2,8 +2,8 @@
 // components/listings/ClientSideListings.tsx
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { ListingsFilters } from "@/components/listings/ListingsFilters";
-import { ListingGrid } from "@/components/listings/ListingGrid";
+import { ListingsFilters } from "@/app/listings/components/ListingsFilters";
+import { ListingGrid } from "@/app/listings/components/ListingGrid";
 import type {
   Listing,
   ListingFilters as ListingFiltersType,

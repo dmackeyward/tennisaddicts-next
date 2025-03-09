@@ -1,7 +1,7 @@
 // app/listings/page.tsx
 import { Metadata } from "next";
 import { Suspense } from "react";
-import { ClientSideListings } from "../components/listings/ClientSideListings";
+import { ClientSideListings } from "./components/ClientSideListings";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getListings } from "@/db/queries/listings";

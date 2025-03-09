@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ThumbsUp } from "lucide-react";
 import prompts from "@/prompts/prompts";
 
-export default function NewsViewClient() {
+export default function LikeButton() {
   const [likes, setLikes] = useState(0);
 
   return (
@@ -17,7 +17,7 @@ export default function NewsViewClient() {
         onClick={() => setLikes(likes + 1)}
       >
         <ThumbsUp size={18} />
-        <span>{prompts.news.clientButton.likeButton}</span>
+        <span>{prompts.news.likeThisArticle}</span>
         {likes > 0 && (
           <span className="ml-2 bg-blue-100 px-2 py-1 rounded-full text-xs">
             {likes}

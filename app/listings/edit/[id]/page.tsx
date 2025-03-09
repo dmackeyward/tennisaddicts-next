@@ -2,7 +2,7 @@
 import { Metadata } from "next";
 import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
-import EditListingForm from "@/app/components/listings/EditListingForm";
+import EditListingForm from "@/app/listings/components/EditListingForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { auth } from "@clerk/nextjs/server";

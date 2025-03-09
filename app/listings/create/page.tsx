@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { Suspense } from "react";
-import CreateListingForm from "@/app/components/listings/CreateListingForm";
+import CreateListingForm from "@/app/listings/components/CreateListingForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 

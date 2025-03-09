@@ -4,7 +4,7 @@ import { formatDate } from "@/lib/format";
 import { NewsItem } from "@/types/news";
 import Image from "next/image";
 import Link from "next/link";
-import NewsViewClient from "./client";
+import LikeButton from "@/app/news/components/LikeButton";
 import { ArrowLeft } from "lucide-react";
 import { use } from "react";
 import prompts from "@/prompts/prompts";
@@ -72,7 +72,7 @@ export default function NewsPage({
               />
             </div>
 
-            <NewsViewClient />
+            <LikeButton />
 
             <div className="mt-8 pt-6 border-t border-gray-200">
               <Link
