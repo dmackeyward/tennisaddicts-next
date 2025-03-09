@@ -81,6 +81,44 @@ export function ClientSideListings({
     setIsFilterOperationInProgress(false);
   };
 
+  // Function to clear all filters
+  const handleClearFilters = async () => {
+    if (isFilterOperationInProgress) {
+      return;
+    }
+
+    console.log("Clearing all filters");
+    setIsFilterOperationInProgress(true);
+    setIsLoading(true);
+
+    // Create default filters
+    const defaultFilters: ListingFiltersType = {
+      sortBy: "date",
+      sortOrder: "desc",
+    };
+
+    // Update URL to remove filter parameters
+    const params = new URLSearchParams();
+    // Use type assertion to assure TypeScript these are strings
+    params.set("sortBy", defaultFilters.sortBy as string);
+    params.set("sortOrder", defaultFilters.sortOrder as string);
+    router.push(`${pathname}?${params.toString()}`);
+
+    // Update the filter reference
+    latestFilterRef.current = defaultFilters;
+
+    try {
+      // Fetch listings with default filters
+      const response = await fetchFilteredListings(defaultFilters);
+      setListings(response);
+    } catch (error) {
+      console.error("Error fetching default listings:", error);
+    }
+
+    setIsLoading(false);
+    setIsFilterOperationInProgress(false);
+  };
+
   // Simulated API call - replace with your actual data fetching logic
   const fetchFilteredListings = async (
     filters: ListingFiltersType
@@ -172,6 +210,20 @@ export function ClientSideListings({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Check if any filters are active
+  const areFiltersActive = useCallback(() => {
+    const currentFilters = latestFilterRef.current;
+    if (!currentFilters) return false;
+
+    // Check if any filter is active besides the default sort
+    return !!(
+      currentFilters.tag ||
+      currentFilters.location?.city ||
+      currentFilters.sortBy !== "date" ||
+      currentFilters.sortOrder !== "desc"
+    );
+  }, []);
+
   return (
     <div>
       <div className="mt-8">
@@ -192,8 +244,17 @@ export function ClientSideListings({
           </div>
         ) : (
           <>
-            <div className="text-sm text-gray-500 mb-4 px-4">
-              {listings.length} listings found
+            <div className="flex justify-between items-center text-sm text-gray-500 mb-4 px-4">
+              <div>{listings.length} listings found</div>
+              {areFiltersActive() && (
+                <button
+                  onClick={handleClearFilters}
+                  className="text-blue-500 hover:text-blue-700 font-medium transition-colors focus:outline-none"
+                  disabled={isFilterOperationInProgress}
+                >
+                  Clear filters
+                </button>
+              )}
             </div>
             <ListingGrid listings={listings} />
           </>

@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import type { ListingFilters } from "@/types/listings";
 import { AVAILABLE_TAGS } from "@/types/listings";
+import citiesData from "@/assets/data/city.json"; // Import the city.json file
 
 interface ListingsFiltersProps {
   onFiltersChange: (filters: ListingFilters) => Promise<void>;
@@ -219,7 +220,7 @@ export function ListingsFilters({
         </SelectContent>
       </Select>
 
-      {/* City Filter Dropdown */}
+      {/* City Filter Dropdown - Using data from city.json */}
       <Select
         value={selectedCity}
         onValueChange={handleCityChange}
@@ -234,13 +235,11 @@ export function ListingsFilters({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Cities</SelectItem>
-          <SelectItem value="New York">New York</SelectItem>
-          <SelectItem value="Los Angeles">Los Angeles</SelectItem>
-          <SelectItem value="Chicago">Chicago</SelectItem>
-          <SelectItem value="Miami">Miami</SelectItem>
-          <SelectItem value="Houston">Houston</SelectItem>
-          <SelectItem value="Online">Online</SelectItem>
-          {/* Add more cities as needed */}
+          {citiesData.cities.map((city) => (
+            <SelectItem key={city.id} value={city.name}>
+              {city.name}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
     </div>
