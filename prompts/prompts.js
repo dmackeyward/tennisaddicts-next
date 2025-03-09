@@ -38,7 +38,15 @@ const prompts = {
     privacyPolicyLink: "Privacy Policy",
   },
 
-  signIn: {},
+  signIn: {
+    metadata: {
+      title: "Sign In",
+      description: "Sign in to your Tennis Addicts account",
+    },
+    title: "Sign In",
+    dontHaveAccount: "Don't have an account?",
+    signUpLink: "Sign up",
+  },
 
   // News section prompts
   news: {},

@@ -5,10 +5,11 @@ import { Metadata } from "next";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Icon from "@/components/Icon";
+import prompts from "@/prompts/prompts";
 
 export const metadata: Metadata = {
-  title: "Sign In",
-  description: "Sign in to your account",
+  title: prompts.signIn.metadata.title,
+  description: prompts.signIn.metadata.description,
 };
 
 export default async function SignInPage() {
@@ -24,15 +25,14 @@ export default async function SignInPage() {
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-white to-green-100">
       <div className="w-full max-w-md bg-white p-6">
         <CardHeader className="px-0 pt-0 pb-4">
-          {/* <CardTitle className="text-2xl font-bold text-center">
-            Sign In
-          </CardTitle> */}
           {/* Hero Section */}
           <div className="flex flex-col items-center text-center space-y-6">
             <div className="bg-white rounded-full p-4 shadow-lg">
               <Icon name="tennisball" size={48} className="text-green-600" />
             </div>
-            <h1 className="text-2xl md:text-5xl font-bold">Sign In</h1>
+            <h1 className="text-2xl md:text-5xl font-bold">
+              {prompts.signIn.title}
+            </h1>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col items-center p-0">
@@ -87,12 +87,12 @@ export default async function SignInPage() {
 
           <div className="mt-6 text-center text-sm text-muted-foreground w-full">
             <p>
-              Don&apos;t have an account?{" "}
+              {prompts.signIn.dontHaveAccount}{" "}
               <Link
                 href="/sign-up"
                 className="text-primary hover:text-primary/90 font-medium"
               >
-                Sign up
+                {prompts.signIn.signUpLink}
               </Link>
             </p>
           </div>
