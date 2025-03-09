@@ -42,9 +42,9 @@
 - [] Test Github Actions
 - [] Modularize prompts
 - [x] Relocate city and club values to assets folder
-- [x] Sort - price, createdAt(?)
+- [x] Sort - price, createdAt
 - [x] Filter - tags, location
-- [] Search functionality - local versus API search - query params
+- [] Search functionality - API search - query params
 
 ## Bugs
 
