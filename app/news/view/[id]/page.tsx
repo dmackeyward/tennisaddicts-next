@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import newsData from "@/data/news-items.json";
+import newsData from "@/assets/data/news-items.json";
 import { formatDate } from "@/lib/format";
 import { NewsItem } from "@/types/news";
 import Image from "next/image";

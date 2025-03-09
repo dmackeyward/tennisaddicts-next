@@ -1,6 +1,6 @@
 // app/news/page.js (remains a server component)
 import { Metadata } from "next";
-import newsData from "@/data/news-items.json";
+import newsData from "@/assets/data/news-items.json";
 import { NewsItem } from "@/types/news";
 import Icon from "@/components/Icon";
 import NewsCard from "@/components/news/NewsCard";

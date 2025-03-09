@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import newsData from "@/data/news-items.json";
+import newsData from "@/assets/data/news-items.json";
 import { NewsItem } from "@/types/news";
 import {
   Card,

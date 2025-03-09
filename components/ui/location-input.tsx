@@ -18,8 +18,8 @@ import {
 import { cn } from "@/lib/utils";
 
 // Import JSON data directly
-import city from "@/data/city.json";
-import club from "@/data/club.json";
+import city from "@/assets/data/city.json";
+import club from "@/assets/data/club.json";
 
 type CityProps = {
   id: number;
