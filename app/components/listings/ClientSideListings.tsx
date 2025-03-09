@@ -24,6 +24,7 @@ export function ClientSideListings({
   const [isLoading, setIsLoading] = useState(false);
   const [isFilterOperationInProgress, setIsFilterOperationInProgress] =
     useState(false);
+  const [resetFilterTrigger, setResetFilterTrigger] = useState(0);
   const latestFilterRef = useRef<ListingFiltersType | null>(null);
 
   // Initial filters from URL
@@ -106,6 +107,9 @@ export function ClientSideListings({
 
     // Update the filter reference
     latestFilterRef.current = defaultFilters;
+
+    // Increment the reset trigger to notify the filter component
+    setResetFilterTrigger((prev) => prev + 1);
 
     try {
       // Fetch listings with default filters
@@ -227,9 +231,8 @@ export function ClientSideListings({
   return (
     <div>
       <div className="mt-8">
-        {/* Prevent the ListingsFilters component from re-initializing on each render */}
         <ListingsFilters
-          key="listings-filters"
+          key={`listings-filters-${resetFilterTrigger}`}
           onFiltersChange={handleFiltersChange}
           initialFilters={getInitialFilters()}
           disabled={isFilterOperationInProgress}

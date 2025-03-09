@@ -58,6 +58,31 @@ export function ListingsFilters({
     [searchParams]
   );
 
+  // Initialize filters from URL parameters whenever initialFilters changes
+  useEffect(() => {
+    console.log(
+      "ListingsFilters: Updating from initialFilters",
+      initialFilters
+    );
+
+    // Update state with values from initialFilters
+    setFilters(initialFilters);
+
+    // Update UI states based on initialFilters
+    if (initialFilters.sortBy === "date") {
+      setSelectedSort(
+        initialFilters.sortOrder === "desc" ? "newest" : "oldest"
+      );
+    } else if (initialFilters.sortBy === "price") {
+      setSelectedSort(
+        initialFilters.sortOrder === "desc" ? "highest" : "lowest"
+      );
+    }
+
+    setSelectedTag(initialFilters.tag || "all");
+    setSelectedCity(initialFilters.location?.city || "all");
+  }, [initialFilters]);
+
   // Initialize filters from URL parameters on component mount - only once on initial mount
   useEffect(() => {
     console.log("ListingsFilters: Reading URL parameters once on mount");
