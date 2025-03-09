@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 
 // Import JSON data directly
 import city from "@/data/city.json";
-import area from "@/data/area.json";
+import club from "@/data/club.json";
 
 type CityProps = {
   id: number;
@@ -28,7 +28,7 @@ type CityProps = {
   city: string;
 };
 
-type AreaProps = {
+type ClubProps = {
   id: number;
   city_id: number;
   name: string;
@@ -53,13 +53,13 @@ const LocationSelector = ({
   value,
 }: LocationSelectorProps) => {
   const [selectedCity, setSelectedCity] = useState<CityProps | null>(null);
-  const [selectedClub, setSelectedClub] = useState<AreaProps | null>(null);
+  const [selectedClub, setSelectedClub] = useState<ClubProps | null>(null);
   const [openCityDropdown, setOpenCityDropdown] = useState(false);
   const [openClubDropdown, setOpenClubDropdown] = useState(false);
 
   // Cast imported JSON data to their respective types
   const cityData = city.cities as CityProps[];
-  const areaData = area.areas as AreaProps[];
+  const clubData = club.clubs as ClubProps[];
 
   // Effect to handle external value changes (including reset)
   useEffect(() => {
@@ -76,10 +76,10 @@ const LocationSelector = ({
       setSelectedCity(foundCity);
 
       if (value.club) {
-        const foundArea = areaData.find(
-          (area) => area.city_id === foundCity.id && area.name === value.club
+        const foundClub = clubData.find(
+          (club) => club.city_id === foundCity.id && club.name === value.club
         );
-        setSelectedClub(foundArea || null);
+        setSelectedClub(foundClub || null);
       } else {
         setSelectedClub(null);
       }
@@ -87,11 +87,11 @@ const LocationSelector = ({
       setSelectedCity(null);
       setSelectedClub(null);
     }
-  }, [value, cityData, areaData]);
+  }, [value, cityData, clubData]);
 
   // Filter clubs for selected city
-  const availableAreas = selectedCity
-    ? areaData.filter((area) => area.city_id === selectedCity.id)
+  const availableClubs = selectedCity
+    ? clubData.filter((club) => club.city_id === selectedCity.id)
     : [];
 
   const handleCitySelect = (city: CityProps) => {
@@ -103,7 +103,7 @@ const LocationSelector = ({
     });
   };
 
-  const handleClubSelect = (club: AreaProps) => {
+  const handleClubSelect = (club: ClubProps) => {
     setSelectedClub(club);
     if (selectedCity) {
       onClubChange({
@@ -172,7 +172,7 @@ const LocationSelector = ({
         </PopoverContent>
       </Popover>
 
-      {availableAreas.length > 0 && (
+      {availableClubs.length > 0 && (
         <Popover open={openClubDropdown} onOpenChange={setOpenClubDropdown}>
           <PopoverTrigger asChild>
             <Button
@@ -197,21 +197,21 @@ const LocationSelector = ({
                 <CommandEmpty>No club found.</CommandEmpty>
                 <CommandGroup>
                   <ScrollArea className="h-72">
-                    {availableAreas.map((area) => (
+                    {availableClubs.map((club) => (
                       <CommandItem
-                        key={area.id}
-                        value={area.name}
+                        key={club.id}
+                        value={club.name}
                         onSelect={() => {
-                          handleClubSelect(area);
+                          handleClubSelect(club);
                           setOpenClubDropdown(false);
                         }}
                       >
                         <div className="flex items-center justify-between w-full">
-                          <span>{area.name}</span>
+                          <span>{club.name}</span>
                           <Check
                             className={cn(
                               "h-4 w-4",
-                              selectedClub?.id === area.id
+                              selectedClub?.id === club.id
                                 ? "opacity-100"
                                 : "opacity-0"
                             )}
