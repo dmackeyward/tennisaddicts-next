@@ -39,11 +39,11 @@
 - [x] Modularize Modal
 - [x] Disable the image upload when page is submitting
 - [x] Github Actions
-- [] Test Github Actions
-- [] Modularize prompts
 - [x] Relocate city and club values to assets folder
 - [x] Sort - price, createdAt
 - [x] Filter - tags, location
+- [] Modularize prompts
+- [] Test Github Actions
 - [] Search functionality - API search - query params
 
 ## Bugs
