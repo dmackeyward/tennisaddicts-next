@@ -49,7 +49,27 @@ const prompts = {
   },
 
   // News section prompts
-  news: {},
+  news: {
+    metadata: {
+      title: "News",
+      description: "Latest news and updates from Tennis Addicts",
+    },
+    title: "News",
+    description:
+      "Find and book the perfect tennis court in your area. Browse our listings to discover top-rated courts, availability, and special offers.",
+    newsPage: {
+      metadata: {
+        title: "News Article",
+        description: "Read the latest tennis news and updates",
+      },
+      notFound: "News item not found",
+      backToNews: "Back to News",
+      byAuthor: "By",
+    },
+    clientButton: {
+      likeButton: "Like this artice",
+    },
+  },
 
   // Listings section prompts
   listings: {},
@@ -59,9 +79,6 @@ const prompts = {
 
   // Contact Us section prompts
   contactUs: {},
-
-  // Sign-in/Community section prompts
-  community: {},
 
   // Toast notification prompts
   toast: {

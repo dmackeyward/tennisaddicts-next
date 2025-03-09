@@ -7,10 +7,11 @@ import Link from "next/link";
 import NewsViewClient from "./client";
 import { ArrowLeft } from "lucide-react";
 import { use } from "react";
+import prompts from "@/prompts/prompts";
 
 export const metadata: Metadata = {
-  title: "News",
-  description: "Latest news and updates",
+  title: prompts.news.newsPage.metadata.title,
+  description: prompts.news.newsPage.metadata.description,
 };
 
 export default function NewsPage({
@@ -24,7 +25,9 @@ export default function NewsPage({
 
   if (!newsItem) {
     return (
-      <div className="container mx-auto px-6 py-12">News item not found</div>
+      <div className="container mx-auto px-6 py-12">
+        {prompts.news.newsPage.notFound}
+      </div>
     );
   }
 
@@ -56,7 +59,9 @@ export default function NewsPage({
               <div className="flex items-center text-gray-500">
                 <p>{formatDate(newsItem.date)}</p>
                 <span className="mx-2">•</span>
-                <p>By {newsItem.author}</p>
+                <p>
+                  {prompts.news.newsPage.byAuthor} {newsItem.author}
+                </p>
               </div>
             </div>
 
@@ -75,7 +80,7 @@ export default function NewsPage({
                 className="flex items-center text-blue-600 hover:text-blue-800"
               >
                 <ArrowLeft size={20} className="mr-2" />
-                Back to News
+                {prompts.news.newsPage.backToNews}
               </Link>
             </div>
           </div>
