@@ -24,6 +24,22 @@ const prompts = {
     listingsCardDescription: `Explore tennis equipment, coaching services, and court listings`,
   },
 
+  signUp: {
+    metadata: {
+      title: "Sign Up",
+      description: "Join Tennis Addicts - Your community for everything tennis",
+    },
+    title: "Sign Up",
+    alreadyHaveAccount: "Already have an account?",
+    signInLink: "Sign in",
+    termsText: "By signing up, you agree to our",
+    termsOfServiceLink: "Terms of Service",
+    andText: "and",
+    privacyPolicyLink: "Privacy Policy",
+  },
+
+  signIn: {},
+
   // News section prompts
   news: {},
 
