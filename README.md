@@ -1,6 +1,6 @@
 # Tennis Addicts
 
-## To Do
+## Features
 
 - [x] Scaffold basic UI
 - [x] Connect database
@@ -45,12 +45,7 @@
 - [x] Modularize prompts
 - [x] Fix Github Actions
 - [x] Update toast prompts
-- [] Compare utils/device with use-mobile hook
-- [] Understand the error and loading pages and where to use them
-- [] Search functionality - API search - query params
-
-## Bugs
-
+- [x] Compare utils/device with use-mobile hook
 - [x] Create form background gradiant
 - [x] Sidebar differs in mobile from desktop view
 - [x] Homepage background gradiant
@@ -58,15 +53,33 @@
 - [x] Remove the successful edit redirect and display a notification without rendering the modal
 - [x] Fix the View Listing gradient container
 - [x] Close sidebar from header and footer on sidebar
-- [] Testing auth
-
-## Mobile
-
 - [x] Add padding to bottom of the pages for mobile
 - [x] Disable modal view on mobile
+- [x] Duplicate clear filters button
+- [x] Improve UI - N listings found
 
-## Future features
+## To do
 
-- [] Court lookup - cool - allow users to contribute to info
-- [] Player lookup - Tennis NZ API - cool
+- [] API Search
+- [] Court lookup - community focussed
+- [] Player lookup - Tennis NZ API
 - [] Add Comments to News / Listings / Courts
+
+## Nice to have
+
+- [] Understand the error and loading pages and where to use them
+
+## To be tested
+
+- [] Auth
+
+## Bugs
+
+- [] Add env variables to Github
+- [] Error screens only displaying on 50% of the page
+
+## Mobile Consideration
+
+## Automation
+
+- [x] Run 1
