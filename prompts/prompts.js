@@ -781,15 +781,63 @@ const community = {
   },
 };
 
-// Toast notification prompts
+// Toast notification prompts - Updated with more tennis-themed messages
 const toast = {
+  // Core toast types
   success: `Game, set, match! Your changes have been saved successfully.`,
   error: `Fault! An error occurred. Please try again or contact our Tennis Addicts support team.`,
   warning: `Let's review your information before serving. Some fields may require attention.`,
   info: `Tennis tip: Here's something you might want to know to enhance your experience.`,
+
+  // User account related
   welcome: `Welcome back to Tennis Addicts! We're glad to see you on the court again.`,
   update: `Your Tennis Addicts profile has been updated successfully. Game on!`,
   reminder: `Just a friendly reminder about your upcoming tennis matches or court reservations.`,
+  signInRequired: `You need to sign in to access this feature. Let's get you back on the court!`,
+  signOut: `You've been signed out. Come back soon for more tennis action!`,
+  accountCreated: `Ace! Your Tennis Addicts account has been created successfully. Time to find your match!`,
+  passwordChanged: `Your password has been successfully changed. Your account is now secure and ready for action.`,
+  emailVerified: `Your email has been verified! You now have full access to all Tennis Addicts features.`,
+
+  // Listings related
+  listingCreated: `Your listing has been created successfully. It's now live and ready for the Tennis Addicts community!`,
+  listingUpdated: `Your listing has been rallied to perfection! Updates are now live.`,
+  listingDeleted: `Your listing has been removed from the marketplace. Game, set, done!`,
+  listingSaved: `This listing has been saved to your favorites. Check your profile to view all saved items.`,
+
+  // File uploads
+  incorrectFileType: `Out of bounds! Please upload an image file (JPG, PNG, GIF) only.`,
+  uploadSuccess: `Your photos have been uploaded successfully. They look ace!`,
+  uploadError: `Fault on the upload! Please try again or contact support for assistance.`,
+
+  // Interactions
+  rateLimited: `Time violation! You're making too many requests. Please wait a moment before trying again.`,
+  reportSuccess: `Thank you for your line call. Our team will review this listing shortly.`,
+  reportError: `Your report couldn't be submitted. Please try again or contact our umpires for assistance.`,
+  saveSuccess: `Your progress has been saved. You can return to complete this form after your match.`,
+  saveError: `Deuce! We couldn't save your progress. Please try again before changing courts.`,
+  linkCopied: `Match point! Link copied to clipboard. Share it with your tennis buddies!`,
+
+  // Booking related
+  bookingSuccess: `Court reserved! Your tennis session has been successfully booked.`,
+  bookingCancelled: `Your court reservation has been cancelled. No penalty points this time!`,
+  bookingReminder: `Your tennis court is reserved for tomorrow. Don't forget your racquet!`,
+
+  // Community interaction
+  messageReceived: `New message in your inbox! Someone from the Tennis Addicts community wants to connect.`,
+  connectionRequest: `A player wants to connect with you! Check your profile for pending requests.`,
+  eventJoined: `You've successfully registered for this tennis event. We'll see you on the court!`,
+  challengeReceived: `Game on! You've received a new match challenge. Check your notifications to respond.`,
+
+  // Payments and transactions
+  paymentSuccess: `Perfect serve! Your payment has been processed successfully.`,
+  paymentFailed: `Let fault! There was an issue processing your payment. Please try again with a different method.`,
+  refundIssued: `A refund has been issued to your original payment method. It may take 3-5 business days to appear.`,
+
+  // Errors and fallbacks
+  genericError: `We hit the net on that one. Please try again or contact support if the issue persists.`,
+  networkError: `Looks like your connection faulted. Please check your internet and try again.`,
+  timeoutError: `The request timed out. The server might be experiencing high traffic - like center court during Wimbledon!`,
 };
 
 // Form interaction prompts

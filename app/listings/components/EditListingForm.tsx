@@ -453,7 +453,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                           (file) => !file.type.startsWith("image/")
                         );
                         if (invalidFiles.length > 0) {
-                          toast.error("Please upload only image files");
+                          toast.error(prompts.toast.incorrectFileType);
                           return false;
                         }
 
@@ -479,11 +479,9 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                       }}
                       onUploadError={(error: Error) => {
                         if (error.message.includes("Unauthorized")) {
-                          toast.error("Please sign in to upload images");
+                          toast.error(prompts.toast.signInRequired);
                         } else if (error.message.includes("Ratelimited")) {
-                          toast.error(
-                            "Please wait before uploading more images"
-                          );
+                          toast.error(prompts.toast.rateLimited);
                         } else {
                           toast.error(prompts.toast.error);
                         }

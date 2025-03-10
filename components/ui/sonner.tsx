@@ -4,6 +4,7 @@ import { useEffect, Suspense } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Toaster as Sonner, toast } from "sonner";
+import prompts from "@/prompts/prompts";
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
@@ -18,8 +19,8 @@ const ToasterContent = () => {
     const authRequired = searchParams.get("authRequired");
 
     if (authRequired === "true") {
-      toast.error("Authentication required", {
-        description: "You need to be logged in to access this page.",
+      toast.error("Authentication Required", {
+        description: prompts.toast.signInRequired,
         duration: 4000,
       });
 
@@ -35,38 +36,133 @@ const ToasterContent = () => {
   useEffect(() => {
     // Check sessionStorage for messages, wrapped in try/catch for SSR safety
     try {
-      // Check for listing update success message
+      // Listing related notifications
       if (sessionStorage.getItem("listingUpdateSuccess") === "true") {
-        toast.success("Listing updated successfully", {
+        toast.success("Listing Updated", {
+          description: prompts.toast.listingUpdated,
           duration: 3000,
         });
         sessionStorage.removeItem("listingUpdateSuccess");
       }
 
-      if (sessionStorage.getItem("alreadySignedIn") === "true") {
-        toast.error("You are already signed in", {
-          duration: 3000,
-        });
-        sessionStorage.removeItem("alreadySignedIn");
-      }
-
-      // You can add more sessionStorage checks here as needed
-      // For example:
       if (sessionStorage.getItem("listingCreated") === "true") {
-        toast.success("Listing created successfully", {
+        toast.success("Listing Created", {
+          description: prompts.toast.listingCreated,
           duration: 3000,
         });
         sessionStorage.removeItem("listingCreated");
       }
 
+      if (sessionStorage.getItem("listingDeleted") === "true") {
+        toast.success("Listing Deleted", {
+          description: prompts.toast.listingDeleted,
+          duration: 3000,
+        });
+        sessionStorage.removeItem("listingDeleted");
+      }
+
+      // Account related notifications
+      if (sessionStorage.getItem("alreadySignedIn") === "true") {
+        toast.error("Already Signed In", {
+          description: prompts.toast.genericError,
+          duration: 3000,
+        });
+        sessionStorage.removeItem("alreadySignedIn");
+      }
+
       if (sessionStorage.getItem("accountUpdated") === "true") {
-        toast.success("Account updated successfully", {
+        toast.success("Profile Updated", {
+          description: prompts.toast.update,
           duration: 3000,
         });
         sessionStorage.removeItem("accountUpdated");
       }
 
-      // Check for generic message
+      if (sessionStorage.getItem("accountCreated") === "true") {
+        toast.success("Welcome to Tennis Addicts!", {
+          description: prompts.toast.accountCreated,
+          duration: 4000,
+        });
+        sessionStorage.removeItem("accountCreated");
+      }
+
+      // Booking related notifications
+      if (sessionStorage.getItem("bookingSuccess") === "true") {
+        toast.success("Court Reserved", {
+          description: prompts.toast.bookingSuccess,
+          duration: 3000,
+        });
+        sessionStorage.removeItem("bookingSuccess");
+      }
+
+      if (sessionStorage.getItem("bookingCancelled") === "true") {
+        toast.info("Booking Cancelled", {
+          description: prompts.toast.bookingCancelled,
+          duration: 3000,
+        });
+        sessionStorage.removeItem("bookingCancelled");
+      }
+
+      // Community interaction notifications
+      if (sessionStorage.getItem("messageReceived") === "true") {
+        toast.info("New Message", {
+          description: prompts.toast.messageReceived,
+          duration: 3000,
+        });
+        sessionStorage.removeItem("messageReceived");
+      }
+
+      if (sessionStorage.getItem("connectionRequest") === "true") {
+        toast.info("Connection Request", {
+          description: prompts.toast.connectionRequest,
+          duration: 3000,
+        });
+        sessionStorage.removeItem("connectionRequest");
+      }
+
+      if (sessionStorage.getItem("eventJoined") === "true") {
+        toast.success("Event Registration", {
+          description: prompts.toast.eventJoined,
+          duration: 3000,
+        });
+        sessionStorage.removeItem("eventJoined");
+      }
+
+      // Payment related notifications
+      if (sessionStorage.getItem("paymentSuccess") === "true") {
+        toast.success("Payment Successful", {
+          description: prompts.toast.paymentSuccess,
+          duration: 3000,
+        });
+        sessionStorage.removeItem("paymentSuccess");
+      }
+
+      if (sessionStorage.getItem("paymentFailed") === "true") {
+        toast.error("Payment Failed", {
+          description: prompts.toast.paymentFailed,
+          duration: 4000,
+        });
+        sessionStorage.removeItem("paymentFailed");
+      }
+
+      // File upload notifications
+      if (sessionStorage.getItem("uploadSuccess") === "true") {
+        toast.success("Upload Complete", {
+          description: prompts.toast.uploadSuccess,
+          duration: 3000,
+        });
+        sessionStorage.removeItem("uploadSuccess");
+      }
+
+      if (sessionStorage.getItem("uploadError") === "true") {
+        toast.error("Upload Failed", {
+          description: prompts.toast.uploadError,
+          duration: 4000,
+        });
+        sessionStorage.removeItem("uploadError");
+      }
+
+      // Generic message handler (for custom or one-off notifications)
       const genericMessage = sessionStorage.getItem("toastMessage");
       if (genericMessage) {
         const messageData = JSON.parse(genericMessage);

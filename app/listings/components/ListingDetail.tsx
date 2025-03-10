@@ -172,7 +172,7 @@ const ListingDetail = ({
         if (result.success) {
           // Handle the redirect on the client side
           console.log("Listing deleted successfully");
-          toast.success("Listing deleted successfully");
+          toast.success(prompts.toast.deleteSuccess);
           router.push("/listings");
         } else {
           // Handle the error with the specific message from the server
@@ -220,12 +220,12 @@ const ListingDetail = ({
     } else {
       // Fallback
       navigator.clipboard.writeText(window.location.href);
-      toast.success("Link copied to clipboard");
+      toast.success(prompts.toast.linkCopied);
     }
   }, [listing.title, listing.description]);
 
   const handleReport = useCallback(() => {
-    toast.info("Thank you for your report. We'll review this listing.");
+    toast.info(prompts.toast.reportSuccess);
   }, []);
 
   const handleContactMethod = useCallback(

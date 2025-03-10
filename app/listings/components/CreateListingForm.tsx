@@ -117,7 +117,7 @@ export default function CreateListingForm({
   const handleSubmit = async (values: FormValues) => {
     // Prevent form submission if not signed in
     if (!isSignedIn && isLoaded) {
-      toast.error("Please sign in to create a listing");
+      toast.error(prompts.toast.signInRequired);
       router.push("/sign-in");
       return;
     }
@@ -424,7 +424,7 @@ export default function CreateListingForm({
                           (file) => !file.type.startsWith("image/")
                         );
                         if (invalidFiles.length > 0) {
-                          toast.error("Please upload only image files");
+                          toast.error(prompts.toast.incorrectFileType);
                           return false;
                         }
 
@@ -439,7 +439,7 @@ export default function CreateListingForm({
                             MAX_FILE_COUNT
                           ) {
                             field.onChange([...field.value, ...uploadedUrls]);
-                            toast.success("Images uploaded successfully");
+                            toast.success(prompts.toast.uploadSuccess);
                           } else {
                             toast.error(
                               `Cannot exceed ${MAX_FILE_COUNT} images`
@@ -450,15 +450,11 @@ export default function CreateListingForm({
                       }}
                       onUploadError={(error: Error) => {
                         if (error.message.includes("Unauthorized")) {
-                          toast.error("Please sign in to upload images");
+                          toast.error(prompts.toast.signInRequired);
                         } else if (error.message.includes("Ratelimited")) {
-                          toast.error(
-                            "Please wait before uploading more images"
-                          );
+                          toast.error(prompts.toast.rateLimited);
                         } else {
-                          toast.error(
-                            "Upload failed. Please ensure your images are valid and try again."
-                          );
+                          toast.error(prompts.toast.uploadError);
                         }
                         setIsUploading(false);
                       }}
