@@ -44,7 +44,7 @@
 - [x] Filter - tags, location
 - [x] Modularize prompts
 - [x] Fix Github Actions
-- [] Update toast prompts
+- [x] Update toast prompts
 - [] Compare utils/device with use-mobile hook
 - [] Understand the error and loading pages and where to use them
 - [] Search functionality - API search - query params

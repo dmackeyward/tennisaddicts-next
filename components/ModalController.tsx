@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState, ReactNode } from "react";
-import { isMobileDevice } from "@/utils/device";
 import { usePathname } from "next/navigation";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ModalControllerProps {
   children: ReactNode;
@@ -14,20 +14,16 @@ export default function ModalController({ children }: ModalControllerProps) {
     undefined
   );
   const pathname = usePathname();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
+    // Only proceed if isMobile has been determined
+    if (isMobile === undefined) return;
+
     // Function to check the flag and mobile status
     const checkShouldRender = () => {
       try {
-        // First, check if we're on a mobile device
-        const isMobile = isMobileDevice();
-
-        // Then check for the skipModal flag
         const skipModal = sessionStorage.getItem("skipModal") === "true";
-
-        // Log what we're doing
-        if (isMobile) {
-        }
 
         if (skipModal) {
           sessionStorage.removeItem("skipModal");
@@ -75,7 +71,7 @@ export default function ModalController({ children }: ModalControllerProps) {
 
     // Check immediately
     checkShouldRender();
-  }, [pathname]);
+  }, [pathname, isMobile]); // Add isMobile as a dependency
 
   // If we're still determining (undefined), don't render anything yet
   if (shouldRender === undefined) {
