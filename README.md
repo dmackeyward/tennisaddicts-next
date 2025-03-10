@@ -79,3 +79,7 @@
 - [] Error screens only displaying on 50% of the page
 
 ## Mobile Consideration
+
+## Automation
+
+- [x] Run 1
