@@ -92,7 +92,6 @@ export function ListingsFilters({
 
   // Initialize filters from URL parameters on component mount - only once on initial mount
   useEffect(() => {
-    console.log("ListingsFilters: Reading URL parameters once on mount");
     const sortBy = searchParams.get("sortBy") || initialFilters.sortBy;
     const sortOrder = searchParams.get("sortOrder") || initialFilters.sortOrder;
     const tag = searchParams.get("tag") || undefined;

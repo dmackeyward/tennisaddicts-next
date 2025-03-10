@@ -22,7 +22,6 @@ export function handleModalNavigation(route: string): boolean {
     try {
       // Set flag to skip modal rendering for mobile devices
       sessionStorage.setItem("skipModal", "true");
-      console.log(`Set skipModal flag for mobile device - route: ${route}`);
     } catch (e) {
       console.error("Error setting skipModal flag:", e);
     }

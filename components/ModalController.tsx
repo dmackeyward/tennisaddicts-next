@@ -27,18 +27,14 @@ export default function ModalController({ children }: ModalControllerProps) {
 
         // Log what we're doing
         if (isMobile) {
-          console.log("ModalController: On mobile device");
         }
 
         if (skipModal) {
-          console.log("ModalController: skipModal flag found");
           sessionStorage.removeItem("skipModal");
         }
 
         // Don't render if on mobile or if skipModal is set
         if (isMobile || skipModal) {
-          console.log("ModalController: Not rendering modal");
-
           // Convert modal route to main content route
           const parts = pathname.split("/");
 
@@ -59,8 +55,6 @@ export default function ModalController({ children }: ModalControllerProps) {
               mainContentPath = `/${section}/view/${id}`;
             }
 
-            console.log(`ModalController: Redirecting to ${mainContentPath}`);
-
             // Use a slight delay to allow React to finish its work
             setTimeout(() => {
               // Use window.location for a hard navigation
@@ -70,7 +64,6 @@ export default function ModalController({ children }: ModalControllerProps) {
 
           setShouldRender(false);
         } else {
-          console.log("ModalController: Rendering modal");
           setShouldRender(true);
         }
       } catch (e) {

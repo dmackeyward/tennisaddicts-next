@@ -269,7 +269,6 @@ export async function deleteListing(
       .where(eq(listings.id, parseInt(listingId)));
 
     // Log the result to check if anything was deleted
-    console.log("Delete operation result:", result);
 
     // Revalidate the listings page and the specific listing page
     revalidatePath("/listings");

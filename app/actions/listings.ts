@@ -67,13 +67,10 @@ export async function createListingAction(
   formData: FormData
 ): Promise<ServerActionResponse> {
   try {
-    console.log("Server action started");
-
     // Add authentication check
     const { userId } = await auth();
 
     if (!userId) {
-      console.log("Authentication required for creating a listing");
       return {
         success: false,
         error: "You must be logged in to create a listing",
@@ -100,18 +97,11 @@ export async function createListingAction(
       images: formData.getAll("images").map((image) => image.toString()),
     };
 
-    console.log("Validated data before Zod:", validatedData);
-
     // Validate using Zod schema
     const parsed = serverListingSchema.safeParse(validatedData);
 
     if (!parsed.success) {
-      console.log("Zod validation failed");
-      console.log("Raw Zod error:", parsed.error);
-      console.log("Formatted Zod error:", parsed.error.format());
-
       const errors = parsed.error.formErrors.fieldErrors;
-      console.log("Field errors:", errors);
 
       const response = {
         success: false,
@@ -123,26 +113,19 @@ export async function createListingAction(
         },
       };
 
-      console.log("Sending error response:", response);
       return response;
     }
 
-    console.log("Zod validation passed");
-
     // Log the parsed data
-    console.log("Parsed data:", parsed.data);
 
     // Call the createListing mutation
     const result = await createListing(prevState, formData);
-    console.log("Database mutation result:", result);
 
     if (result.data && result.data.id) {
-      console.log("Listing updated successfully:", result.data);
       revalidatePath("/listings");
       revalidatePath(`/listings/${result.data.id}`);
       return { success: true, data: { id: result.data.id } };
     } else {
-      console.log("Listing update failed:", result);
       if (result.errors) {
         return {
           success: false,
@@ -168,13 +151,10 @@ export async function updateListingAction(
   formData: FormData
 ): Promise<ServerActionResponse> {
   try {
-    console.log("Update server action started for listing:", id);
-
     // Get current user ID for authorization check
     const { userId } = await auth();
 
     if (!userId) {
-      console.log("Authentication required");
       return {
         success: false,
         error: "Authentication required",
@@ -185,7 +165,6 @@ export async function updateListingAction(
     const listing = await getListing(id);
 
     if (!listing) {
-      console.log("Listing not found");
       return {
         success: false,
         error: "Listing not found",
@@ -194,7 +173,6 @@ export async function updateListingAction(
 
     // Verify the current user is the author
     if (listing.userId !== userId) {
-      console.log("Authorization failed: User is not the listing owner");
       return {
         success: false,
         error: "You are not authorized to edit this listing",
@@ -221,18 +199,11 @@ export async function updateListingAction(
       images: formData.getAll("images").map((image) => image.toString()),
     };
 
-    console.log("Validated data before Zod:", validatedData);
-
     // Validate using Zod schema
     const parsed = serverListingSchema.safeParse(validatedData);
 
     if (!parsed.success) {
-      console.log("Zod validation failed");
-      console.log("Raw Zod error:", parsed.error);
-      console.log("Formatted Zod error:", parsed.error.format());
-
       const errors = parsed.error.formErrors.fieldErrors;
-      console.log("Field errors:", errors);
 
       const response = {
         success: false,
@@ -244,21 +215,17 @@ export async function updateListingAction(
         },
       };
 
-      console.log("Sending error response:", response);
       return response;
     }
 
     // Call the updateListing mutation
     const result = await updateListing(id, prevState, formData);
-    console.log("Database mutation result:", result);
 
     if (result.data && result.data.id) {
-      console.log("Listing updated successfully:", result.data);
       revalidatePath("/listings");
       revalidatePath(`/listings/${id}`);
       return { success: true, data: { id: result.data.id } };
     } else {
-      console.log("Listing update failed:", result);
       if (result.errors) {
         return {
           success: false,
@@ -286,7 +253,6 @@ export async function deleteListingAction(id: string) {
     const { userId } = await auth();
 
     if (!userId) {
-      console.log("Authentication required for deletion");
       return {
         success: false,
         error: "Authentication required",
@@ -297,7 +263,6 @@ export async function deleteListingAction(id: string) {
     const listing = await getListing(id);
 
     if (!listing) {
-      console.log("Listing not found for deletion");
       return {
         success: false,
         error: "Listing not found",
@@ -306,7 +271,6 @@ export async function deleteListingAction(id: string) {
 
     // Verify the current user is the author
     if (listing.userId !== userId) {
-      console.log("Authorization failed: User is not the listing owner");
       return {
         success: false,
         error: "You are not authorized to delete this listing",
@@ -329,7 +293,7 @@ export async function deleteListingAction(id: string) {
     revalidatePath(`/listings/view/${id}`);
 
     // Return success response
-    console.log("Listing deleted successfully from server action");
+
     return { success: true };
   } catch (error) {
     // Return error information that the client can use

@@ -171,8 +171,8 @@ const ListingDetail = ({
 
         if (result.success) {
           // Handle the redirect on the client side
-          console.log("Listing deleted successfully");
-          toast.success(prompts.toast.deleteSuccess);
+
+          toast.success(prompts.toast.listingDeleted);
           router.push("/listings");
         } else {
           // Handle the error with the specific message from the server
@@ -216,7 +216,7 @@ const ListingDetail = ({
           text: listing.description.substring(0, 100) + "...",
           url: window.location.href,
         })
-        .catch((error) => console.log("Error sharing", error));
+        .catch((error) => toast.error("Error sharing", error));
     } else {
       // Fallback
       navigator.clipboard.writeText(window.location.href);

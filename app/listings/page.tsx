@@ -16,16 +16,7 @@ export const metadata: Metadata = {
   description: prompts.listings.metadata.description,
 };
 
-export default async function ListingsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
-  // Convert searchParams to your filter type
-  const filters = await searchParams;
-
-  console.log(filters);
-
+export default async function ListingsPage() {
   // Get listings with filters
   const initialListings = await getListings();
   const { userId } = await auth();

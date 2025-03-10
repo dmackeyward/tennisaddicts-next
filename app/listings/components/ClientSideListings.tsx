@@ -46,39 +46,32 @@ export function ClientSideListings({
       location,
     };
 
-    console.log("Initial filters from URL:", filters);
     return filters;
   }, [searchParams]);
 
   // Handle filter changes
   const handleFiltersChange = async (filters: ListingFiltersType) => {
-    console.log("Filter change requested with filters:", filters);
-
     // Save the latest filters requested
     latestFilterRef.current = filters;
 
     // If a filter operation is already in progress, don't start another one
     if (isFilterOperationInProgress) {
-      console.log("Filter operation already in progress, skipping");
       return;
     }
 
-    console.log("Starting filter operation");
     setIsFilterOperationInProgress(true);
     setIsLoading(true);
 
     try {
-      console.log("Fetching filtered listings...");
       // Use the latest filters from the ref to ensure we're using the most recent request
       const currentFilters = latestFilterRef.current || filters;
       const response = await fetchFilteredListings(currentFilters);
-      console.log("Fetch completed, updating listings");
+
       setListings(response);
     } catch (error) {
       console.error("Error fetching filtered listings:", error);
     }
 
-    console.log("Setting loading state to false");
     setIsLoading(false);
     setIsFilterOperationInProgress(false);
   };
@@ -89,7 +82,6 @@ export function ClientSideListings({
       return;
     }
 
-    console.log("Clearing all filters");
     setIsFilterOperationInProgress(true);
     setIsLoading(true);
 
@@ -128,17 +120,14 @@ export function ClientSideListings({
   const fetchFilteredListings = async (
     filters: ListingFiltersType
   ): Promise<Listing[]> => {
-    console.log("fetchFilteredListings started with filters:", filters);
-
     // This is where you would make an API call to your backend
     // For example:
     // const response = await fetch(`/api/listings?${new URLSearchParams(filterParams)}`)
     // return response.json()
 
     // For now, we'll just simulate a delay and filter the initial listings client-side
-    console.log("Simulating network delay...");
+
     await new Promise((resolve) => setTimeout(resolve, 1000)); // Longer delay to make loading state more visible
-    console.log("Network delay completed");
 
     // Apply filters to initialListings
     const filteredResults = initialListings
@@ -176,14 +165,12 @@ export function ClientSideListings({
         }
       });
 
-    console.log(`Filter complete, returning ${filteredResults.length} results`);
     return filteredResults;
   };
 
   // Effect to apply initial filters only once when component mounts
   useEffect(() => {
     const initialFilters = getInitialFilters();
-    console.log("INITIALIZATION: Using initial filters", initialFilters);
 
     // Skip the initial filter operation if we already have initialListings
     if (initialListings.length > 0) {

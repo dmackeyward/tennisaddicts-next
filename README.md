@@ -44,10 +44,10 @@
 - [x] Filter - tags, location
 - [x] Modularize prompts
 - [x] Fix Github Actions
-- [] Check toast prompts
+- [] Update toast prompts
 - [] Compare utils/device with use-mobile hook
-- [] Search functionality - API search - query params
 - [] Understand the error and loading pages and where to use them
+- [] Search functionality - API search - query params
 
 ## Bugs
 

@@ -136,7 +136,6 @@ export default function CreateListingForm({
 
     startTransition(async () => {
       const result = await createListingAction(formData);
-      console.log("Server action complete result:", result);
 
       if (result.success) {
         toast.success(prompts.toast.success);
@@ -148,24 +147,17 @@ export default function CreateListingForm({
         if (typeof result.error === "string") {
           toast.error(result.error);
         } else if (result.error) {
-          console.log("Error object received:", result.error);
           Object.entries(result.error).forEach(([field, errors]) => {
-            console.log(`Processing field: ${field}`, errors);
-
             if (field === "location") {
-              console.log("Location error structure:", errors);
               const locationError = errors as LocationErrorType;
-              console.log("Parsed location error:", locationError);
 
               if (locationError.city) {
-                console.log("Setting city error:", locationError.city[0]);
                 form.setError("location.city" as FieldName, {
                   type: "server",
                   message: locationError.city[0] || "City must be selected",
                 });
               }
             } else if (Array.isArray(errors) && errors.length > 0) {
-              console.log(`Setting error for field ${field}:`, errors[0]);
               form.setError(field as FieldName, {
                 type: "server",
                 message: errors[0],
@@ -300,12 +292,10 @@ export default function CreateListingForm({
                     <LocationSelector
                       value={field.value}
                       onCityChange={(location) => {
-                        console.log("City changed to:", location);
                         field.onChange(location);
                         form.clearErrors("location.city");
                       }}
                       onClubChange={(location) => {
-                        console.log("Club changed to:", location);
                         field.onChange(location);
                       }}
                       disabled={isFormDisabled}
