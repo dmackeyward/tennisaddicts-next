@@ -10,9 +10,11 @@ jobs:
   test-and-lint:
     runs-on: ubuntu-latest
 
-    # Add environment variables here
+    # Updated environment variables section with Clerk keys
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+      CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
 
     steps:
       - name: Checkout code
