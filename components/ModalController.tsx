@@ -2,7 +2,7 @@
 
 import { useEffect, useState, ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/useMobile";
 
 interface ModalControllerProps {
   children: ReactNode;

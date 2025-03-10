@@ -1,6 +1,6 @@
 "use client";
 
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/useMobile";
 
 /**
  * Sets the skipModal flag before navigating to a modal route on mobile devices
