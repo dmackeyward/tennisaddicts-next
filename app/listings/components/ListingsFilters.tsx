@@ -12,11 +12,13 @@ import {
 import type { ListingFilters } from "@/types/listings";
 import { AVAILABLE_TAGS } from "@/types/listings";
 import citiesData from "@/assets/data/city.json"; // Import the city.json file
+import prompts from "@/prompts/prompts"; // Import prompts
 
 interface ListingsFiltersProps {
   onFiltersChange: (filters: ListingFilters) => Promise<void>;
   initialFilters?: ListingFilters;
   disabled?: boolean;
+  category?: string; // Optional category to customize filter options
 }
 
 export function ListingsFilters({
@@ -26,10 +28,15 @@ export function ListingsFilters({
     sortOrder: "desc",
   },
   disabled = false,
+  category,
 }: ListingsFiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  // Get prompts
+  const filtersPrompts = prompts.common.filters;
+  const listingsPrompts = prompts.listings;
 
   // State for filters
   const [filters, setFilters] = useState<ListingFilters>(initialFilters);
@@ -199,9 +206,56 @@ export function ListingsFilters({
     await onFiltersChange(updatedFilters);
   };
 
+  // Get category-specific filter options if applicable
+  const getCategorySpecificFilterOptions = () => {
+    if (
+      category === "equipment" &&
+      listingsPrompts.equipment?.filters?.condition
+    ) {
+      return {
+        title: listingsPrompts.equipment.filters.condition.title,
+        options: [
+          { value: "all", label: "All Conditions" },
+          {
+            value: "new",
+            label: listingsPrompts.equipment.filters.condition.new,
+          },
+          {
+            value: "likeNew",
+            label: listingsPrompts.equipment.filters.condition.likeNew,
+          },
+          {
+            value: "good",
+            label: listingsPrompts.equipment.filters.condition.good,
+          },
+          {
+            value: "fair",
+            label: listingsPrompts.equipment.filters.condition.fair,
+          },
+        ],
+      };
+    }
+
+    if (category === "courts" && listingsPrompts.courts?.filters?.surface) {
+      return {
+        title: listingsPrompts.courts.filters.surface,
+        options: [
+          { value: "all", label: "All Surfaces" },
+          { value: "hard", label: listingsPrompts.courts.subcategories.hard },
+          { value: "clay", label: listingsPrompts.courts.subcategories.clay },
+          { value: "grass", label: listingsPrompts.courts.subcategories.grass },
+        ],
+      };
+    }
+
+    return null;
+  };
+
+  const categoryFilters = getCategorySpecificFilterOptions();
+
   return (
     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-screen-lg mx-auto py-4">
-      {/* Sort Dropdown - Simplified to 4 common options */}
+      {/* Sort Dropdown */}
       <Select
         value={selectedSort}
         onValueChange={handleSortChange}
@@ -212,13 +266,17 @@ export function ListingsFilters({
             disabled ? "opacity-70 cursor-not-allowed" : ""
           }`}
         >
-          <SelectValue placeholder="Sort by" />
+          <SelectValue placeholder={filtersPrompts.sortBy} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="newest">Most Recent</SelectItem>
-          <SelectItem value="oldest">Oldest First</SelectItem>
-          <SelectItem value="highest">Highest Price</SelectItem>
-          <SelectItem value="lowest">Lowest Price</SelectItem>
+          <SelectItem value="newest">{filtersPrompts.date} (Newest)</SelectItem>
+          <SelectItem value="oldest">{filtersPrompts.date} (Oldest)</SelectItem>
+          <SelectItem value="highest">
+            {filtersPrompts.price} (Highest)
+          </SelectItem>
+          <SelectItem value="lowest">
+            {filtersPrompts.price} (Lowest)
+          </SelectItem>
         </SelectContent>
       </Select>
 
@@ -233,10 +291,10 @@ export function ListingsFilters({
             disabled ? "opacity-70 cursor-not-allowed" : ""
           }`}
         >
-          <SelectValue placeholder="Filter by tag" />
+          <SelectValue placeholder={filtersPrompts.filterBy} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Items</SelectItem>
+          <SelectItem value="all">{listingsPrompts.categories.all}</SelectItem>
           {AVAILABLE_TAGS.map((tag) => (
             <SelectItem key={tag} value={tag}>
               {tag}
@@ -256,7 +314,9 @@ export function ListingsFilters({
             disabled ? "opacity-70 cursor-not-allowed" : ""
           }`}
         >
-          <SelectValue placeholder="Filter by city" />
+          <SelectValue
+            placeholder={`${filtersPrompts.filterBy} ${filtersPrompts.distance}`}
+          />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Cities</SelectItem>
@@ -267,6 +327,49 @@ export function ListingsFilters({
           ))}
         </SelectContent>
       </Select>
+
+      {/* Category-specific filter, conditionally rendered */}
+      {categoryFilters && (
+        <Select value="all" onValueChange={() => {}} disabled={disabled}>
+          <SelectTrigger
+            className={`w-full sm:w-48 ${
+              disabled ? "opacity-70 cursor-not-allowed" : ""
+            }`}
+          >
+            <SelectValue placeholder={categoryFilters.title} />
+          </SelectTrigger>
+          <SelectContent>
+            {categoryFilters.options.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
+
+      {/* Clear filters button */}
+      <button
+        onClick={() => {
+          // Reset to defaults
+          setSelectedSort("newest");
+          setSelectedTag("all");
+          setSelectedCity("all");
+
+          handleFilterChange({
+            sortBy: "date",
+            sortOrder: "desc",
+            tag: undefined,
+            location: undefined,
+          });
+        }}
+        className="text-sm text-blue-600 hover:underline disabled:opacity-50"
+        disabled={disabled}
+      >
+        {filtersPrompts.clearFilters}
+      </button>
     </div>
   );
 }
+
+export default ListingsFilters;

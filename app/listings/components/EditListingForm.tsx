@@ -38,6 +38,7 @@ import {
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import isEqual from "lodash/isEqual";
+import { listings, common, toast as toastPrompts } from "@/prompts/prompts"; // Import the prompts
 
 const MAX_FILE_COUNT = 6;
 const MAX_FILE_SIZE = "4MB";
@@ -224,10 +225,10 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
             name="title"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Title</FormLabel>
+                <FormLabel>{listings.listingForms.titleLabel}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="E.g. Wilson Blade"
+                    placeholder={listings.listingForms.titlePlaceholder}
                     {...field}
                     className="w-full"
                     disabled={isFormDisabled}
@@ -247,10 +248,10 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Description</FormLabel>
+                <FormLabel>{listings.listingForms.descriptionLabel}</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="Describe your item in detail..."
+                    placeholder={listings.listingForms.descriptionPlaceholder}
                     className="min-h-32 resize-none"
                     {...field}
                     disabled={isFormDisabled}
@@ -270,7 +271,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
             name="price"
             render={({ field: { onChange, ...fieldProps } }) => (
               <FormItem>
-                <FormLabel>Price (Optional)</FormLabel>
+                <FormLabel>{listings.listingForms.priceLabel}</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <span className="absolute left-3 top-2 text-gray-500">
@@ -280,7 +281,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                       type="number"
                       step="0.01"
                       min="0"
-                      placeholder="0.00"
+                      placeholder={listings.listingForms.pricePlaceholder}
                       className="pl-8"
                       {...fieldProps}
                       onChange={(e) => {
@@ -309,7 +310,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
 
               return (
                 <FormItem>
-                  <FormLabel>Location</FormLabel>
+                  <FormLabel>{listings.listingForms.locationLabel}</FormLabel>
                   <FormControl>
                     <LocationSelector
                       value={field.value}
@@ -340,7 +341,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
             name="tags"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Tags</FormLabel>
+                <FormLabel>{listings.listingForms.categoryLabel}</FormLabel>
                 <FormControl>
                   <MultiSelector
                     values={field.value}
@@ -374,7 +375,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
             name="images"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Images</FormLabel>
+                <FormLabel>{listings.listingForms.photosLabel}</FormLabel>
                 <FormControl>
                   <div className="space-y-4">
                     {/* Display uploaded images first */}
@@ -451,7 +452,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                             MAX_FILE_COUNT
                           ) {
                             field.onChange([...field.value, ...uploadedUrls]);
-                            toast.success("Images uploaded successfully");
+                            toast.success(toastPrompts.success);
                           } else {
                             toast.error(
                               `Cannot exceed ${MAX_FILE_COUNT} images`
@@ -468,9 +469,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                             "Please wait before uploading more images"
                           );
                         } else {
-                          toast.error(
-                            "Upload failed. Please ensure your images are valid and try again."
-                          );
+                          toast.error(toastPrompts.error);
                         }
                         setIsUploading(false);
                       }}
@@ -478,8 +477,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                   </div>
                 </FormControl>
                 <FormDescription>
-                  Upload up to {MAX_FILE_COUNT} images (max {MAX_FILE_SIZE}{" "}
-                  each)
+                  {listings.listingForms.maxPhotos} {MAX_FILE_SIZE} each
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -493,7 +491,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
               onClick={() => router.back()}
               disabled={isFormDisabled}
             >
-              Cancel
+              {common.buttons.cancel}
             </Button>
             <Button type="submit" disabled={isFormDisabled || !hasFormChanged}>
               {isPending ? (
@@ -507,7 +505,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                   Uploading...
                 </>
               ) : (
-                "Save Changes"
+                listings.listingForms.updateButton
               )}
             </Button>
           </div>

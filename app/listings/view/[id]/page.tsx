@@ -6,6 +6,7 @@ import { ListingImage, PLACEHOLDER_LISTING } from "@/types/listings";
 import { Metadata } from "next";
 import { use } from "react";
 import { auth } from "@clerk/nextjs/server";
+import { listings, error } from "@/prompts/prompts"; // Import prompts
 
 export const dynamic = "force-dynamic";
 
@@ -74,13 +75,13 @@ export async function generateMetadata({
 
     if (!listing) {
       return {
-        title: "Listing Not Found",
-        description: "The requested listing could not be found.",
+        title: error.listingNotFound,
+        description: error.errorLoadingListingDetails,
       };
     }
 
     return {
-      title: `${listing.title} | Your Platform Name`,
+      title: `${listing.title} | Tennis Addicts`, // Using the app name from our prompts
       description: listing.description.slice(0, 155) + "...",
       openGraph: {
         title: listing.title,
@@ -94,7 +95,7 @@ export async function generateMetadata({
   } catch {
     return {
       title: "Listing Details",
-      description: "View listing details on our platform.",
+      description: listings.description,
     };
   }
 }

@@ -8,6 +8,7 @@ import type {
   Listing,
   ListingFilters as ListingFiltersType,
 } from "@/types/listings";
+import { listings, common } from "@/prompts/prompts"; // Import the prompts
 
 interface ClientSideListingsProps {
   initialListings: Listing[];
@@ -241,21 +242,25 @@ export function ClientSideListings({
         {isLoading ? (
           <div className="flex justify-center py-12">
             <div className="animate-pulse text-center">
-              <p className="text-gray-500">Loading results...</p>
+              <p className="text-gray-500">
+                {common.emptyStates.loading || "Loading results..."}
+              </p>
               <div className="h-2 bg-gray-200 rounded-full max-w-md mx-auto mt-4"></div>
             </div>
           </div>
         ) : (
           <>
             <div className="flex justify-between items-center text-sm text-gray-500 mb-4 px-4">
-              <div>{listings.length} listings found</div>
+              <div>
+                {listings.length} {common.pagination.items}
+              </div>
               {areFiltersActive() && (
                 <button
                   onClick={handleClearFilters}
                   className="text-blue-500 hover:text-blue-700 font-medium transition-colors focus:outline-none"
                   disabled={isFilterOperationInProgress}
                 >
-                  Clear filters
+                  {common.filters.clearFilters}
                 </button>
               )}
             </div>

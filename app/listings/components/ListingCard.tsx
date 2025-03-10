@@ -15,6 +15,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatPrice, formatDate } from "@/lib/format";
 import { handleModalNavigation } from "@/utils/device";
+import { common, listings } from "@/prompts/prompts"; // Import the prompts
 
 interface ListingCardProps {
   listing?: Listing;
@@ -24,7 +25,10 @@ interface ListingCardProps {
 
 // LoadingSkeleton component unchanged...
 const LoadingSkeleton = memo(() => (
-  <div role="status" aria-label="Loading listing card">
+  <div
+    role="status"
+    aria-label={common.emptyStates.loading || "Loading listing card"}
+  >
     <Card className="h-full">
       <CardHeader>
         <Skeleton className="w-full h-48 rounded-t-lg" />
@@ -102,7 +106,9 @@ const ListingCard: React.FC<ListingCardProps> = memo(
       <Link
         href={listingUrl}
         className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg"
-        aria-label={`View details for ${displayData.title}`}
+        aria-label={`${
+          listings.listingDetail.viewTitle || "View details for"
+        } ${displayData.title}`}
         tabIndex={isPlaceholder ? -1 : 0}
         onClick={handleLinkClick}
       >
@@ -133,18 +139,22 @@ const ListingCard: React.FC<ListingCardProps> = memo(
           <CardFooter className="flex justify-between items-center">
             <div
               className="text-lg font-semibold"
-              aria-label={`Price: ${formatPrice(displayData.price)}`}
+              aria-label={`${listings.listingForms.priceLabel}: ${formatPrice(
+                displayData.price
+              )}`}
             >
               ${Number(displayData.price).toFixed(2)}
             </div>
             <div
               className="text-gray-500 text-sm truncate max-w-[150px]"
-              aria-label={`Location: ${displayData.location?.formatted}`}
+              aria-label={`${listings.listingForms.locationLabel}: ${displayData.location?.formatted}`}
             >
               {displayData.location?.formatted}
             </div>
           </CardFooter>
-          <div className="sr-only">Last updated {formattedDate}</div>
+          <div className="sr-only">
+            {listings.listingDetail.listedOn} {formattedDate}
+          </div>
         </Card>
       </Link>
     );

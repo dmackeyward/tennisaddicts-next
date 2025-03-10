@@ -8,10 +8,12 @@ import { getListings } from "@/db/queries/listings";
 import { auth } from "@clerk/nextjs/server";
 import Icon from "@/components/Icon";
 import { Plus, Loader2 } from "lucide-react";
+import { listings } from "@/prompts/prompts";
 
+// Use metadata from prompts file
 export const metadata: Metadata = {
-  title: "Tennis Court Listings",
-  description: "Discover and book tennis courts in your area",
+  title: listings.metadata.title,
+  description: listings.metadata.description,
 };
 
 export default async function ListingsPage({
@@ -37,17 +39,13 @@ export default async function ListingsPage({
             <div className="bg-white rounded-full p-4 shadow-lg">
               <Icon name="tennisball" size={48} className="text-green-600" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold">Listings</h1>
-            <p className="text-xl max-w-3xl">
-              Find and book the perfect tennis court in your area. Browse our
-              listings to discover top-rated courts, availability, and special
-              offers.
-            </p>
+            <h1 className="text-4xl md:text-5xl font-bold">{listings.title}</h1>
+            <p className="text-xl max-w-3xl">{listings.description}</p>
             {userId && (
               <Link href="/listings/create">
                 <Button size="sm" className="bg-green-600 hover:bg-green-700">
                   <Plus size={16} className="mr-2" />
-                  Create New Listing
+                  {listings.myListings.createButton}
                 </Button>
               </Link>
             )}

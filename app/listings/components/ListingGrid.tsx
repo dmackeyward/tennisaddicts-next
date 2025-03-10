@@ -2,11 +2,24 @@
 
 import React, { useEffect, useRef, useCallback, memo } from "react";
 import ListingCard from "./ListingCard";
-import type { Listing, ListingGridProps } from "@/types/listings";
+import type { Listing } from "@/types/listings";
+import prompts from "@/prompts/prompts"; // Import prompts file
+
+// Extended ListingGridProps interface with additional properties
+interface ListingGridProps {
+  listings?: Listing[];
+  isLoading?: boolean;
+  onLoadMore?: () => void;
+  hasMore?: boolean;
+  category?: string;
+  subcategory?: string;
+}
 
 // Separate loading indicator component
 const LoadingIndicator = memo(() => (
-  <div className="animate-pulse text-gray-500">Loading more...</div>
+  <div className="animate-pulse text-gray-500">
+    {prompts.common.emptyStates.loading}
+  </div>
 ));
 LoadingIndicator.displayName = "LoadingIndicator";
 
@@ -18,10 +31,10 @@ const EmptyState = memo(() => (
     aria-label="No listings available"
   >
     <h3 className="text-xl font-semibold text-gray-900 mb-2">
-      No listings found
+      {prompts.common.emptyStates.noResults}
     </h3>
     <p className="text-gray-500 text-center">
-      There are currently no listings available.
+      {prompts.common.emptyStates.tryAgain}
     </p>
   </div>
 ));
@@ -46,9 +59,15 @@ export function ListingGrid({
   isLoading = false,
   onLoadMore,
   hasMore = false,
+  category,
+  subcategory,
 }: ListingGridProps) {
   const observerTarget = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
+
+  // Get relevant prompts
+  const listingsPrompts = prompts.listings;
+  const commonPrompts = prompts.common;
 
   // Memoize the intersection observer callback
   const handleIntersection = useCallback(
@@ -84,6 +103,34 @@ export function ListingGrid({
     };
   }, [hasMore, handleIntersection, onLoadMore]);
 
+  // Get proper empty state message based on category/subcategory
+  const getEmptyStateMessage = () => {
+    if (category) {
+      // Safely check if the category exists in listingsPrompts
+      const categoryExists = Object.keys(listingsPrompts).includes(category);
+      if (categoryExists) {
+        return `No ${category.toLowerCase()} listings found. ${
+          prompts.common.emptyStates.tryAgain
+        }`;
+      }
+    }
+    return prompts.common.emptyStates.tryAgain;
+  };
+
+  // Custom EmptyState with category-specific messaging
+  const CategoryEmptyState = () => (
+    <div
+      className="flex flex-col items-center justify-center py-12 px-4"
+      role="status"
+      aria-label="No listings available"
+    >
+      <h3 className="text-xl font-semibold text-gray-900 mb-2">
+        {prompts.common.emptyStates.noResults}
+      </h3>
+      <p className="text-gray-500 text-center">{getEmptyStateMessage()}</p>
+    </div>
+  );
+
   // Show loading state if no listings and isLoading
   if (listings.length === 0 && isLoading) {
     return <SkeletonGrid />;
@@ -91,11 +138,22 @@ export function ListingGrid({
 
   // Show message if no listings and not loading
   if (listings.length === 0 && !isLoading) {
-    return <EmptyState />;
+    return <CategoryEmptyState />;
   }
+
+  // Display informational text about results
+  const getResultsText = () => {
+    if (listings.length === 0) return "";
+
+    return `${prompts.common.pagination.showing} ${listings.length} ${prompts.common.pagination.items}`;
+  };
 
   return (
     <div className="space-y-6">
+      {listings.length > 0 && (
+        <div className="text-sm text-gray-500">{getResultsText()}</div>
+      )}
+
       <div
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         role="grid"
@@ -109,8 +167,10 @@ export function ListingGrid({
             isLoading={isLoading}
           />
         ))}
-        {isLoading && hasMore && <SkeletonGrid />}
       </div>
+
+      {isLoading && <SkeletonGrid count={3} />}
+
       {hasMore && (
         <div
           ref={observerTarget}
@@ -121,6 +181,19 @@ export function ListingGrid({
           {isLoading && <LoadingIndicator />}
         </div>
       )}
+
+      {/* Pagination summary - shows at the bottom when there are multiple pages */}
+      {listings.length > 0 && hasMore && !isLoading && (
+        <div className="flex justify-center items-center text-sm text-gray-500">
+          {commonPrompts.pagination.showing} {listings.length}{" "}
+          {commonPrompts.pagination.items}
+          {hasMore
+            ? ` - ${commonPrompts.pagination.next} ${commonPrompts.pagination.page} available`
+            : ""}
+        </div>
+      )}
     </div>
   );
 }
+
+export default memo(ListingGrid);

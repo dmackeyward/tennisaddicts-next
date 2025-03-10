@@ -33,6 +33,12 @@ import { AVAILABLE_TAGS, LocationErrorType } from "@/types/listings";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAuth } from "@clerk/nextjs";
+import {
+  listings,
+  common,
+  forms,
+  toast as toastPrompts,
+} from "@/prompts/prompts"; // Import the prompts
 
 const MAX_FILE_COUNT = 6;
 const MAX_FILE_SIZE = "4MB";
@@ -138,7 +144,7 @@ export default function CreateListingForm({
       console.log("Server action complete result:", result);
 
       if (result.success) {
-        toast.success("Listing created successfully!");
+        toast.success(toastPrompts.success);
         form.reset(defaultValues);
         onSubmitSuccess?.();
         router.push("/listings");
@@ -199,10 +205,10 @@ export default function CreateListingForm({
             name="title"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Title</FormLabel>
+                <FormLabel>{listings.listingForms.titleLabel}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="E.g. Wilson Blade"
+                    placeholder={listings.listingForms.titlePlaceholder}
                     {...field}
                     className="w-full"
                     disabled={isFormDisabled}
@@ -222,10 +228,10 @@ export default function CreateListingForm({
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Description</FormLabel>
+                <FormLabel>{listings.listingForms.descriptionLabel}</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="Describe your item in detail..."
+                    placeholder={listings.listingForms.descriptionPlaceholder}
                     className="min-h-32 resize-none"
                     {...field}
                     disabled={isFormDisabled}
@@ -245,7 +251,7 @@ export default function CreateListingForm({
             name="price"
             render={({ field: { onChange, ...fieldProps } }) => (
               <FormItem>
-                <FormLabel>Price (Optional)</FormLabel>
+                <FormLabel>{listings.listingForms.priceLabel}</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <span className="absolute left-3 top-2 text-gray-500">
@@ -255,7 +261,7 @@ export default function CreateListingForm({
                       type="number"
                       step="0.01"
                       min="0"
-                      placeholder="0.00"
+                      placeholder={listings.listingForms.pricePlaceholder}
                       className="pl-8"
                       {...fieldProps}
                       onChange={(e) => {
@@ -284,7 +290,7 @@ export default function CreateListingForm({
 
               return (
                 <FormItem>
-                  <FormLabel>Location</FormLabel>
+                  <FormLabel>{listings.listingForms.locationLabel}</FormLabel>
                   <FormControl>
                     <LocationSelector
                       value={field.value}
@@ -349,7 +355,7 @@ export default function CreateListingForm({
             name="images"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Images</FormLabel>
+                <FormLabel>{listings.listingForms.photosLabel}</FormLabel>
                 <FormControl>
                   <div className="space-y-4">
                     {/* Display uploaded images first */}
@@ -453,8 +459,7 @@ export default function CreateListingForm({
                   </div>
                 </FormControl>
                 <FormDescription>
-                  Upload up to {MAX_FILE_COUNT} images (max {MAX_FILE_SIZE}{" "}
-                  each)
+                  {listings.listingForms.maxPhotos} {MAX_FILE_SIZE} each
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -468,7 +473,7 @@ export default function CreateListingForm({
               onClick={() => router.back()}
               disabled={isFormDisabled}
             >
-              Cancel
+              {common.buttons.cancel}
             </Button>
             <Button type="submit" disabled={isFormDisabled}>
               {!isSignedIn && isLoaded ? (
@@ -484,7 +489,7 @@ export default function CreateListingForm({
                   Uploading...
                 </>
               ) : (
-                "Create Listing"
+                listings.listingForms.publishButton
               )}
             </Button>
           </div>

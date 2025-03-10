@@ -7,9 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { auth } from "@clerk/nextjs/server";
 import { getListing } from "@/db/queries/listings";
+import { listings } from "@/prompts/prompts"; // Import the listings prompts
 
 export const metadata: Metadata = {
-  title: "Edit Listing",
+  title: listings.listingForms.editTitle,
   description: "Edit your listing details",
 };
 
@@ -42,10 +43,12 @@ export default async function EditListingPage({
   }
 
   return (
-    <div className="container mx-auto max-w-6xl px-6 py-8  bg-gradient-to-b from-white to-green-100">
+    <div className="container mx-auto max-w-6xl px-6 py-8 bg-gradient-to-b from-white to-green-100">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">Edit Listing</CardTitle>
+          <CardTitle className="text-2xl font-bold">
+            {listings.listingForms.editTitle}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <Suspense fallback={<EditListingFormSkeleton />}>

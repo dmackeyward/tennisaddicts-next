@@ -2,7 +2,17 @@
 
 import React, { useState, useCallback, memo, startTransition } from "react";
 import Image from "next/image";
-import { DeleteIcon, Loader2, PencilIcon } from "lucide-react";
+import {
+  DeleteIcon,
+  Loader2,
+  PencilIcon,
+  Share2,
+  AlertTriangle,
+  Heart,
+  MessageCircle,
+  Phone,
+  Mail,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   MapPin,
@@ -10,6 +20,7 @@ import {
   DollarSign,
   ChevronLeft,
   ChevronRight,
+  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -22,6 +33,15 @@ import { formatDate } from "@/utils/format-date";
 import { deleteListingAction } from "@/app/actions/listings";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import prompts from "@/prompts/prompts"; // Import prompts
+
+// Define seller info interface for the component
+interface SellerInfo {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+}
 
 // Memoized loading skeleton component
 const LoadingSkeleton = memo(() => (
@@ -121,9 +141,23 @@ const ListingDetail = ({
   isAuthor = false,
 }: ListingDetailProps) => {
   const [selectedImage, setSelectedImage] = useState(0);
+  const [isSaved, setIsSaved] = useState(false);
+  const [activeContact, setActiveContact] = useState<string | null>(null);
   const listing = propListing || PLACEHOLDER_LISTING;
   const router = useRouter();
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+
+  // Mock seller info - in a real app, this would come from your API
+  // This avoids TypeScript errors since your Listing type doesn't have a user property
+  const sellerInfo: SellerInfo = {
+    id: "seller-1",
+    name: "Tennis Seller",
+    email: "seller@example.com",
+    phone: "(555) 123-4567",
+  };
+
+  // Get prompts for listing detail page
+  const listingDetailPrompts = prompts.listings.listingDetail;
 
   // Navigate to edit page
   const handleEdit = useCallback(() => {
@@ -144,11 +178,11 @@ const ListingDetail = ({
         } else {
           // Handle the error with the specific message from the server
           console.error("Delete error:", result.error);
-          toast.error(result.error || "Failed to delete listing");
+          toast.error(result.error || prompts.error.errorLoadingListing);
         }
       } catch (error) {
         console.error("Client-side delete error:", error);
-        toast.error("Failed to delete listing");
+        toast.error(prompts.error.errorLoadingListing);
       }
     });
   }, [listing.id, router]);
@@ -168,6 +202,50 @@ const ListingDetail = ({
     [listing.images.length]
   );
 
+  const toggleSaved = useCallback(() => {
+    setIsSaved((prev) => !prev);
+    toast.success(
+      isSaved ? "Listing removed from favorites" : "Listing saved to favorites"
+    );
+  }, [isSaved]);
+
+  const handleShare = useCallback(() => {
+    if (navigator.share) {
+      navigator
+        .share({
+          title: listing.title,
+          text: listing.description.substring(0, 100) + "...",
+          url: window.location.href,
+        })
+        .catch((error) => console.log("Error sharing", error));
+    } else {
+      // Fallback
+      navigator.clipboard.writeText(window.location.href);
+      toast.success("Link copied to clipboard");
+    }
+  }, [listing.title, listing.description]);
+
+  const handleReport = useCallback(() => {
+    toast.info("Thank you for your report. We'll review this listing.");
+  }, []);
+
+  const handleContactMethod = useCallback(
+    (method: string) => {
+      setActiveContact(activeContact === method ? null : method);
+    },
+    [activeContact]
+  );
+
+  const handleAskQuestion = useCallback(() => {
+    // This would open a message form in a real implementation
+    toast.info("Message form would open here");
+  }, []);
+
+  const handleSeeMoreListings = useCallback(() => {
+    // Navigate to seller's other listings
+    router.push(`/listings?seller=${sellerInfo.id}`);
+  }, [sellerInfo.id, router]);
+
   if (isLoading) {
     return <LoadingSkeleton />;
   }
@@ -176,19 +254,27 @@ const ListingDetail = ({
     <Card className="overflow-hidden">
       <CardHeader>
         <div className="flex justify-between items-start">
-          <CardTitle className="text-2xl font-bold">{listing.title}</CardTitle>
+          <div>
+            <CardTitle className="text-2xl font-bold">
+              {listing.title}
+            </CardTitle>
+            <div className="text-sm text-gray-500 mt-1">
+              {listingDetailPrompts.listedOn} {formatDate(listing.createdAt)}{" "}
+              {listingDetailPrompts.by} {sellerInfo.name}
+            </div>
+          </div>
 
-          {/* Button container */}
+          {/* Action buttons */}
           <div className="flex space-x-2">
             {/* Edit and Delete buttons - only shown if isAuthor is true */}
-            {isAuthor && (
+            {isAuthor ? (
               <>
                 {/* Edit button */}
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={handleEdit}
-                  aria-label="Edit listing"
+                  aria-label={prompts.common.buttons.edit}
                 >
                   <PencilIcon className="h-5 w-5" />
                 </Button>
@@ -199,15 +285,13 @@ const ListingDetail = ({
                     variant="ghost"
                     size="icon"
                     onClick={() => setIsConfirmingDelete(true)}
-                    aria-label="Delete listing"
+                    aria-label={prompts.common.buttons.delete}
                   >
                     <DeleteIcon className="h-5 w-5" />
                   </Button>
                 ) : (
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm">
-                      Are you sure you want to delete this item?
-                    </span>
+                  <div className="flex items-center space-x-2 bg-gray-100 p-2 rounded-md">
+                    <span className="text-sm">Are you sure?</span>
                     <Button
                       variant="destructive"
                       size="sm"
@@ -218,21 +302,41 @@ const ListingDetail = ({
                         });
                       }}
                     >
-                      Yes
+                      {prompts.common.buttons.submit}
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setIsConfirmingDelete(false)}
                     >
-                      No
+                      {prompts.common.buttons.cancel}
                     </Button>
                   </div>
                 )}
               </>
+            ) : (
+              <>
+                {/* Save button */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleSaved}
+                  aria-label={
+                    isSaved
+                      ? listingDetailPrompts.saved
+                      : listingDetailPrompts.save
+                  }
+                  className={isSaved ? "text-red-500" : ""}
+                >
+                  <Heart
+                    className={`h-5 w-5 ${isSaved ? "fill-current" : ""}`}
+                  />
+                </Button>
+              </>
             )}
           </div>
         </div>
+
         <div className="flex items-center space-x-4 text-gray-600">
           <div className="flex items-center">
             <MapPin className="w-4 h-4 mr-1" />
@@ -293,9 +397,9 @@ const ListingDetail = ({
                       }`}
                       role="tab"
                       aria-selected={idx === selectedImage}
-                      aria-label={`View image ${idx + 1} of ${
-                        listing.images.length
-                      }`}
+                      aria-label={`${listingDetailPrompts.viewTitle} ${
+                        idx + 1
+                      } of ${listing.images.length}`}
                     />
                   ))}
                 </div>
@@ -340,14 +444,116 @@ const ListingDetail = ({
               </div>
             )}
 
-            <div className="pt-4">
+            {/* Contact section */}
+            <div className="border-t pt-4 mt-6">
+              <h3 className="text-lg font-semibold mb-3">
+                {listingDetailPrompts.contactSeller}
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={activeContact === "message" ? "bg-blue-50" : ""}
+                  onClick={() => handleContactMethod("message")}
+                >
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  {listingDetailPrompts.message}
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={activeContact === "call" ? "bg-blue-50" : ""}
+                  onClick={() => handleContactMethod("call")}
+                >
+                  <Phone className="w-4 h-4 mr-2" />
+                  {listingDetailPrompts.call}
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={activeContact === "email" ? "bg-blue-50" : ""}
+                  onClick={() => handleContactMethod("email")}
+                >
+                  <Mail className="w-4 h-4 mr-2" />
+                  {listingDetailPrompts.email}
+                </Button>
+              </div>
+
+              {activeContact && (
+                <div className="mt-3 p-3 bg-gray-50 rounded-md">
+                  {activeContact === "message" && (
+                    <div>
+                      <textarea
+                        className="w-full p-2 border rounded"
+                        rows={3}
+                        placeholder="Hi, I'm interested in your listing..."
+                      ></textarea>
+                      <Button size="sm" className="mt-2">
+                        {listingDetailPrompts.message}
+                      </Button>
+                    </div>
+                  )}
+                  {activeContact === "call" && (
+                    <div className="flex items-center">
+                      <Phone className="w-4 h-4 mr-2 text-green-600" />
+                      <span>{sellerInfo.phone}</span>
+                    </div>
+                  )}
+                  {activeContact === "email" && (
+                    <div className="flex items-center">
+                      <Mail className="w-4 h-4 mr-2 text-blue-600" />
+                      <span>{sellerInfo.email}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex flex-wrap gap-2 pt-2">
+              <Button variant="outline" size="sm" onClick={handleAskQuestion}>
+                {listingDetailPrompts.askQuestion}
+              </Button>
+
               <Button
-                className="w-full md:w-auto"
-                aria-label="Contact seller about this listing"
+                variant="outline"
+                size="sm"
+                onClick={handleSeeMoreListings}
               >
-                Contact Seller
+                {listingDetailPrompts.seeMoreListings}
+              </Button>
+
+              <Button variant="ghost" size="sm" onClick={handleShare}>
+                <Share2 className="w-4 h-4 mr-2" />
+                {listingDetailPrompts.share}
+              </Button>
+
+              <Button variant="ghost" size="sm" onClick={handleReport}>
+                <AlertTriangle className="w-4 h-4 mr-2" />
+                {listingDetailPrompts.report}
               </Button>
             </div>
+          </div>
+        </div>
+
+        {/* Similar listings section */}
+        <div className="mt-8 border-t pt-6">
+          <h3 className="text-xl font-semibold mb-4">
+            {listingDetailPrompts.similarListings}
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* This would be populated with actual similar listings */}
+            <Card className="h-64 flex items-center justify-center bg-gray-50">
+              <p className="text-gray-400">Similar listing 1</p>
+            </Card>
+            <Card className="h-64 flex items-center justify-center bg-gray-50">
+              <p className="text-gray-400">Similar listing 2</p>
+            </Card>
+            <Card className="h-64 flex items-center justify-center bg-gray-50">
+              <p className="text-gray-400">Similar listing 3</p>
+            </Card>
           </div>
         </div>
       </CardContent>
