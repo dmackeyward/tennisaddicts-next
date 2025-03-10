@@ -32,7 +32,7 @@ import { formatDate } from "@/utils/format-date";
 import { deleteListingAction } from "@/app/actions/listings";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import prompts from "@/prompts/prompts"; // Import prompts
+import prompts from "@/prompts/prompts";
 
 // Define seller info interface for the component
 interface SellerInfo {

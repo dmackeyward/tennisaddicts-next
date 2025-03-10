@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useCallback, memo } from "react";
 import ListingCard from "./ListingCard";
 import type { Listing } from "@/types/listings";
-import prompts from "@/prompts/prompts"; // Import prompts file
+import prompts from "@/prompts/prompts";
 
 // Extended ListingGridProps interface with additional properties
 interface ListingGridProps {

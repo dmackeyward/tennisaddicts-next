@@ -7,10 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { auth } from "@clerk/nextjs/server";
 import { getListing } from "@/db/queries/listings";
-import { listings } from "@/prompts/prompts"; // Import the listings prompts
+import prompts from "@/prompts/prompts";
 
 export const metadata: Metadata = {
-  title: listings.listingForms.editTitle,
+  title: prompts.listings.listingForms.editTitle,
   description: "Edit your listing details",
 };
 
@@ -47,7 +47,7 @@ export default async function EditListingPage({
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-bold">
-            {listings.listingForms.editTitle}
+            {prompts.listings.listingForms.editTitle}
           </CardTitle>
         </CardHeader>
         <CardContent>

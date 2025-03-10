@@ -6,7 +6,7 @@ import { ListingImage, PLACEHOLDER_LISTING } from "@/types/listings";
 import { Metadata } from "next";
 import { use } from "react";
 import { auth } from "@clerk/nextjs/server";
-import { listings, error } from "@/prompts/prompts"; // Import prompts
+import prompts from "@/prompts/prompts";
 
 export const dynamic = "force-dynamic";
 
@@ -75,8 +75,8 @@ export async function generateMetadata({
 
     if (!listing) {
       return {
-        title: error.listingNotFound,
-        description: error.errorLoadingListingDetails,
+        title: prompts.error.listingNotFound,
+        description: prompts.error.errorLoadingListingDetails,
       };
     }
 
@@ -95,7 +95,7 @@ export async function generateMetadata({
   } catch {
     return {
       title: "Listing Details",
-      description: listings.description,
+      description: prompts.listings.description,
     };
   }
 }

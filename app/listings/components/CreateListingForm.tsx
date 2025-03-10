@@ -33,7 +33,7 @@ import { AVAILABLE_TAGS, LocationErrorType } from "@/types/listings";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAuth } from "@clerk/nextjs";
-import { listings, common, toast as toastPrompts } from "@/prompts/prompts"; // Import the prompts
+import prompts from "@/prompts/prompts";
 
 const MAX_FILE_COUNT = 6;
 const MAX_FILE_SIZE = "4MB";
@@ -139,15 +139,13 @@ export default function CreateListingForm({
       console.log("Server action complete result:", result);
 
       if (result.success) {
-        toast.success(toastPrompts.success);
+        toast.success(prompts.toast.success);
         form.reset(defaultValues);
         onSubmitSuccess?.();
         router.push("/listings");
         router.refresh(); // Refresh the page to show the latest data
       } else {
-        console.log("Submission failed, processing errors");
         if (typeof result.error === "string") {
-          console.log("String error received:", result.error);
           toast.error(result.error);
         } else if (result.error) {
           console.log("Error object received:", result.error);
@@ -200,10 +198,12 @@ export default function CreateListingForm({
             name="title"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{listings.listingForms.titleLabel}</FormLabel>
+                <FormLabel>
+                  {prompts.listings.listingForms.titleLabel}
+                </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={listings.listingForms.titlePlaceholder}
+                    placeholder={prompts.listings.listingForms.titlePlaceholder}
                     {...field}
                     className="w-full"
                     disabled={isFormDisabled}
@@ -223,10 +223,14 @@ export default function CreateListingForm({
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{listings.listingForms.descriptionLabel}</FormLabel>
+                <FormLabel>
+                  {prompts.listings.listingForms.descriptionLabel}
+                </FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder={listings.listingForms.descriptionPlaceholder}
+                    placeholder={
+                      prompts.listings.listingForms.descriptionPlaceholder
+                    }
                     className="min-h-32 resize-none"
                     {...field}
                     disabled={isFormDisabled}
@@ -246,7 +250,9 @@ export default function CreateListingForm({
             name="price"
             render={({ field: { onChange, ...fieldProps } }) => (
               <FormItem>
-                <FormLabel>{listings.listingForms.priceLabel}</FormLabel>
+                <FormLabel>
+                  {prompts.listings.listingForms.priceLabel}
+                </FormLabel>
                 <FormControl>
                   <div className="relative">
                     <span className="absolute left-3 top-2 text-gray-500">
@@ -256,7 +262,9 @@ export default function CreateListingForm({
                       type="number"
                       step="0.01"
                       min="0"
-                      placeholder={listings.listingForms.pricePlaceholder}
+                      placeholder={
+                        prompts.listings.listingForms.pricePlaceholder
+                      }
                       className="pl-8"
                       {...fieldProps}
                       onChange={(e) => {
@@ -285,7 +293,9 @@ export default function CreateListingForm({
 
               return (
                 <FormItem>
-                  <FormLabel>{listings.listingForms.locationLabel}</FormLabel>
+                  <FormLabel>
+                    {prompts.listings.listingForms.locationLabel}
+                  </FormLabel>
                   <FormControl>
                     <LocationSelector
                       value={field.value}
@@ -350,7 +360,9 @@ export default function CreateListingForm({
             name="images"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{listings.listingForms.photosLabel}</FormLabel>
+                <FormLabel>
+                  {prompts.listings.listingForms.photosLabel}
+                </FormLabel>
                 <FormControl>
                   <div className="space-y-4">
                     {/* Display uploaded images first */}
@@ -454,7 +466,7 @@ export default function CreateListingForm({
                   </div>
                 </FormControl>
                 <FormDescription>
-                  {listings.listingForms.maxPhotos} {MAX_FILE_SIZE} each
+                  {prompts.listings.listingForms.maxPhotos} {MAX_FILE_SIZE} each
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -468,7 +480,7 @@ export default function CreateListingForm({
               onClick={() => router.back()}
               disabled={isFormDisabled}
             >
-              {common.buttons.cancel}
+              {prompts.common.buttons.cancel}
             </Button>
             <Button type="submit" disabled={isFormDisabled}>
               {!isSignedIn && isLoaded ? (
@@ -484,7 +496,7 @@ export default function CreateListingForm({
                   Uploading...
                 </>
               ) : (
-                listings.listingForms.publishButton
+                prompts.listings.listingForms.publishButton
               )}
             </Button>
           </div>

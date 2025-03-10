@@ -4,10 +4,10 @@ import { Suspense } from "react";
 import CreateListingForm from "@/app/listings/components/CreateListingForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { listings } from "@/prompts/prompts"; // Import the listings prompts
+import prompts from "@/prompts/prompts";
 
 export const metadata: Metadata = {
-  title: listings.listingForms.createTitle,
+  title: prompts.listings.listingForms.createTitle,
   description: "Create a new listing to sell your tennis equipment",
 };
 
@@ -22,7 +22,7 @@ export default async function CreateListingPage() {
         <Card className="mb-12">
           <CardHeader>
             <CardTitle className="text-2xl font-bold">
-              {listings.listingForms.createTitle}
+              {prompts.listings.listingForms.createTitle}
             </CardTitle>
           </CardHeader>
           <CardContent>

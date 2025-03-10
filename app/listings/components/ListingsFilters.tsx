@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/select";
 import type { ListingFilters } from "@/types/listings";
 import { AVAILABLE_TAGS } from "@/types/listings";
-import citiesData from "@/assets/data/city.json"; // Import the city.json file
-import prompts from "@/prompts/prompts"; // Import prompts
+import citiesData from "@/assets/data/city.json";
+import prompts from "@/prompts/prompts";
 
 interface ListingsFiltersProps {
   onFiltersChange: (filters: ListingFilters) => Promise<void>;

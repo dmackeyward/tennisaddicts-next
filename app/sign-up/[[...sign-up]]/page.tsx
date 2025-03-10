@@ -8,8 +8,8 @@ import Icon from "@/components/Icon";
 import prompts from "@/prompts/prompts";
 
 export const metadata: Metadata = {
-  title: prompts.signUp.metadata.title,
-  description: prompts.signUp.metadata.description,
+  title: prompts.auth.signUp.metadata.title,
+  description: prompts.auth.signUp.metadata.description,
 };
 
 export default async function SignUpPage() {
@@ -30,7 +30,7 @@ export default async function SignUpPage() {
               <Icon name="tennisball" size={48} className="text-green-600" />
             </div>
             <h1 className="text-2xl md:text-5xl font-bold">
-              {prompts.signUp.title}
+              {prompts.auth.signUp.title}
             </h1>
           </div>
         </CardHeader>
@@ -62,29 +62,29 @@ export default async function SignUpPage() {
 
           <div className="mt-6 text-center text-sm text-muted-foreground w-full">
             <p>
-              {prompts.signUp.alreadyHaveAccount}{" "}
+              {prompts.auth.signUp.alreadyHaveAccount}{" "}
               <Link
                 href="/sign-in"
                 className="text-primary hover:text-primary/90 font-medium"
               >
-                {prompts.signUp.signInLink}
+                {prompts.auth.signUp.signInLink}
               </Link>
             </p>
 
             <p className="mt-4">
-              {prompts.signUp.termsText}{" "}
+              {prompts.auth.signUp.termsText}{" "}
               <Link
                 href="/terms"
                 className="underline underline-offset-4 hover:text-foreground"
               >
-                {prompts.signUp.termsOfServiceLink}
+                {prompts.auth.signUp.termsOfServiceLink}
               </Link>{" "}
-              {prompts.signUp.andText}{" "}
+              {prompts.auth.signUp.andText}{" "}
               <Link
                 href="/privacy"
                 className="underline underline-offset-4 hover:text-foreground"
               >
-                {prompts.signUp.privacyPolicyLink}
+                {prompts.auth.signUp.privacyPolicyLink}
               </Link>
             </p>
           </div>

@@ -193,7 +193,7 @@ const news = {
   },
 };
 
-// Listings section prompts - now fully populated
+// Listings section prompts
 const listings = {
   metadata: {
     title: "Tennis Listings",
@@ -836,13 +836,35 @@ const error = {
   },
 };
 
+// Define signIn object directly to match the way it's accessed in the code
+const signIn = {
+  metadata: {
+    title: "Sign In",
+    description: "Sign in to your Tennis Addicts account",
+  },
+  title: "Sign In",
+  dontHaveAccount: "Don't have an account?",
+  signUpLink: "Sign up",
+  form: {
+    emailLabel: "Email",
+    emailPlaceholder: "your.email@example.com",
+    passwordLabel: "Password",
+    passwordPlaceholder: "Enter your password",
+    rememberMe: "Remember me",
+    forgotPassword: "Forgot password?",
+    signInButton: "Sign In",
+    processingButton: "Signing in...",
+  },
+};
+
 // Combine all modules into the main prompts object
 const prompts = {
   common,
   home,
+  signIn, // Add it directly here to match the way it's accessed in the component
   auth: {
     signUp: auth.signUp,
-    signIn: auth.signIn,
+    signIn: auth.signIn, // Keep this too for backward compatibility
     forgotPassword: auth.forgotPassword,
     resetPassword: auth.resetPassword,
   },
@@ -857,21 +879,5 @@ const prompts = {
   error,
 };
 
-// Export the prompts object for use in other files
+// At the end of your prompts.js file, after all other exports
 export default prompts;
-
-// Export individual modules for more granular imports
-export {
-  common,
-  home,
-  auth,
-  news,
-  listings,
-  aboutUs,
-  contactUs,
-  community,
-  toast,
-  forms,
-  search,
-  error,
-};

@@ -43,11 +43,11 @@
 - [x] Sort - price, createdAt
 - [x] Filter - tags, location
 - [x] Modularize prompts
-- [] Fix Github Actions
-- [] Update Prompt imports
+- [x] Fix Github Actions
 - [] Check toast prompts
 - [] Compare utils/device with use-mobile hook
 - [] Search functionality - API search - query params
+- [] Understand the error and loading pages and where to use them
 
 ## Bugs
 
