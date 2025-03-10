@@ -1,13 +1,14 @@
 // app/news/page.js (remains a server component)
 import { Metadata } from "next";
-import newsData from "@/data/news-items.json";
+import newsData from "@/assets/data/news-items.json";
 import { NewsItem } from "@/types/news";
 import Icon from "@/components/Icon";
-import NewsCard from "@/components/news/NewsCard";
+import NewsCard from "@/app/news/components/NewsCard";
+import prompts from "@/prompts/prompts";
 
 export const metadata: Metadata = {
-  title: "News",
-  description: "Latest news and updates",
+  title: prompts.news.metadata.title,
+  description: prompts.news.metadata.description,
 };
 
 export default function News() {
@@ -26,12 +27,10 @@ export default function News() {
           <div className="bg-white rounded-full p-4 shadow-lg">
             <Icon name="tennisball" size={48} className="text-green-600" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold">News</h1>
-          <p className="text-xl max-w-3xl">
-            Find and book the perfect tennis court in your area. Browse our
-            listings to discover top-rated courts, availability, and special
-            offers.
-          </p>
+          <h1 className="text-4xl md:text-5xl font-bold">
+            {prompts.news.title}
+          </h1>
+          <p className="text-xl max-w-3xl">{prompts.news.description}</p>
         </div>
         <div className="space-y-6">
           {newsItems.map((item) => (

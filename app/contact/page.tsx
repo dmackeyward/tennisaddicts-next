@@ -1,10 +1,11 @@
 import { Metadata } from "next";
-import ContactForm from "@/components/contact/ContactForm";
+import ContactForm from "@/app/contact/components/ContactForm";
 import Icon from "@/components/Icon";
+import prompts from "@/prompts/prompts";
 
 export const metadata: Metadata = {
-  title: "Contact Us",
-  description: "Get in touch with us",
+  title: prompts.contactUs.metadata.title,
+  description: prompts.contactUs.metadata.description,
 };
 
 export default function Contact() {
@@ -21,10 +22,10 @@ export default function Contact() {
           <div className="bg-white rounded-full p-4 shadow-lg">
             <Icon name="tennisball" size={48} className="text-green-600" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold">Contact Us</h1>
-          <p className="text-xl max-w-2xl">
-            Get in touch with us for any questions or feedback
-          </p>
+          <h1 className="text-4xl md:text-5xl font-bold">
+            {prompts.contactUs.title}
+          </h1>
+          <p className="text-xl max-w-2xl">{prompts.contactUs.description}</p>
         </div>
 
         <div>

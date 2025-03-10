@@ -1,11 +1,13 @@
+// app/listings/create/page.tsx
 import { Metadata } from "next";
 import { Suspense } from "react";
-import CreateListingForm from "@/app/components/listings/CreateListingForm";
+import CreateListingForm from "@/app/listings/components/CreateListingForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import prompts from "@/prompts/prompts";
 
 export const metadata: Metadata = {
-  title: "Create Listing",
+  title: prompts.listings.listingForms.createTitle,
   description: "Create a new listing to sell your tennis equipment",
 };
 
@@ -20,7 +22,7 @@ export default async function CreateListingPage() {
         <Card className="mb-12">
           <CardHeader>
             <CardTitle className="text-2xl font-bold">
-              Create New Listing
+              {prompts.listings.listingForms.createTitle}
             </CardTitle>
           </CardHeader>
           <CardContent>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useTransition, useMemo } from "react";
+import React, { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -26,18 +26,14 @@ import {
   MultiSelectorTrigger,
 } from "@/components/ui/multi-select";
 import { UploadDropzone } from "@/utils/uploadthing";
-import { updateListingAction } from "@/app/actions/listings";
+import { createListingAction } from "@/app/actions/listings";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import {
-  LocationErrorType,
-  Listing,
-  AVAILABLE_TAGS,
-  AvailableTags,
-} from "@/types/listings";
+import { AVAILABLE_TAGS, LocationErrorType } from "@/types/listings";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import isEqual from "lodash/isEqual";
+import { useAuth } from "@clerk/nextjs";
+import prompts from "@/prompts/prompts";
 
 const MAX_FILE_COUNT = 6;
 const MAX_FILE_SIZE = "4MB";
@@ -64,7 +60,7 @@ const formSchema = z.object({
   location: z.object({
     city: z
       .string({
-        required_error: "City must be selected",
+        required_error: "City must be selected", // This is the message that will be shown
         invalid_type_error: "City must be selected",
       })
       .min(1, "City must be selected"),
@@ -81,61 +77,51 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
+
 type FieldName = keyof FormValues | `location.${keyof FormValues["location"]}`;
 
-interface EditListingFormProps {
-  listing: Listing;
+interface CreateListingFormProps {
+  onSubmitSuccess?: () => void;
+  onDismiss?: () => void;
 }
 
-export default function EditListingForm({ listing }: EditListingFormProps) {
+export default function CreateListingForm({
+  onSubmitSuccess,
+}: CreateListingFormProps) {
   const [isPending, startTransition] = useTransition();
   const [isUploading, setIsUploading] = useState(false);
-  const [hasFormChanged, setHasFormChanged] = useState(false);
   const router = useRouter();
+  const { isSignedIn, isLoaded } = useAuth();
 
   // Determine if form should be disabled
-  const isFormDisabled = isPending || isUploading;
+  const isFormDisabled = isPending || isUploading || (!isSignedIn && isLoaded);
 
-  // Memoize defaultValues to prevent recreation on every render
-  const defaultValues = useMemo<FormValues>(
-    () => ({
-      title: listing.title,
-      description: listing.description,
-      price: listing.price.toString(),
-      status: (listing.status as "active" | "sold" | "archived") || "active",
-      location: {
-        city: listing.location.city || listing.location.formatted || "",
-        club: listing.location.club || "",
-      },
-      tags: listing.tags.filter((tag): tag is AvailableTags =>
-        AVAILABLE_TAGS.includes(tag as AvailableTags)
-      ) || ["Other"],
-      images: listing.images.map((img) => img.url),
-    }),
-    [listing]
-  ); // Only depend on the listing object
+  const defaultValues: FormValues = {
+    title: "",
+    description: "",
+    price: "",
+    status: "active" as const, // explicitly type as const to match the enum
+    location: {
+      city: "",
+      club: "",
+    },
+    tags: ["Other" as const], // explicitly type as const to match the enum array
+    images: [],
+  };
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
   });
 
-  // Add this useEffect to check for form changes
-  useEffect(() => {
-    const subscription = form.watch(() => {
-      // Get current form values
-      const currentValues = form.getValues();
-
-      // Deep comparison of current values with default values
-      const changed = !isEqual(currentValues, defaultValues);
-      setHasFormChanged(changed);
-    });
-
-    // Clean up subscription
-    return () => subscription.unsubscribe();
-  }, [form, defaultValues]);
-
   const handleSubmit = async (values: FormValues) => {
+    // Prevent form submission if not signed in
+    if (!isSignedIn && isLoaded) {
+      toast.error(prompts.toast.signInRequired);
+      router.push("/sign-in");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("title", values.title);
     formData.append("description", values.description);
@@ -143,55 +129,35 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
     formData.append("location.club", values.location.club || "");
     values.tags.forEach((tag) => formData.append("tags", tag));
     values.images.forEach((image) => formData.append("images", image));
-    formData.append("status", values.status);
 
     if (values.price) {
       formData.append("price", values.price.toString());
     }
 
     startTransition(async () => {
-      const result = await updateListingAction(listing.id, formData);
-      console.log("Server action complete result:", result);
+      const result = await createListingAction(formData);
 
       if (result.success) {
-        // Set the skipModal flag in sessionStorage
-        sessionStorage.setItem("skipModal", "true");
-
-        // Store a success message in sessionStorage to show after navigation
-        sessionStorage.setItem("listingUpdateSuccess", "true");
-
-        // Reset form to avoid unsaved changes warnings
-        form.reset(form.getValues());
-
-        // Use a slight delay and then perform a hard navigation
-        setTimeout(() => {
-          // Use window.location for a hard navigation instead of router.push
-          window.location.href = `/listings/view/${listing.id}`;
-        }, 100);
+        toast.success(prompts.toast.success);
+        form.reset(defaultValues);
+        onSubmitSuccess?.();
+        router.push("/listings");
+        router.refresh(); // Refresh the page to show the latest data
       } else {
-        console.log("Submission failed, processing errors");
         if (typeof result.error === "string") {
-          console.log("String error received:", result.error);
           toast.error(result.error);
         } else if (result.error) {
-          console.log("Error object received:", result.error);
           Object.entries(result.error).forEach(([field, errors]) => {
-            console.log(`Processing field: ${field}`, errors);
-
             if (field === "location") {
-              console.log("Location error structure:", errors);
               const locationError = errors as LocationErrorType;
-              console.log("Parsed location error:", locationError);
 
               if (locationError.city) {
-                console.log("Setting city error:", locationError.city[0]);
                 form.setError("location.city" as FieldName, {
                   type: "server",
                   message: locationError.city[0] || "City must be selected",
                 });
               }
             } else if (Array.isArray(errors) && errors.length > 0) {
-              console.log(`Setting error for field ${field}:`, errors[0]);
               form.setError(field as FieldName, {
                 type: "server",
                 message: errors[0],
@@ -224,10 +190,12 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
             name="title"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Title</FormLabel>
+                <FormLabel>
+                  {prompts.listings.listingForms.titleLabel}
+                </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="E.g. Wilson Blade"
+                    placeholder={prompts.listings.listingForms.titlePlaceholder}
                     {...field}
                     className="w-full"
                     disabled={isFormDisabled}
@@ -247,10 +215,14 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Description</FormLabel>
+                <FormLabel>
+                  {prompts.listings.listingForms.descriptionLabel}
+                </FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="Describe your item in detail..."
+                    placeholder={
+                      prompts.listings.listingForms.descriptionPlaceholder
+                    }
                     className="min-h-32 resize-none"
                     {...field}
                     disabled={isFormDisabled}
@@ -270,7 +242,9 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
             name="price"
             render={({ field: { onChange, ...fieldProps } }) => (
               <FormItem>
-                <FormLabel>Price (Optional)</FormLabel>
+                <FormLabel>
+                  {prompts.listings.listingForms.priceLabel}
+                </FormLabel>
                 <FormControl>
                   <div className="relative">
                     <span className="absolute left-3 top-2 text-gray-500">
@@ -280,7 +254,9 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                       type="number"
                       step="0.01"
                       min="0"
-                      placeholder="0.00"
+                      placeholder={
+                        prompts.listings.listingForms.pricePlaceholder
+                      }
                       className="pl-8"
                       {...fieldProps}
                       onChange={(e) => {
@@ -309,17 +285,17 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
 
               return (
                 <FormItem>
-                  <FormLabel>Location</FormLabel>
+                  <FormLabel>
+                    {prompts.listings.listingForms.locationLabel}
+                  </FormLabel>
                   <FormControl>
                     <LocationSelector
                       value={field.value}
                       onCityChange={(location) => {
-                        console.log("City changed to:", location);
                         field.onChange(location);
                         form.clearErrors("location.city");
                       }}
                       onClubChange={(location) => {
-                        console.log("Club changed to:", location);
                         field.onChange(location);
                       }}
                       disabled={isFormDisabled}
@@ -374,7 +350,9 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
             name="images"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Images</FormLabel>
+                <FormLabel>
+                  {prompts.listings.listingForms.photosLabel}
+                </FormLabel>
                 <FormControl>
                   <div className="space-y-4">
                     {/* Display uploaded images first */}
@@ -436,7 +414,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                           (file) => !file.type.startsWith("image/")
                         );
                         if (invalidFiles.length > 0) {
-                          toast.error("Please upload only image files");
+                          toast.error(prompts.toast.incorrectFileType);
                           return false;
                         }
 
@@ -451,7 +429,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                             MAX_FILE_COUNT
                           ) {
                             field.onChange([...field.value, ...uploadedUrls]);
-                            toast.success("Images uploaded successfully");
+                            toast.success(prompts.toast.uploadSuccess);
                           } else {
                             toast.error(
                               `Cannot exceed ${MAX_FILE_COUNT} images`
@@ -462,15 +440,11 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                       }}
                       onUploadError={(error: Error) => {
                         if (error.message.includes("Unauthorized")) {
-                          toast.error("Please sign in to upload images");
+                          toast.error(prompts.toast.signInRequired);
                         } else if (error.message.includes("Ratelimited")) {
-                          toast.error(
-                            "Please wait before uploading more images"
-                          );
+                          toast.error(prompts.toast.rateLimited);
                         } else {
-                          toast.error(
-                            "Upload failed. Please ensure your images are valid and try again."
-                          );
+                          toast.error(prompts.toast.uploadError);
                         }
                         setIsUploading(false);
                       }}
@@ -478,8 +452,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                   </div>
                 </FormControl>
                 <FormDescription>
-                  Upload up to {MAX_FILE_COUNT} images (max {MAX_FILE_SIZE}{" "}
-                  each)
+                  {prompts.listings.listingForms.maxPhotos} {MAX_FILE_SIZE} each
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -493,13 +466,15 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
               onClick={() => router.back()}
               disabled={isFormDisabled}
             >
-              Cancel
+              {prompts.common.buttons.cancel}
             </Button>
-            <Button type="submit" disabled={isFormDisabled || !hasFormChanged}>
-              {isPending ? (
+            <Button type="submit" disabled={isFormDisabled}>
+              {!isSignedIn && isLoaded ? (
+                "Sign in to Create"
+              ) : isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
+                  Creating...
                 </>
               ) : isUploading ? (
                 <>
@@ -507,7 +482,7 @@ export default function EditListingForm({ listing }: EditListingFormProps) {
                   Uploading...
                 </>
               ) : (
-                "Save Changes"
+                prompts.listings.listingForms.publishButton
               )}
             </Button>
           </div>

@@ -131,7 +131,6 @@ export interface ListingPageProps {
 export interface ListingFilters {
   location?: {
     city?: string;
-    club?: string;
   };
   tag?: string;
   minPrice?: number;

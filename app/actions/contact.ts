@@ -68,7 +68,6 @@ export async function submitContactForm(formData: ContactFormData) {
     });
 
     // Log for demonstration purposes
-    console.log("Contact form submission:", validatedData);
 
     // Simulate processing time
     await new Promise((resolve) => setTimeout(resolve, 1000));

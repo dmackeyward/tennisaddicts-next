@@ -48,12 +48,6 @@ export async function getListings(
         );
       }
 
-      if (filters?.location?.club) {
-        conditions.push(
-          sql`${fields.location}->>'club' = ${filters.location.club}`
-        );
-      }
-
       if (filters?.minPrice !== undefined) {
         conditions.push(sql`${fields.price} >= ${String(filters.minPrice)}`);
       }

@@ -4,10 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Metadata } from "next";
 import Link from "next/link";
 import Icon from "@/components/Icon";
+import prompts from "@/prompts/prompts";
 
 export const metadata: Metadata = {
-  title: "Tennis Addicts",
-  description: "Your community for everything tennis",
+  title: prompts.home.metadata.title,
+  description: prompts.home.metadata.description,
 };
 
 export default function Home() {
@@ -23,19 +24,19 @@ export default function Home() {
             <div className="bg-white rounded-full p-4 shadow-lg">
               <Icon name="tennisball" size={48} className="text-green-600" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold">Tennis Addicts</h1>
-            <p className="text-xl max-w-2xl">
-              Your community for local matches, courts, and tennis enthusiasts
-            </p>
+            <h1 className="text-4xl md:text-5xl font-bold">
+              {prompts.home.title}
+            </h1>
+            <p className="text-xl max-w-2xl">{prompts.home.description}</p>
             <div className="flex flex-wrap gap-4 justify-center pt-4">
               <Link href="/news">
                 <Button className="bg-green-600 hover:bg-green-700 text-black font-medium text-lg px-6 py-6 h-auto">
-                  Latest News
+                  {prompts.home.newsButton}
                 </Button>
               </Link>
               <Link href="/listings">
                 <Button className="bg-white hover:bg-gray-100 text-green-600 font-medium text-lg px-6 py-6 h-auto">
-                  See Listings
+                  {prompts.home.listingsButton}
                 </Button>
               </Link>
             </div>
@@ -59,13 +60,12 @@ export default function Home() {
                     </div>
                   </div>
                   <CardTitle className="text-xl text-center">
-                    Join Our Community
+                    {prompts.home.communityCardTitle}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-center text-gray-600">
-                    Sign up to connect with local players, find courts, and join
-                    events.
+                    {prompts.home.communityCardDescription}
                   </p>
                 </CardContent>
               </Card>
@@ -84,12 +84,13 @@ export default function Home() {
                       />
                     </div>
                   </div>
-                  <CardTitle className="text-xl text-center">News</CardTitle>
+                  <CardTitle className="text-xl text-center">
+                    {prompts.home.newsCardTitle}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-center text-gray-600">
-                    Keep up to date with the latest local and international
-                    tennis news.
+                    {prompts.home.newsCardDescription}
                   </p>
                 </CardContent>
               </Card>
@@ -109,12 +110,12 @@ export default function Home() {
                     </div>
                   </div>
                   <CardTitle className="text-xl text-center">
-                    Listings
+                    {prompts.home.listingsCardTitle}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-center text-gray-600">
-                    Find equipment, coaching, and other tennis-related listings.
+                    {prompts.home.listingsCardDescription}
                   </p>
                 </CardContent>
               </Card>

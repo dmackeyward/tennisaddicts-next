@@ -1,56 +1,25 @@
 // app/listings/page.tsx
 import { Metadata } from "next";
 import { Suspense } from "react";
-import { ClientSideListings } from "../components/listings/ClientSideListings";
+import { ClientSideListings } from "./components/ClientSideListings";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getListings } from "@/db/queries/listings";
 import { auth } from "@clerk/nextjs/server";
 import Icon from "@/components/Icon";
 import { Plus, Loader2 } from "lucide-react";
-import type { ListingFilters } from "@/types/listings";
+import prompts from "@/prompts/prompts";
 
+// Use metadata from prompts file
 export const metadata: Metadata = {
-  title: "Tennis Court Listings",
-  description: "Discover and book tennis courts in your area",
+  title: prompts.listings.metadata.title,
+  description: prompts.listings.metadata.description,
 };
 
-export default async function ListingsPage({
-  searchParams,
-}: {
-  searchParams?: { [key: string]: string | string[] | undefined };
-}) {
-  // Get initial listings without filters first
+export default async function ListingsPage() {
+  // Get listings with filters
   const initialListings = await getListings();
   const { userId } = await auth();
-
-  // Extract parameters individually without using 'in' operator
-  const serializableParams: Record<string, string | string[]> = {};
-
-  // Safely extract parameters using direct access
-  if (searchParams) {
-    // Handle each parameter individually
-    const sortBy = searchParams.sortBy;
-    if (sortBy !== undefined) serializableParams.sortBy = sortBy;
-
-    const sortOrder = searchParams.sortOrder;
-    if (sortOrder !== undefined) serializableParams.sortOrder = sortOrder;
-
-    const tag = searchParams.tag;
-    if (tag !== undefined) serializableParams.tag = tag;
-
-    const city = searchParams.city;
-    if (city !== undefined) serializableParams.city = city;
-
-    const club = searchParams.club;
-    if (club !== undefined) serializableParams.club = club;
-
-    const minPrice = searchParams.minPrice;
-    if (minPrice !== undefined) serializableParams.minPrice = minPrice;
-
-    const maxPrice = searchParams.maxPrice;
-    if (maxPrice !== undefined) serializableParams.maxPrice = maxPrice;
-  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -61,17 +30,15 @@ export default async function ListingsPage({
             <div className="bg-white rounded-full p-4 shadow-lg">
               <Icon name="tennisball" size={48} className="text-green-600" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold">Listings</h1>
-            <p className="text-xl max-w-3xl">
-              Find and book the perfect tennis court in your area. Browse our
-              listings to discover top-rated courts, availability, and special
-              offers.
-            </p>
+            <h1 className="text-4xl md:text-5xl font-bold">
+              {prompts.listings.title}
+            </h1>
+            <p className="text-xl max-w-3xl">{prompts.listings.description}</p>
             {userId && (
               <Link href="/listings/create">
                 <Button size="sm" className="bg-green-600 hover:bg-green-700">
                   <Plus size={16} className="mr-2" />
-                  Create New Listing
+                  {prompts.listings.myListings.createButton}
                 </Button>
               </Link>
             )}
@@ -91,10 +58,7 @@ export default async function ListingsPage({
               </div>
             }
           >
-            <ClientSideListings
-              initialListings={initialListings}
-              rawSearchParams={serializableParams}
-            />
+            <ClientSideListings initialListings={initialListings} />
           </Suspense>
         </div>
       </div>

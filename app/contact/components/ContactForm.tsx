@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Check } from "lucide-react";
 import { submitContactForm } from "@/actions/contact";
+import prompts from "@/prompts/prompts";
 
 export default function ContactForm() {
   const [formState, setFormState] = useState({
@@ -54,7 +55,7 @@ export default function ContactForm() {
         setStatus({
           submitted: false,
           loading: false,
-          error: result.message || "Something went wrong. Please try again.",
+          error: result.message || prompts.contactUs.form.error.generic,
         });
       }
     } catch (error) {
@@ -62,7 +63,7 @@ export default function ContactForm() {
       setStatus({
         submitted: false,
         loading: false,
-        error: "An unexpected error occurred. Please try again.",
+        error: prompts.contactUs.form.error.unexpected,
       });
     }
   };
@@ -71,10 +72,9 @@ export default function ContactForm() {
     <Card className="shadow-lg">
       {!status.submitted && (
         <CardHeader>
-          <CardTitle>Send us a message</CardTitle>
+          <CardTitle>{prompts.contactUs.form.title}</CardTitle>
           <CardDescription>
-            Fill out the form below and we&apos;ll get back to you as soon as
-            possible.
+            {prompts.contactUs.form.description}
           </CardDescription>
         </CardHeader>
       )}
@@ -84,16 +84,17 @@ export default function ContactForm() {
             <div className="bg-green-100 rounded-full p-3">
               <Check size={32} className="text-green-600" />
             </div>
-            <h3 className="text-xl font-semibold">Message Sent!</h3>
+            <h3 className="text-xl font-semibold">
+              {prompts.contactUs.form.success.title}
+            </h3>
             <p className="text-gray-600">
-              Thank you for contacting us. We&apos;ll respond to your inquiry
-              shortly.
+              {prompts.contactUs.form.success.message}
             </p>
             <Button
               variant="outline"
               onClick={() => setStatus({ ...status, submitted: false })}
             >
-              Send another message
+              {prompts.contactUs.form.success.button}
             </Button>
           </div>
         ) : (
@@ -105,11 +106,11 @@ export default function ContactForm() {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name">{prompts.contactUs.form.nameLabel}</Label>
               <Input
                 id="name"
                 name="name"
-                placeholder="Your name"
+                placeholder={prompts.contactUs.form.namePlaceholder}
                 required
                 value={formState.name}
                 onChange={(e) =>
@@ -120,12 +121,12 @@ export default function ContactForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{prompts.contactUs.form.emailLabel}</Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
-                placeholder="your.email@example.com"
+                placeholder={prompts.contactUs.form.emailPlaceholder}
                 required
                 value={formState.email}
                 onChange={(e) =>
@@ -136,7 +137,9 @@ export default function ContactForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="subject">Subject</Label>
+              <Label htmlFor="subject">
+                {prompts.contactUs.form.subjectLabel}
+              </Label>
               <Select
                 name="subject"
                 value={formState.subject}
@@ -147,23 +150,35 @@ export default function ContactForm() {
                 disabled={isFormDisabled}
               >
                 <SelectTrigger id="subject">
-                  <SelectValue placeholder="Select a subject" />
+                  <SelectValue
+                    placeholder={prompts.contactUs.form.subjectPlaceholder}
+                  />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="general">General Inquiry</SelectItem>
-                  <SelectItem value="feedback">Feedback</SelectItem>
-                  <SelectItem value="issue">Issue</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
+                  <SelectItem value="general">
+                    {prompts.contactUs.form.subjects.general}
+                  </SelectItem>
+                  <SelectItem value="feedback">
+                    {prompts.contactUs.form.subjects.feedback}
+                  </SelectItem>
+                  <SelectItem value="issue">
+                    {prompts.contactUs.form.subjects.issue}
+                  </SelectItem>
+                  <SelectItem value="other">
+                    {prompts.contactUs.form.subjects.other}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="message">Message</Label>
+              <Label htmlFor="message">
+                {prompts.contactUs.form.messageLabel}
+              </Label>
               <Textarea
                 id="message"
                 name="message"
-                placeholder="Your message here..."
+                placeholder={prompts.contactUs.form.messagePlaceholder}
                 rows={5}
                 required
                 value={formState.message}
@@ -175,7 +190,9 @@ export default function ContactForm() {
             </div>
 
             <Button type="submit" className="w-full" disabled={isFormDisabled}>
-              {status.loading ? "Sending..." : "Send Message"}
+              {status.loading
+                ? prompts.contactUs.form.sendingButton
+                : prompts.contactUs.form.sendButton}
             </Button>
           </form>
         )}

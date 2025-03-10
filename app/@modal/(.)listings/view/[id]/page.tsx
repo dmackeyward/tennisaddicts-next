@@ -1,13 +1,14 @@
 // app/@modal/(.)listings/[id]/page.tsx
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import ListingDetail from "@/components/listings/ListingDetail";
+import ListingDetail from "@/app/listings/components/ListingDetail";
 import { getListing } from "@/db/queries/listings";
 import { PLACEHOLDER_LISTING } from "@/types/listings";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { auth } from "@clerk/nextjs/server";
 import { Modal } from "@/components/Modal";
 import ModalController from "@/components/ModalController";
+import prompts from "@/prompts/prompts";
 
 export const dynamic = "force-dynamic";
 
@@ -22,10 +23,7 @@ async function ListingContent({ id }: { id: string }) {
     notFound();
   }
 
-  // Get current user to check if they're the author
   const { userId } = await auth();
-
-  // Check if the current user is the author of this listing
   const isAuthor = userId ? userId === listing.userId : false;
 
   return (
@@ -49,10 +47,10 @@ export default async function ListingModal({
           fallback={
             <div className="p-6 bg-white rounded-lg">
               <h2 className="text-xl font-semibold text-red-600">
-                Error Loading Listing
+                {prompts.error.errorLoadingNews}
               </h2>
               <p className="mt-2 text-gray-600">
-                There was a problem loading this listing.
+                {prompts.error.errorLoadingNewsDetails}
               </p>
             </div>
           }
@@ -77,7 +75,7 @@ export async function generateMetadata({
 
   if (!listing) {
     return {
-      title: "Listing Not Found",
+      title: prompts.error.listingNotFound,
     };
   }
 

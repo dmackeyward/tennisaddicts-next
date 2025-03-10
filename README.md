@@ -39,12 +39,15 @@
 - [x] Modularize Modal
 - [x] Disable the image upload when page is submitting
 - [x] Github Actions
-- [] Test Github Actions
-- [] Modularize prompts
-- [] Relocate city and club values to prompts or types
-- [] Sort - price, updatedAt, name
-- [] Filter - tags, location
-- [] Search functionality - local versus API search - query params
+- [x] Relocate city and club values to assets folder
+- [x] Sort - price, createdAt
+- [x] Filter - tags, location
+- [x] Modularize prompts
+- [x] Fix Github Actions
+- [x] Update toast prompts
+- [] Compare utils/device with use-mobile hook
+- [] Understand the error and loading pages and where to use them
+- [] Search functionality - API search - query params
 
 ## Bugs
 
