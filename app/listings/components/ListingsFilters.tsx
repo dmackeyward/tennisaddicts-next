@@ -32,7 +32,6 @@ interface ListingsFiltersProps {
 }
 
 export const ListingsFilters = memo(function ListingsFilters({
-  onFiltersChange,
   disabled = false,
   category,
   totalItems,

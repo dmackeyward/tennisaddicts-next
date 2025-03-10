@@ -1,6 +1,6 @@
 # Tennis Addicts
 
-## Done
+## Features
 
 - [x] Scaffold basic UI
 - [x] Connect database
@@ -55,6 +55,8 @@
 - [x] Close sidebar from header and footer on sidebar
 - [x] Add padding to bottom of the pages for mobile
 - [x] Disable modal view on mobile
+- [x] Duplicate clear filters button
+- [x] Improve UI - N listings found
 
 ## To do
 
@@ -73,8 +75,6 @@
 
 ## Bugs
 
-- [] Duplicate clear filters button
-- [] Improve UI - N listings found
 - [] Add env variables to Github
 - [] Error screens only displaying on 50% of the page
 

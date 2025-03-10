@@ -38,7 +38,46 @@ export function ClientSideListings({
     };
   }, [isLoading]);
 
-  // Handle filter changes and fetch results
+  // First, declare the fetchFilteredListings function
+  const fetchFilteredListings = useCallback(
+    async (filters: ListingFiltersType): Promise<Listing[]> => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      const filteredResults = initialListings
+        .filter((listing) => {
+          if (
+            filters.tag &&
+            listing.tags &&
+            !listing.tags.includes(filters.tag)
+          ) {
+            return false;
+          }
+          if (
+            filters.location?.city &&
+            listing.location?.city !== filters.location.city
+          ) {
+            return false;
+          }
+          return true;
+        })
+        .sort((a, b) => {
+          if (filters.sortBy === "date") {
+            const dateA = new Date(a.createdAt).getTime();
+            const dateB = new Date(b.createdAt).getTime();
+            return filters.sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+          } else {
+            return filters.sortOrder === "asc"
+              ? (a.price || 0) - (b.price || 0)
+              : (b.price || 0) - (a.price || 0);
+          }
+        });
+
+      return filteredResults;
+    },
+    [initialListings] // Only depends on initialListings
+  );
+
+  // Then, declare handleFiltersApplied which uses fetchFilteredListings
   const handleFiltersApplied = useCallback(
     async (filters: ListingFiltersType) => {
       // Only set loading if we're not already loading
@@ -57,7 +96,7 @@ export function ClientSideListings({
         setIsLoading(false);
       }
     },
-    []
+    [fetchFilteredListings]
   );
 
   // Use our custom hook for filter state management
@@ -73,57 +112,6 @@ export function ClientSideListings({
     areFiltersActive,
     clearFilters,
   } = useListingsFilters(handleFiltersApplied);
-
-  // Simulated API call - replace with your actual data fetching logic
-  const fetchFilteredListings = async (
-    filters: ListingFiltersType
-  ): Promise<Listing[]> => {
-    // This is where you would make an API call to your backend
-    // For example:
-    // const response = await fetch(`/api/listings?${new URLSearchParams(filterParams)}`)
-    // return response.json()
-
-    // For now, we'll just simulate a delay and filter the initial listings client-side
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Shorter delay for better UX
-
-    // Apply filters to initialListings
-    const filteredResults = initialListings
-      .filter((listing) => {
-        // Filter by tag
-        if (
-          filters.tag &&
-          listing.tags &&
-          !listing.tags.includes(filters.tag)
-        ) {
-          return false;
-        }
-
-        // Filter by city
-        if (
-          filters.location?.city &&
-          listing.location?.city !== filters.location.city
-        ) {
-          return false;
-        }
-
-        return true;
-      })
-      .sort((a, b) => {
-        // Sort by date or price
-        if (filters.sortBy === "date") {
-          const dateA = new Date(a.createdAt).getTime();
-          const dateB = new Date(b.createdAt).getTime();
-          return filters.sortOrder === "asc" ? dateA - dateB : dateB - dateA;
-        } else {
-          // Sort by price
-          return filters.sortOrder === "asc"
-            ? (a.price || 0) - (b.price || 0)
-            : (b.price || 0) - (a.price || 0);
-        }
-      });
-
-    return filteredResults;
-  };
 
   return (
     <div>
