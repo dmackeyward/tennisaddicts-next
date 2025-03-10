@@ -33,12 +33,7 @@ import { AVAILABLE_TAGS, LocationErrorType } from "@/types/listings";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAuth } from "@clerk/nextjs";
-import {
-  listings,
-  common,
-  forms,
-  toast as toastPrompts,
-} from "@/prompts/prompts"; // Import the prompts
+import { listings, common, toast as toastPrompts } from "@/prompts/prompts"; // Import the prompts
 
 const MAX_FILE_COUNT = 6;
 const MAX_FILE_SIZE = "4MB";

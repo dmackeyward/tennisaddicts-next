@@ -8,7 +8,7 @@ import type {
   Listing,
   ListingFilters as ListingFiltersType,
 } from "@/types/listings";
-import { listings, common } from "@/prompts/prompts"; // Import the prompts
+import { common } from "@/prompts/prompts"; // Import the prompts
 
 interface ClientSideListingsProps {
   initialListings: Listing[];

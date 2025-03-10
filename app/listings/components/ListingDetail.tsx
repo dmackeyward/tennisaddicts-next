@@ -20,7 +20,6 @@ import {
   DollarSign,
   ChevronLeft,
   ChevronRight,
-  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";

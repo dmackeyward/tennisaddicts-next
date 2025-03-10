@@ -42,8 +42,11 @@
 - [x] Relocate city and club values to assets folder
 - [x] Sort - price, createdAt
 - [x] Filter - tags, location
-- [] Modularize prompts
-- [] Test Github Actions
+- [x] Modularize prompts
+- [] Fix Github Actions
+- [] Update Prompt imports
+- [] Check toast prompts
+- [] Compare utils/device with use-mobile hook
 - [] Search functionality - API search - query params
 
 ## Bugs

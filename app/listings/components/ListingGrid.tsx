@@ -60,7 +60,6 @@ export function ListingGrid({
   onLoadMore,
   hasMore = false,
   category,
-  subcategory,
 }: ListingGridProps) {
   const observerTarget = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
