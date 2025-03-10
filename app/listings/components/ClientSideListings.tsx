@@ -1,6 +1,6 @@
 "use client";
 // components/listings/ClientSideListings.tsx
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { ListingsFilters } from "@/app/listings/components/ListingsFilters";
 import { ListingGrid } from "@/app/listings/components/ListingGrid";
 import type {
@@ -19,24 +19,57 @@ export function ClientSideListings({
 }: ClientSideListingsProps) {
   const [listings, setListings] = useState<Listing[]>(initialListings);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
+  // Ensure we stop the loading state even if stuck (safety net)
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    if (isLoading) {
+      // If loading takes more than 10 seconds, force it to stop
+      timeoutId = setTimeout(() => {
+        console.warn("Loading timeout reached, forcing loading state to end");
+        setIsLoading(false);
+      }, 10000);
+    }
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [isLoading]);
 
   // Handle filter changes and fetch results
-  const handleFiltersApplied = async (filters: ListingFiltersType) => {
-    setIsLoading(true);
-    try {
-      const response = await fetchFilteredListings(filters);
-      setListings(response);
-    } catch (error) {
-      console.error("Error fetching filtered listings:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const handleFiltersApplied = useCallback(
+    async (filters: ListingFiltersType) => {
+      // Only set loading if we're not already loading
+      setIsLoading(true);
+      setHasError(false);
+
+      try {
+        const response = await fetchFilteredListings(filters);
+        setListings(response);
+      } catch (error) {
+        console.error("Error fetching filtered listings:", error);
+        setHasError(true);
+        // If there's an error, continue showing the previous listings
+      } finally {
+        // Always reset loading state
+        setIsLoading(false);
+      }
+    },
+    []
+  );
 
   // Use our custom hook for filter state management
   const {
-    resetFilterTrigger,
+    selectedTag,
+    selectedSort,
+    selectedCity,
     isFilterOperationInProgress,
+    resetFilterTrigger,
+    handleSortChange,
+    handleTagChange,
+    handleCityChange,
     areFiltersActive,
     clearFilters,
   } = useListingsFilters(handleFiltersApplied);
@@ -51,7 +84,7 @@ export function ClientSideListings({
     // return response.json()
 
     // For now, we'll just simulate a delay and filter the initial listings client-side
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Longer delay to make loading state more visible
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // Shorter delay for better UX
 
     // Apply filters to initialListings
     const filteredResults = initialListings
@@ -99,6 +132,17 @@ export function ClientSideListings({
           key={`listings-filters-${resetFilterTrigger}`}
           onFiltersChange={handleFiltersApplied}
           disabled={isFilterOperationInProgress}
+          totalItems={listings.length}
+          clearFilters={clearFilters}
+          areFiltersActive={areFiltersActive}
+          // Pass filter state and handlers directly
+          selectedTag={selectedTag}
+          selectedSort={selectedSort}
+          selectedCity={selectedCity}
+          handleTagChange={handleTagChange}
+          handleSortChange={handleSortChange}
+          handleCityChange={handleCityChange}
+          isFilterOperationInProgress={isFilterOperationInProgress}
         />
 
         {isLoading ? (
@@ -110,24 +154,20 @@ export function ClientSideListings({
               <div className="h-2 bg-gray-200 rounded-full max-w-md mx-auto mt-4"></div>
             </div>
           </div>
-        ) : (
-          <>
-            <div className="flex justify-between items-center text-sm text-gray-500 mb-4 px-4">
-              <div>
-                {listings.length} {prompts.common.pagination.items}
-              </div>
-              {areFiltersActive() && (
-                <button
-                  onClick={clearFilters}
-                  className="text-blue-500 hover:text-blue-700 font-medium transition-colors focus:outline-none"
-                  disabled={isFilterOperationInProgress}
-                >
-                  {prompts.common.filters.clearFilters}
-                </button>
-              )}
+        ) : hasError ? (
+          <div className="flex justify-center py-12 text-center">
+            <div className="text-red-500">
+              <p>Error loading results. Please try again.</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                Refresh
+              </button>
             </div>
-            <ListingGrid listings={listings} />
-          </>
+          </div>
+        ) : (
+          <ListingGrid listings={listings} />
         )}
       </div>
     </div>
